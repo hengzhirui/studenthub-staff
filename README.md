@@ -1,2 +1,2 @@
-# payroll-staff
-Ionic app for Payroll Staff / Studenthub Management
+# payroll-admin
+Frontend app for the Admin portal
