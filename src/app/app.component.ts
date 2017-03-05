@@ -24,21 +24,17 @@ export class MyApp implements OnInit {
       private _zone: NgZone
   ) {
     this._platform.ready().then(() => {
-        // Native functions
-        if (this._platform.is('cordova') && this._platform.is('mobile')) {
-            StatusBar.styleDefault();
-            Splashscreen.hide();
+      // Native functions
+      if (this._platform.is('cordova') && this._platform.is('mobile')) {
+        StatusBar.styleDefault();
+        Splashscreen.hide();
 
-            // Check for App update via Ionic Deploy
-            this._checkForUpdate();
-        }
+        // Check for App update via Ionic Deploy
+        this._checkForUpdate();
 
-        // Figure out which page to load on app start [Based on Auth]
-        if(this._auth.isLoggedIn){
-            this.rootPage = NavigationPage;
-        }else{
-            this.rootPage = LoginPage;
-        }
+        // Initiate the access token request which determines login status.
+        this._auth.getAccessToken();
+      }
     });
   }
 
@@ -62,7 +58,6 @@ export class MyApp implements OnInit {
         if(logoutReason){
           console.log(logoutReason);
         }
-
       });
   }
 
