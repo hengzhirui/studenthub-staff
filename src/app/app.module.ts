@@ -1,7 +1,7 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { CloudSettings, CloudModule } from '@ionic/cloud-angular';
-import { Storage } from '@ionic/storage';
+import { IonicStorageModule } from '@ionic/storage';
 
 import { MyApp } from './app.component';
 
@@ -14,7 +14,7 @@ import { DefaultPage } from '../pages/logged-in/default/default';
 import { CandidateListPage } from '../pages/logged-in/candidate/candidate-list/candidate-list';
 import { CandidateViewPage } from '../pages/logged-in/candidate/candidate-view/candidate-view';
 import { CandidateFormPage } from '../pages/logged-in/candidate/candidate-form/candidate-form';
-// Company CRUD 
+// Company CRUD
 import { CompanyListPage } from '../pages/logged-in/company/company-list/company-list';
 // Store CRUD
 import { StoreListPage } from '../pages/logged-in/store/store-list/store-list';
@@ -48,7 +48,7 @@ export const cloudSettings: CloudSettings = {
     CandidateListPage,
     CandidateViewPage,
     CandidateFormPage,
-    // Company Crud 
+    // Company Crud
     CompanyListPage,
     // Store Crud
     StoreListPage,
@@ -66,7 +66,7 @@ export const cloudSettings: CloudSettings = {
     CandidateListPage,
     CandidateViewPage,
     CandidateFormPage,
-    // Company Crud 
+    // Company Crud
     CompanyListPage,
     // Store Crud
     StoreListPage,
@@ -75,11 +75,11 @@ export const cloudSettings: CloudSettings = {
   ],
   imports: [
     IonicModule.forRoot(MyApp),
-    CloudModule.forRoot(cloudSettings)
+    CloudModule.forRoot(cloudSettings),
+    IonicStorageModule.forRoot()
   ],
   providers: [
       {provide: ErrorHandler, useClass: IonicErrorHandler},
-      Storage, // Ionic Storage
       AuthService, // Handles all Authorization
       ConfigService, // Handles Environment-specific Variables
       AuthHttpService,
