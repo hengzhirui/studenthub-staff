@@ -15,27 +15,24 @@
   <ion-grid id='uploads'>
     <ion-row>
       <ion-col col-4>
-        <ion-card (click)="uploadBtnClicked('photo')" tappable>
-          <ion-spinner *ngIf="isPhotoUploading"></ion-spinner>
-          <ion-icon name="ios-person" *ngIf="!isPhotoUploading"></ion-icon>
-          Photo
-        </ion-card>
+        <image-upload 
+          label="Photo" icon="ios-person" prefix="photo"
+          (uploadComplete)="onUploadComplete($event)">
+        </image-upload>
       </ion-col>
       <ion-col col-4>
-        <ion-card (click)="uploadBtnClicked('civilfront')" tappable>
-          <ion-spinner *ngIf="isCivilFrontUploading"></ion-spinner>
-          <ion-icon name="ios-card-outline" *ngIf="!isCivilFrontUploading && !model.candidate_civil_photo_front"></ion-icon>
-          <img *ngIf="!isCivilFrontUploading && model.candidate_civil_photo_front" [src]='model.candidate_civil_photo_front'/>
-          Civil ID <br/>(Front)
-        </ion-card>
+        <image-upload 
+          label="Civil ID\n(Front)" icon="ios-card-outline" prefix="civilfront"
+          [value]="model.candidate_civil_photo_front"
+          (uploadComplete)="onUploadComplete($event)">
+        </image-upload>
       </ion-col>
       <ion-col col-4>
-        <ion-card (click)="uploadBtnClicked('civilback')" tappable>
-          <ion-spinner *ngIf="isCivilBackUploading"></ion-spinner>
-          <ion-icon name="ios-card" *ngIf="!isCivilBackUploading && !model.candidate_civil_photo_back"></ion-icon>
-          <img *ngIf="!isCivilBackUploading && model.candidate_civil_photo_back" [src]='model.candidate_civil_photo_back'/>
-          Civil ID <br/>(Back)
-        </ion-card>
+        <image-upload 
+          label="Civil ID\n(Back)" icon="ios-card" prefix="civilback"
+          [value]="model.candidate_civil_photo_back"
+          (uploadComplete)="onUploadComplete($event)">
+        </image-upload>
       </ion-col>
     </ion-row>
   </ion-grid>

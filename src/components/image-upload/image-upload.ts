@@ -23,12 +23,14 @@ export class ImageUploadComponent {
   @Input() label: string = "Photo";
   // Icon to use, by default its a regular image icon
   @Input() icon: string = "image";
+  // File prefix when uploading to S3
+  @Input() prefix: string = "image";
 
   // Ouput event when the upload is complete
   @Output() uploadComplete: EventEmitter<any> = new EventEmitter();
 
   // Used for link generation after upload
-  public bucketUrl = "https://bawes-public.s3.eu-west-2.amazonaws.com/";
+  public bucketUrl: string;
 
   // Progress variables
   public isUploading = false;
@@ -42,6 +44,7 @@ export class ImageUploadComponent {
     private _toastCtrl: ToastController,
     private _alertCtrl: AlertController
     ) {
+      this.bucketUrl = this._awsService.bucketUrl;
   }
 
   /**
@@ -62,16 +65,8 @@ export class ImageUploadComponent {
             text: 'Load from Library',
             handler: () => {
               this._cameraService.getImageFromLibrary().then((nativeImageFilePath) => {
-
                   // Upload and process for progress
-                  this._awsService.uploadNativePath("library", nativeImageFilePath)
-                    .then((uploadObservable) => {
-                      this.processFileUpload(uploadObservable);
-                    })
-                    .catch((err) => {
-                      alert(err);
-                    });
-
+                  this.uploadFileViaNativeFilePath(nativeImageFilePath);
               }, (err) => {
                   // Error getting picture
                   alert("Error getting picture from Library: " + JSON.stringify(err));
@@ -83,16 +78,8 @@ export class ImageUploadComponent {
             text: 'Use Camera',
             handler: () => {
               this._cameraService.getImageFromCamera().then((nativeImageFilePath) => {
-
                   // Upload and process for progress
-                  this._awsService.uploadNativePath("camera", nativeImageFilePath)
-                    .then((uploadObservable) => {
-                      this.processFileUpload(uploadObservable);
-                    })
-                    .catch((err) => {
-                      alert(err);
-                    });
-
+                  this.uploadFileViaNativeFilePath(nativeImageFilePath);
               }, (err) => {
                   // Error getting picture
                   alert("Error getting picture from Camera: " + JSON.stringify(err));
@@ -115,7 +102,7 @@ export class ImageUploadComponent {
   /**
    * Upload the selected file through regular HTML file input 
    * This method will only be called if the target is not a cordova app.
-   * @param  {} $event
+   * @param  {any} $event
    */
   uploadFileViaHtmlFileInput($event){
     let fileList: FileList = $event.target.files;
@@ -125,9 +112,25 @@ export class ImageUploadComponent {
       let file = fileList.item(0);
 
       // Upload The File
-      let uploadObservable = this._awsService.uploadFile("browser", file);
+      let uploadObservable = this._awsService.uploadFile(this.prefix, file);
       this.processFileUpload(uploadObservable);
     }
+  }
+
+  /**
+   * Upload the selected file through regular HTML file input 
+   * This method will only be called if the target is not a cordova app.
+   * @param  {any} path
+   */
+  uploadFileViaNativeFilePath(path){
+    // Upload and process for progress
+    this._awsService.uploadNativePath(this.prefix, path)
+      .then((uploadObservable) => {
+        this.processFileUpload(uploadObservable);
+      })
+      .catch((err) => {
+        alert(err);
+      });
   }
 
   /**
@@ -149,18 +152,17 @@ export class ImageUploadComponent {
 
     // Process Upload and Display Progress
     uploadObservable.subscribe((progress) => {
+      // Update progress, possibly create emitter for this data if needed
       if(progress.loaded &&  progress.loaded != progress.total){
           newUpload.status = "uploading";
           newUpload.loaded = progress.loaded;
           newUpload.total = progress.total;
       }
-
       // If Multipart upload (big file), Key with capital "K"
       if(progress.key || progress.Key){
         newUpload.name = progress.key? progress.key : progress.Key; 
         newUpload.link = this.bucketUrl + newUpload.name;
       }
-
     }, (err) => {
       console.log("Error", err);
       newUpload.status = "error";
@@ -172,7 +174,11 @@ export class ImageUploadComponent {
       this.isUploading = false;
       // Store and Emit the new value
       this.value = newUpload.link;
-      this.uploadComplete.emit(this.value);
+      this.uploadComplete.emit({
+        prefix: this.prefix,
+        key: newUpload.name,
+        url: newUpload.link        
+      });
     });
   }
 

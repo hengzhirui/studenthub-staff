@@ -7,6 +7,8 @@ declare var AWS;
 
 @Injectable()
 export class AwsService {
+    public bucketUrl = "https://bawes-public.s3.eu-west-2.amazonaws.com/";
+    
     private _region = "eu-west-2"; //London
     private _access_key_id = "AKIAI5ZFAKH7R3WIHWXQ";
     private _secret_access_key = "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";
@@ -73,9 +75,8 @@ export class AwsService {
 
     /**
      * Upload file to Amazon S3, return an observable to monitor progress
-     * @param  {string} file_prefix
-     * @param  {File} file
-     * @param  {any} callback
+     * @param {string} file_prefix
+     * @param {File} file
      * @returns {Observable<any>}
      */
     uploadFile(file_prefix: string, file: File): Observable<any> {

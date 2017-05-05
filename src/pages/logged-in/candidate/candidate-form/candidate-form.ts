@@ -1,11 +1,9 @@
-import { Component, Renderer, ElementRef, ViewChild } from '@angular/core';
-import { NavController, Platform, ViewController, LoadingController, AlertController, ActionSheetController, NavParams } from 'ionic-angular';
+import { Component } from '@angular/core';
+import { NavController, ViewController, LoadingController, AlertController, NavParams } from 'ionic-angular';
 // Forms
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CustomValidator } from '../../../../validators/custom.validator';
 // Providers
-import { AwsService } from '../../../../providers/aws.service';
-import { CameraService } from '../../../../providers/camera.service';
 import { CandidateService } from '../../../../providers/logged-in/candidate.service';
 import { BankService } from '../../../../providers/logged-in/bank.service';
 import { UniversityService } from '../../../../providers/logged-in/university.service';
@@ -19,15 +17,6 @@ import { Candidate } from '../../../../models/candidate';
   templateUrl: 'candidate-form.html'
 })
 export class CandidateFormPage {
-  @ViewChild('fileInput') fileInput:ElementRef;
-
-  public bucketUrl = "https://bawes-public.s3.eu-west-2.amazonaws.com/"; // Used for link generation after upload
-  // Photo Uploads Progress Indicators
-  public isPhotoUploading = false;
-  public isCivilFrontUploading = false;
-  public isCivilBackUploading = false;
-  private _lastClickedFileInputType: string; // last file input item clicked
-
   public model: Candidate;
   public operation: string;
 
@@ -50,12 +39,7 @@ export class CandidateFormPage {
     private _fb: FormBuilder,
     private _viewCtrl: ViewController,
     private _loadingCtrl: LoadingController,
-    private _actionSheetCtrl: ActionSheetController,
     private _alertCtrl: AlertController,
-    private _awsService: AwsService,
-    private _cameraService: CameraService,
-    private _platform: Platform,
-    private _renderer:Renderer
   ) {
     // Load the passed model if available
     this.model = params.get('model');
@@ -235,7 +219,6 @@ export class CandidateFormPage {
       });
     });
   }
-
   
   /**
    * Sets the default dates for min/max validation
@@ -250,221 +233,13 @@ export class CandidateFormPage {
     this.maxDate = new Date((yyyy+20), mm).toISOString();
   }
 
-
-
   /**
-   * All Upload Functionality Below this Line
+   * Image upload handler
+   * @param {{key: string, url: string}} $event
    */
-
-  /**
-   * Upload Photo button clicked
-   * - On Native device, load native camera/gallery
-   * - On Browser, trigger a click on the html file input
-  * @param  {string} fileType which file we're uploading
-  */
-  uploadBtnClicked(fileType: string){
-    // If Upload isn't allowed, return
-    if(!this._isUploadAllowed(fileType)) return;
-
-    // Store File Type for loading indicators 
-    this._lastClickedFileInputType = fileType; 
-
-    if(this._platform.is("cordova")){
-      // Display action sheet giving user option of camera vs local filesystem.
-      let actionSheet = this._actionSheetCtrl.create({
-        title: "Select image source",
-        buttons: [
-          {
-            text: 'Load from Library',
-            handler: () => {
-              this._cameraService.getImageFromLibrary().then((nativeImageFilePath) => {
-
-                  // Upload and process for progress
-                  this._awsService.uploadNativePath("library", nativeImageFilePath)
-                    .then((uploadObservable) => {
-                      this.processFileUpload(uploadObservable);
-                    })
-                    .catch((err) => {
-                      alert(err);
-                    });
-
-              }, (err) => {
-                  // Error getting picture
-                  alert("Error getting picture from Library: " + JSON.stringify(err));
-                  console.log("Error getting picture from Library: " + JSON.stringify(err));
-              });;
-            }
-          },
-          {
-            text: 'Use Camera',
-            handler: () => {
-              this._cameraService.getImageFromCamera().then((nativeImageFilePath) => {
-
-                  // Upload and process for progress
-                  this._awsService.uploadNativePath("camera", nativeImageFilePath)
-                    .then((uploadObservable) => {
-                      this.processFileUpload(uploadObservable);
-                    })
-                    .catch((err) => {
-                      alert(err);
-                    });
-
-              }, (err) => {
-                  // Error getting picture
-                  alert("Error getting picture from Camera: " + JSON.stringify(err));
-                  console.log("Error getting picture from Camera: " + JSON.stringify(err));
-              });;
-            }
-          }
-        ]
-      });
-      actionSheet.present();
-
-    }else{
-      // Trigger click event on regular HTML file input
-      let event = new MouseEvent('click', {bubbles: true});
-      this._renderer.invokeElementMethod(this.fileInput.nativeElement, 'dispatchEvent', [event]);
-    }
+  onUploadComplete($event: {key: string, url: string}){
+    console.log($event);
   }
-
-
-  /**
-   * Upload the selected file through regular HTML file input 
-   * This method will only be called if the target is not a cordova app.
-   * @param  {} $event
-   */
-  uploadFileViaHtmlFileInput($event){
-    let fileList: FileList = $event.target.files;
-
-    // Check if files available
-    if(fileList.length > 0){
-      let file = fileList.item(0);
-
-      // Upload The File
-      let uploadObservable = this._awsService.uploadFile("browser", file);
-      this.processFileUpload(uploadObservable);
-    }
-  }
-
-  /**
-   * Process S3 upload by subscribing to progress observable
-   * @param  {} uploadObservable
-   */
-  processFileUpload(uploadObservable){
-    // Create Temporary Transfer Record
-    let newUpload = {
-      name: "Preparing file for upload",
-      type: this._lastClickedFileInputType,
-      status: "uploading",
-      loaded: 0,
-      total: 100,
-      link: ''
-    };
-
-    // Show File Upload Indicator based on which file is being uploaded
-    this._showProgressIndicator(newUpload.type);
-
-    // Process Upload and Display Progress
-    uploadObservable.subscribe((progress) => {
-      if(progress.loaded &&  progress.loaded != progress.total){
-          newUpload.status = "uploading";
-          newUpload.loaded = progress.loaded;
-          newUpload.total = progress.total;
-      }
-
-      // If Multipart upload (big file), Key with capital "K"
-      if(progress.key || progress.Key){
-        newUpload.name = progress.key? progress.key : progress.Key; 
-        newUpload.link = this.bucketUrl + newUpload.name;
-      }
-
-    }, (err) => {
-      console.log("Error", err);
-      newUpload.status = "error";
-      // Hide File Upload Indicator based on which file is being uploaded
-      this._hideProgressIndicator(newUpload.type);
-    }, () => {
-      newUpload.status = "complete";
-      // Hide File Upload Indicator based on which file is being uploaded
-      this._hideProgressIndicator(newUpload.type);
-      // Update model for new file 
-      this._updateCandidateModelForUpload(newUpload.type, newUpload.link);
-    });
-  }
-
-  /**
-   * Is upload required for supplied file type?
-   * @param  {string} fileType
-   * @param  {string} fileUrl
-   */
-  private _updateCandidateModelForUpload(fileType: string, fileUrl: string){
-    switch(fileType){
-      case "photo":
-        // Model currently missing personal photo field/validation
-        break;
-      case "civilfront":
-        this.model.candidate_civil_photo_front = fileUrl;
-        this.form.value.photo_front = fileUrl;
-        break;
-      case "civilback":
-        this.model.candidate_civil_photo_back = fileUrl;
-        this.form.value.photo_back = fileUrl;
-        break;
-    }
-  }
-  /**
-   * Show upload progress indicator for specific filetype
-   * @param  {string} fileType
-   */
-  private _showProgressIndicator(fileType: string){
-    switch(fileType){
-      case "photo":
-        this.isPhotoUploading = true;
-        break;
-      case "civilfront":
-        this.isCivilFrontUploading = true;
-        break;
-      case "civilback":
-        this.isCivilBackUploading = true;
-        break;
-    }
-  }
-  /**
-   * Hide upload progress indicator for specific filetype
-   * @param  {string} fileType
-   */
-  private _hideProgressIndicator(fileType: string){
-    switch(fileType){
-      case "photo":
-        this.isPhotoUploading = false;
-        break;
-      case "civilfront":
-        this.isCivilFrontUploading = false;
-        break;
-      case "civilback":
-        this.isCivilBackUploading = false;
-        break;
-    }
-  }
-  /**
-   * Is upload required for supplied file type?
-   * @param  {string} fileType
-   * @returns boolean
-   */
-  private _isUploadAllowed(fileType: string): boolean{
-    switch(fileType){
-      case "photo":
-        if(!this.isPhotoUploading) return true;
-        break;
-      case "civilfront":
-        if(!this.isCivilFrontUploading) return true;
-        break;
-      case "civilback":
-        if(!this.isCivilBackUploading) return true;
-        break;
-    }
-
-    return false;
-  }
+  
 
 }
