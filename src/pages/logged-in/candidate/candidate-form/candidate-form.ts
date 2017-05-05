@@ -99,7 +99,6 @@ export class CandidateFormPage {
         photo_front: [this.model.candidate_civil_photo_front, Validators.required],
         photo_back: [this.model.candidate_civil_photo_back, Validators.required],
         hourly_rate: [this.model.candidate_hourly_rate, Validators.required]
-
       });
     }
   }
@@ -388,9 +387,31 @@ export class CandidateFormPage {
       newUpload.status = "complete";
       // Hide File Upload Indicator based on which file is being uploaded
       this._hideProgressIndicator(newUpload.type);
+      // Update model for new file 
+      this._updateCandidateModelForUpload(newUpload.type, newUpload.link);
     });
   }
 
+  /**
+   * Is upload required for supplied file type?
+   * @param  {string} fileType
+   * @param  {string} fileUrl
+   */
+  private _updateCandidateModelForUpload(fileType: string, fileUrl: string){
+    switch(fileType){
+      case "photo":
+        // Model currently missing personal photo field/validation
+        break;
+      case "civilfront":
+        this.model.candidate_civil_photo_front = fileUrl;
+        this.form.value.photo_front = fileUrl;
+        break;
+      case "civilback":
+        this.model.candidate_civil_photo_back = fileUrl;
+        this.form.value.photo_back = fileUrl;
+        break;
+    }
+  }
   /**
    * Show upload progress indicator for specific filetype
    * @param  {string} fileType
@@ -425,7 +446,6 @@ export class CandidateFormPage {
         break;
     }
   }
-  
   /**
    * Is upload required for supplied file type?
    * @param  {string} fileType

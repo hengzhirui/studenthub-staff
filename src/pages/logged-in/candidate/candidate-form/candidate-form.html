@@ -24,14 +24,16 @@
       <ion-col col-4>
         <ion-card (click)="uploadBtnClicked('civilfront')" tappable>
           <ion-spinner *ngIf="isCivilFrontUploading"></ion-spinner>
-          <ion-icon name="ios-card-outline" *ngIf="!isCivilFrontUploading"></ion-icon>
+          <ion-icon name="ios-card-outline" *ngIf="!isCivilFrontUploading && !model.candidate_civil_photo_front"></ion-icon>
+          <img *ngIf="!isCivilFrontUploading && model.candidate_civil_photo_front" [src]='model.candidate_civil_photo_front'/>
           Civil ID <br/>(Front)
         </ion-card>
       </ion-col>
       <ion-col col-4>
         <ion-card (click)="uploadBtnClicked('civilback')" tappable>
           <ion-spinner *ngIf="isCivilBackUploading"></ion-spinner>
-          <ion-icon name="ios-card" *ngIf="!isCivilBackUploading"></ion-icon>
+          <ion-icon name="ios-card" *ngIf="!isCivilBackUploading && !model.candidate_civil_photo_back"></ion-icon>
+          <img *ngIf="!isCivilBackUploading && model.candidate_civil_photo_back" [src]='model.candidate_civil_photo_back'/>
           Civil ID <br/>(Back)
         </ion-card>
       </ion-col>
