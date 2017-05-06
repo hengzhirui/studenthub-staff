@@ -69,7 +69,7 @@ export class ImageUploadComponent {
                   this.uploadFileViaNativeFilePath(nativeImageFilePath);
               }, (err) => {
                   // Error getting picture
-                  alert("Error getting picture from Library: " + JSON.stringify(err));
+                  // alert("Error getting picture from Library: " + JSON.stringify(err));
                   console.log("Error getting picture from Library: " + JSON.stringify(err));
               });;
             }
@@ -82,7 +82,7 @@ export class ImageUploadComponent {
                   this.uploadFileViaNativeFilePath(nativeImageFilePath);
               }, (err) => {
                   // Error getting picture
-                  alert("Error getting picture from Camera: " + JSON.stringify(err));
+                  // alert("Error getting picture from Camera: " + JSON.stringify(err));
                   console.log("Error getting picture from Camera: " + JSON.stringify(err));
               });;
             }

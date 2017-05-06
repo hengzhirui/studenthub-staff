@@ -94,7 +94,6 @@ export class AwsService {
 
         return Observable.create((observer: Observer<any>) => {
             s3.upload(params).on('httpUploadProgress', (progress: ProgressEvent) => {
-                // console.log("AWS Progress: "+ JSON.stringify(progress));
                 observer.next(progress);
             }).send((err, data) => {
                 if(err) {
