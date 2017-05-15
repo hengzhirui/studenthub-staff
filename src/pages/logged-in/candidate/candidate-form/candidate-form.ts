@@ -12,6 +12,9 @@ import { CountryService } from '../../../../providers/logged-in/country.service'
 // Models
 import { Candidate } from '../../../../models/candidate';
 
+//page 
+import { CandidateViewPage } from '../candidate-view/candidate-view';
+
 @Component({
   selector: 'page-candidate-form',
   templateUrl: 'candidate-form.html'
@@ -156,8 +159,12 @@ export class CandidateFormPage {
         let data = { 'refresh': true };
         this._viewCtrl.dismiss(data);
         
+        this.navCtrl.push(CandidateViewPage, {
+          'model': jsonResponse.candidate
+        });
+
         let toast = this._toastCtrl.create({
-          message: this.model.candidate_name+' Candidate account data saved successfully',
+          message: this.model.candidate_name+' account saved successfully',
           duration: 3000
         });
         toast.present();
