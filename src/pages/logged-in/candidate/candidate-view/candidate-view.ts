@@ -30,6 +30,7 @@ export class CandidateViewPage {
     private _loadingCtrl: LoadingController
   ) {
     this.candidate = params.get('model');
+    console.log(this.candidate);
   }
 
   ionViewDidLoad() {
