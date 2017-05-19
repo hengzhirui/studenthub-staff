@@ -1,6 +1,6 @@
 import { Component, Input, forwardRef, Renderer, ElementRef, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { Platform, ToastController, AlertController, ActionSheetController } from 'ionic-angular';
+import { Platform, AlertController, ActionSheetController } from 'ionic-angular';
 
 import { AwsService } from '../../providers/aws.service';
 import { CameraService } from '../../providers/camera.service';
@@ -54,7 +54,6 @@ export class ImageUploadComponent implements ControlValueAccessor {
     private _awsService: AwsService,
     private _cameraService: CameraService,
     private _actionSheetCtrl: ActionSheetController,
-    private _toastCtrl: ToastController,
     private _alertCtrl: AlertController
     ) {
       this._bucketUrlPermanent = this._awsService.permanentBucketUrl;
