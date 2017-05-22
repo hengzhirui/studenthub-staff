@@ -1,6 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 
 import { Platform } from 'ionic-angular';
+
+// Custom
+import { EnvConfig } from '../app/environments/environments.token';
 
 /*
   Handles all Environment-based config
@@ -16,7 +19,7 @@ export class ConfigService {
   public browserOptions: string;
   public browserOptionsWithCache: string;
 
-  constructor(public platform: Platform) {
+  constructor(public platform: Platform, @Inject(EnvConfig) public envConfig) {
     // Initiate dev environment on computer while
     // running the production on mobile
     platform.ready().then(() => {
