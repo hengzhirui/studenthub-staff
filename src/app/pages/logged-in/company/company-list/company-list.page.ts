@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController} from "@ionic/angular";
-import {ActivatedRoute} from "@angular/router";
-//model
-import {Company} from "src/app/models/company";
-//service
-import {CompanyService} from "src/app/providers/logged-in/company.service";
+import { NavController} from '@ionic/angular';
+import {ActivatedRoute} from '@angular/router';
+// model
+import {Company} from 'src/app/models/company';
+// service
+import {CompanyService} from 'src/app/providers/logged-in/company.service';
 
 @Component({
   selector: 'app-company-list',
@@ -31,8 +31,8 @@ export class CompanyListPage implements OnInit {
   ngOnInit() {}
   ionViewWillEnter() {
     const state = window.history.state;
-    if (state['companies']) {
-      this.companies = state['companies'];
+    if (state.companies) {
+      this.companies = state.companies;
     }
 
     if (!this.companies && this.company_id) {
@@ -45,8 +45,9 @@ export class CompanyListPage implements OnInit {
 
   pageLinkColor(page: number) {
 
-    if(page == this.currentPage)
+    if (page == this.currentPage) {
       return 'light';
+    }
 
     return '';
   }
@@ -62,20 +63,21 @@ export class CompanyListPage implements OnInit {
 
         this.pages = [];
 
-        for(var i = 1; i <= this.pageCount; i++){
+        for (let i = 1; i <= this.pageCount; i++){
           this.pages.push(i);
         }
 
-        //hide if no page = 1
+        // hide if no page = 1
 
-        if(this.pageCount == 1)
+        if (this.pageCount == 1) {
           this.pages = [];
+        }
 
         this.companies = response.body;
 
       },
       error => {},
-      () => {this.loading = false;}
+      () => {this.loading = false; }
     );
   }
 
@@ -84,16 +86,16 @@ export class CompanyListPage implements OnInit {
    */
   rowSelected(model: Company){
     // Check if has subCompanies
-    if(model.subCompanies && model.subCompanies.length > 0){
+    if (model.subCompanies && model.subCompanies.length > 0){
       // Load Subcompany List
-      this.navCtrl.navigateForward('company-list/'+model.company_id, {
+      this.navCtrl.navigateForward('company-list/' + model.company_id, {
         state : {
           companies: model.subCompanies
         }
       });
     }else{
       // Load store list for this company
-      this.navCtrl.navigateForward('store-list/'+model.company_id);
+      this.navCtrl.navigateForward('store-list/' + model.company_id);
     }
   }
 
@@ -105,6 +107,6 @@ export class CompanyListPage implements OnInit {
     this.companyService.view(this.company_id).subscribe( response => {
       this.loading = false;
       this.companies = response.subCompanies;
-    })
+    });
   }
 }

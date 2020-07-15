@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
-import {AlertController, LoadingController, ModalController} from "@ionic/angular";
-import {ActivatedRoute} from "@angular/router";
-//service
-import {StoreService} from "src/app/providers/logged-in/store.service";
-//model
-import {Store} from "src/app/models/store";
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AlertController, LoadingController, ModalController} from '@ionic/angular';
+import {ActivatedRoute} from '@angular/router';
+// service
+import {StoreService} from 'src/app/providers/logged-in/store.service';
+// model
+import {Store} from 'src/app/models/store';
 
 @Component({
   selector: 'app-store-form',
@@ -15,17 +15,17 @@ import {Store} from "src/app/models/store";
 export class StoreFormPage implements OnInit {
 
   public model: Store = new Store();
-  public operation:string;
+  public operation: string;
   public store_id = null;
   public company_id;
-  public form: FormGroup
+  public form: FormGroup;
+  public loading = false;
 
   constructor(
     public activatedRoute: ActivatedRoute,
     public storeService: StoreService,
     private _fb: FormBuilder,
     private _modelCtrl: ModalController,
-    private _loadingCtrl: LoadingController,
     private _alertCtrl: AlertController
   ){
     this.store_id = this.activatedRoute.snapshot.paramMap.get('id');
@@ -36,8 +36,8 @@ export class StoreFormPage implements OnInit {
 
     // Load the passed model if available
     const state = window.history.state;
-    if (state['model']) {
-      this.model = state['model'];
+    if (state.model) {
+      this.model = state.model;
     } else {
       this.model.company_id = this.company_id;
     }
@@ -46,13 +46,13 @@ export class StoreFormPage implements OnInit {
 
   formInit() {
     // Init Form
-    if(!this.model.store_id){ // Show Create Form
-      this.operation = "Create";
+    if (!this.model.store_id){ // Show Create Form
+      this.operation = 'Create';
       this.form = this._fb.group({
-        name: ["", Validators.required]
+        name: ['', Validators.required]
       });
     }else{ // Show Update Form
-      this.operation = "Update";
+      this.operation = 'Update';
       this.form = this._fb.group({
         name: [this.model.store_name, Validators.required]
       });
@@ -69,7 +69,7 @@ export class StoreFormPage implements OnInit {
    * Close the page
    */
   close(){
-    let data = { 'refresh': false };
+    const data = { refresh: false };
     this._modelCtrl.dismiss(data);
   }
 
@@ -77,13 +77,12 @@ export class StoreFormPage implements OnInit {
    * Save the model
    */
   async save(){
-    let loader = await this._loadingCtrl.create();
-    loader.present();
+    this.loading = true;
 
     this.updateModelDataFromForm();
 
     let action;
-    if(!this.model.store_id){
+    if (!this.model.store_id){
       // Create
       action = this.storeService.create(this.model);
     }else{
@@ -92,20 +91,20 @@ export class StoreFormPage implements OnInit {
     }
 
     action.subscribe(async jsonResponse => {
-      loader.dismiss();
+      this.loading = false;
 
       // On Success
-      if(jsonResponse.operation == "success"){
+      if (jsonResponse.operation == 'success'){
         // Close the page
-        let data = { 'refresh': true };
+        const data = { refresh: true };
         this._modelCtrl.dismiss(data);
       }
 
       // On Failure
-      if(jsonResponse.operation == "error"){
-        let prompt = await this._alertCtrl.create({
+      if (jsonResponse.operation == 'error'){
+        const prompt = await this._alertCtrl.create({
           message: JSON.stringify(jsonResponse.message),
-          buttons: ["Ok"]
+          buttons: ['Ok']
         });
         prompt.present();
       }

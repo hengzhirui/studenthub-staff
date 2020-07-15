@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {LoadingController, NavController} from "@ionic/angular";
+import {NavController} from '@ionic/angular';
 
-//services
-import {EventService} from "src/app/providers/event.service";
-import {StatisticService} from "src/app/providers/logged-in/statistic.service";
+// services
+import {EventService} from 'src/app/providers/event.service';
+import {StatisticService} from 'src/app/providers/logged-in/statistic.service';
 
 @Component({
   selector: 'app-default',
@@ -13,11 +13,11 @@ import {StatisticService} from "src/app/providers/logged-in/statistic.service";
 export class DefaultPage implements OnInit {
 
   public statistics: any;
+  public loading = false;
 
   constructor(
     public navCtrl: NavController,
     public statisticService: StatisticService,
-    private _loadingCtrl: LoadingController,
     private _events: EventService,
   ) { }
 
@@ -30,8 +30,7 @@ export class DefaultPage implements OnInit {
    */
   async loadData() {
     // Load list of country
-    let loader = await this._loadingCtrl.create();
-    loader.present();
+    this.loading = true;
 
     this.statisticService.get().subscribe(response => {
         this.statistics = response;
@@ -39,7 +38,7 @@ export class DefaultPage implements OnInit {
         this._events.printIdCard$.next(this.statistics.id_need_generated);
       },
       error => {},
-      () => {loader.dismiss();}
+      () => {this.loading = false; }
     );
   }
 

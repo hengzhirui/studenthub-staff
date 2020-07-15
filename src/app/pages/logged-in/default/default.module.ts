@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { DefaultPageRoutingModule } from './default-routing.module';
 
 import { DefaultPage } from './default.page';
+import {LoadingModalModule} from "../../../components/loading-modal/loading-modal.module";
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    DefaultPageRoutingModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        DefaultPageRoutingModule,
+        LoadingModalModule
+    ],
   declarations: [DefaultPage]
 })
 export class DefaultPageModule {}

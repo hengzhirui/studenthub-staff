@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {University} from "../../../../models/university";
-import {ActivatedRoute} from "@angular/router";
-import {LoadingController} from "@ionic/angular";
-import {UniversityService} from "../../../../providers/logged-in/university.service";
+import {University} from '../../../../models/university';
+import {ActivatedRoute} from '@angular/router';
+import {LoadingController} from '@ionic/angular';
+import {UniversityService} from '../../../../providers/logged-in/university.service';
 
 
 @Component({
@@ -21,8 +21,8 @@ export class UniversityViewPage implements OnInit {
   ) {
     this.university_id = this.activatedRoute.snapshot.paramMap.get('id');
     const state = window.history.state;
-    if (state['model']) {
-      this.university = state['model'];
+    if (state.model) {
+      this.university = state.model;
     }
   }
 
@@ -37,7 +37,7 @@ export class UniversityViewPage implements OnInit {
     this.universityService.view(this.university_id).subscribe( response => {
       this.loading = false;
       this.university = response;
-    })
+    });
   }
 }
 

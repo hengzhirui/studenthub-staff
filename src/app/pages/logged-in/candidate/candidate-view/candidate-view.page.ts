@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import {AlertController, LoadingController, NavController, ToastController} from "@ionic/angular";
-import {ActivatedRoute} from "@angular/router";
+import {AlertController, NavController, ToastController} from '@ionic/angular';
+import {ActivatedRoute} from '@angular/router';
 
-//models
-import {Store} from "src/app/models/store";
-import {Candidate} from "src/app/models/candidate";
+// models
+import {Store} from 'src/app/models/store';
+import {Candidate} from 'src/app/models/candidate';
 
-//service
-import {StoreService} from "src/app/providers/logged-in/store.service";
-import {CandidateService} from "src/app/providers/logged-in/candidate.service";
-import {AwsService} from "src/app/providers/aws.service";
+// service
+import {StoreService} from 'src/app/providers/logged-in/store.service';
+import {CandidateService} from 'src/app/providers/logged-in/candidate.service';
+import {AwsService} from 'src/app/providers/aws.service';
 
 
 @Component({
@@ -24,6 +24,9 @@ export class CandidateViewPage implements OnInit {
   public stores: Store[];
   public workHistory: any[] = [];
   public candidate_id;
+  public sendingPassword = false;
+  public assigning = false;
+  public unassinging = false;
   constructor(
     public navCtrl: NavController,
     public activatedRoute: ActivatedRoute,
@@ -31,7 +34,6 @@ export class CandidateViewPage implements OnInit {
     public storeService: StoreService,
     public candidateService: CandidateService,
     public aws: AwsService,
-    private _loadingCtrl: LoadingController,
     public toastCtrl: ToastController,
   ) {
     this.candidate_id = this.activatedRoute.snapshot.paramMap.get('id');
@@ -40,19 +42,17 @@ export class CandidateViewPage implements OnInit {
 
   ngOnInit() {
     const state = window.history.state;
-    if (state['model']) {
-      this.candidate = state['model'];
+
+    if (state.model) {
+      this.candidate = state.model;
     } else  {
-      this.candidate = state['model'];
+      this.candidate = state.model;
     }
     this.loadCandidateDetail();
     this.loadWorkHistoryData();
 
-    //let loader = this._loadingCtrl.create();
-    //loader.present();
     this.loadStoreData();
     this.loadTransfersData();
-    //loader.dismiss();
   }
 
   /**
@@ -68,7 +68,7 @@ export class CandidateViewPage implements OnInit {
    * Load list of all stores then set store name and id as per candidate data
    */
   loadStoreData() {
-    this.storeService.list("store_id", "storeWithCompany").subscribe(response => {
+    this.storeService.list('store_id', 'storeWithCompany').subscribe(response => {
       this.stores = response;
     });
   }
@@ -77,7 +77,7 @@ export class CandidateViewPage implements OnInit {
    * Loads Form in modal to update
    */
   update() {
-    this.navCtrl.navigateForward('candidate-form/'+this.candidate.candidate_id, {
+    this.navCtrl.navigateForward('candidate-form/' + this.candidate.candidate_id, {
       state : {
         model: this.candidate
       }
@@ -89,18 +89,17 @@ export class CandidateViewPage implements OnInit {
    * @param {number} store_id
    */
   async assignCandidateToStore(store_id: number) {
-    let loader = await this._loadingCtrl.create();
-    loader.present();
+    this.assigning = true;
 
     this.candidateService.assignCandidateToStore(this.candidate, store_id).subscribe(async response => {
-      loader.dismiss();
+      this.assigning = false;
 
       if (response.operation == 'success') {
         this.candidate = response.candidate_detail;
       } else {
-        let alert = await this.alertCtrl.create({
+        const alert = await this.alertCtrl.create({
           message: this._processResponseMessage(response),
-          buttons: ["Ok"]
+          buttons: ['Ok']
         });
         alert.present();
       }
@@ -111,7 +110,7 @@ export class CandidateViewPage implements OnInit {
    * Unassign Candidate from store
    */
   async unassignCandidateFromStore() {
-    let confirm = await this.alertCtrl.create({
+    const confirm = await this.alertCtrl.create({
       header: 'Are you sure?',
       message: 'Remove candidate from store',
       buttons: [
@@ -125,20 +124,19 @@ export class CandidateViewPage implements OnInit {
           text: 'Ok',
           handler: async () => {
             // Handle the functionality when user click on 'ok' button
-            let loader = await this._loadingCtrl.create();
-            loader.present();
+            this.unassinging = true;
 
             // Unassign Candidate from store
             this.candidateService.removeFromAssignedStore(this.candidate).subscribe(async response => {
               // Dismiss the loader
-              loader.dismiss();
+              this.unassinging = false;
 
-              if(response.operation == 'success') {
+              if (response.operation == 'success') {
                 this.candidate = response.candidate_detail;
               } else {
-                let prompt = await this.alertCtrl.create({
+                const prompt = await this.alertCtrl.create({
                   message: this._processResponseMessage(response),
-                  buttons: ["Ok"]
+                  buttons: ['Ok']
                 });
                 prompt.present();
               }
@@ -158,13 +156,13 @@ export class CandidateViewPage implements OnInit {
    */
   private _processResponseMessage(response){
     let html = '';
-    if(response.code == 2) {
-      for (let i in response.message) {
-        for (let j of response.message[i]) {
+    if (response.code == 2) {
+      for (const i in response.message) {
+        for (const j of response.message[i]) {
           html += j + '<br />';
         }
       }
-    }else html = response.message;
+    }else { html = response.message; }
 
     return html;
   }
@@ -173,7 +171,7 @@ export class CandidateViewPage implements OnInit {
    * Show confirm alert to reset password
    */
   async resetPassword() {
-    let alert = await this.alertCtrl.create({
+    const alert = await this.alertCtrl.create({
       header: 'Confirm password reset',
       message: 'Do you want to send new password to candidate?',
       buttons: [
@@ -196,15 +194,14 @@ export class CandidateViewPage implements OnInit {
    * Reset and email the candidate a new password
    */
   async sendNewPassword() {
-    let loader = await this._loadingCtrl.create();
-    loader.present();
+    this.sendingPassword = true;
 
     this.candidateService.resetPassword(this.candidate).subscribe(async response => {
-      loader.dismiss();
+      this.sendingPassword = false;
 
-      if(response.operation == 'error')
+      if (response.operation == 'error')
       {
-        let toast = await this.toastCtrl.create({
+        const toast = await this.toastCtrl.create({
           message: response.message,
           duration: 3000
         });
@@ -213,7 +210,7 @@ export class CandidateViewPage implements OnInit {
       }
       else
       {
-        let alert = await this.alertCtrl.create({
+        const alert = await this.alertCtrl.create({
           header: 'Reset Password',
           subHeader: 'New password sent to candidate',
           buttons: ['Okay']
@@ -234,7 +231,7 @@ export class CandidateViewPage implements OnInit {
 
   loadCandidateDetail() {
     this.candidateService.detail(this.candidate_id).subscribe( response => {
-      this.candidate = response
-    })
+      this.candidate = response;
+    });
   }
 }

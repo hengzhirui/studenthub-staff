@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { ActivatedRoute } from "@angular/router";
-import { AlertController, LoadingController, NavController, ToastController } from "@ionic/angular";
-import { CustomValidator } from "src/app/validators/custom.validator";
-//service
-import { CandidateService } from "src/app/providers/logged-in/candidate.service";
-import { UniversityService } from "src/app/providers/logged-in/university.service";
-import { CountryService } from "src/app/providers/logged-in/country.service";
-//model
-import { Candidate } from "src/app/models/candidate";
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { AlertController, NavController, ToastController } from '@ionic/angular';
+import { CustomValidator } from 'src/app/validators/custom.validator';
+// service
+import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
+import { UniversityService } from 'src/app/providers/logged-in/university.service';
+import { CountryService } from 'src/app/providers/logged-in/country.service';
+// model
+import { Candidate } from 'src/app/models/candidate';
 
 
 @Component({
@@ -30,7 +30,8 @@ export class CandidateFormPage implements OnInit {
   public maxDate;
   public minBirthDate;
   public maxBirthDate;
-
+  public loading = false;
+  public saving = false;
   constructor(
     public activatedRoute: ActivatedRoute,
     public navCtrl: NavController,
@@ -38,7 +39,6 @@ export class CandidateFormPage implements OnInit {
     public universityService: UniversityService,
     public countryService: CountryService,
     private _fb: FormBuilder,
-    private _loadingCtrl: LoadingController,
     private _alertCtrl: AlertController,
     private _toastCtrl: ToastController,
   ) {
@@ -50,8 +50,8 @@ export class CandidateFormPage implements OnInit {
 
     const state = window.history.state;
 
-    if (state['model']) {
-      this.model = state['model']
+    if (state.model) {
+      this.model = state.model;
     }
 
     if (this.candidate_id) {
@@ -99,9 +99,8 @@ export class CandidateFormPage implements OnInit {
    * Save the candidate model
    */
   async save() {
-   
-    let loader = await this._loadingCtrl.create();
-    loader.present();
+
+    this.saving = true;
     this.updateModelDataFromForm();
 
     let action;
@@ -114,46 +113,46 @@ export class CandidateFormPage implements OnInit {
     }
 
     action.subscribe(async jsonResponse => {
-      loader.dismiss();
+      this.saving = false;
 
       // On Success
-      if (jsonResponse.operation == "success") {
+      if (jsonResponse.operation == 'success') {
         // Fix photo folder path after upload
-        if (this.model.candidate_personal_photo && !this.model.candidate_personal_photo.includes("photos/")) {
+        if (this.model.candidate_personal_photo && !this.model.candidate_personal_photo.includes('photos/')) {
           this.model.candidate_personal_photo = `photos/${this.model.candidate_personal_photo}`;
         }
 
         // Close the page
-        let data = { 'refresh': true };
+        const data = { refresh: true };
         // this._viewCtrl.dismiss(data);
 
-        //open view page
+        // open view page
         this.navCtrl.navigateForward('candidate-view/' + jsonResponse.candidate.candidate_id, {
           state: {
             model: jsonResponse.candidate
           }
         });
 
-        let toast = await this._toastCtrl.create({
-          message: this.model.candidate_name + "'s account saved successfully",
+        const toast = await this._toastCtrl.create({
+          message: this.model.candidate_name + '\'s account saved successfully',
           duration: 3000
         });
         toast.present();
       }
 
       // On Failure
-      if (jsonResponse.operation == "error") {
-        var html = '';
+      if (jsonResponse.operation == 'error') {
+        let html = '';
 
-        for (let i in jsonResponse.message) {
-          for (let j of jsonResponse.message[i]) {
+        for (const i in jsonResponse.message) {
+          for (const j of jsonResponse.message[i]) {
             html += j + '<br />';
           }
         }
 
-        let prompt = await this._alertCtrl.create({
+        const prompt = await this._alertCtrl.create({
           message: html,
-          buttons: ["Ok"]
+          buttons: ['Ok']
         });
         prompt.present();
       }
@@ -182,10 +181,10 @@ export class CandidateFormPage implements OnInit {
    * Sets the default dates for min/max validation
    */
   setDates() {
-    let today = new Date();
-    //var dd = today.getDate();
-    var mm = today.getMonth() + 1; // 0 is January, so we must add 1
-    var yyyy = today.getFullYear();
+    const today = new Date();
+    // var dd = today.getDate();
+    const mm = today.getMonth() + 1; // 0 is January, so we must add 1
+    const yyyy = today.getFullYear();
 
     this.todayDate = new Date().toISOString();
     this.maxDate = new Date((yyyy + 20), mm).toISOString();
@@ -197,46 +196,45 @@ export class CandidateFormPage implements OnInit {
    * candidate detail
    */
   async candidateDetail() {
-    let loading = await this._loadingCtrl.create();
-    loading.present();
+    this.loading = true;
     this.candidateService.detail(this.candidate_id).subscribe(response => {
-      loading.dismiss();
+      this.loading = false;
       if (response) {
         this.model = response;
         this.initForm();
       }
-    })
+    });
   }
 
   initForm() {
     // Init Form
     if (!this.model.candidate_id) { // Show Create Form
-      this.operation = "Create";
+      this.operation = 'Create';
       this.form = this._fb.group({
-        name: ["", Validators.required],
-        email: ["", [Validators.required, CustomValidator.emailValidator]],
-        bank_account_name: ["", Validators.required],
-        university_id: ["", Validators.required],
-        country_id: ["", Validators.required],
-        iban: ["", Validators.required],
-        name_ar: ["", Validators.required],
-        phone: ["", Validators.required],
-        birth_date: ["", Validators.required],
-        civil_id: ["", Validators.required],
-        photo: ["", Validators.required],
-        civilfront: ["", Validators.required],
-        civilback: ["", Validators.required],
-        expiry_date: ["", Validators.required],
-        hourly_rate: ["", Validators.required]
+        name: ['', Validators.required],
+        email: ['', [Validators.required, CustomValidator.emailValidator]],
+        bank_account_name: ['', Validators.required],
+        university_id: ['', Validators.required],
+        country_id: ['', Validators.required],
+        iban: ['', Validators.required],
+        name_ar: ['', Validators.required],
+        phone: ['', Validators.required],
+        birth_date: ['', Validators.required],
+        civil_id: ['', Validators.required],
+        photo: ['', Validators.required],
+        civilfront: ['', Validators.required],
+        civilback: ['', Validators.required],
+        expiry_date: ['', Validators.required],
+        hourly_rate: ['', Validators.required]
       });
     } else { // Show Update Form
-      this.operation = "Update";
+      this.operation = 'Update';
       this.form = this._fb.group({
         name: [this.model.candidate_name, Validators.required],
         email: [this.model.candidate_email, [Validators.required, CustomValidator.emailValidator]],
         bank_account_name: [this.model.bank_account_name, Validators.required],
         university_id: [this.model.university_id, Validators.required],
-        country_id: [this.model.country_id+'', Validators.required],
+        country_id: [this.model.country_id + '', Validators.required],
         iban: [this.model.candidate_iban, Validators.required],
         name_ar: [this.model.candidate_name_ar, Validators.required],
         phone: [this.model.candidate_phone, Validators.required],

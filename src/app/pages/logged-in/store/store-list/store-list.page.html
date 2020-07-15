@@ -9,7 +9,7 @@
 
 <ion-content class="ion-padding">
   <loading-modal [loading]="loading" type="text-list"></loading-modal>
-  <ion-list>
+  <ion-list *ngIf="!loading">
     <ion-item-sliding *ngFor="let store of stores">
       <ion-item button (click)="rowSelected(store)">
         {{ store.store_name }}

@@ -79,7 +79,7 @@ export class StoreViewPage implements OnInit {
     this.loading = true;
     this._storeService.detail(this.store_id).subscribe(response => {
       this.loading = false;
-      this.store = response
-    })
+      this.store = response;
+    });
   }
 }

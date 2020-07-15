@@ -8,9 +8,10 @@
     <ion-title>{{ operation }}</ion-title>
     <ion-buttons slot="end">
       <ion-button color="primary"
-              [disabled]="!form.valid"
+              [disabled]="!form.valid && loading"
               (click)="save()">
-        Save
+        <span *ngIf="!loading">Save</span>
+        <ion-spinner *ngIf="loading"></ion-spinner>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

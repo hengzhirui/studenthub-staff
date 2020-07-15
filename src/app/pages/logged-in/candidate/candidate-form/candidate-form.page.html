@@ -5,15 +5,16 @@
     </ion-buttons>
     <ion-title>{{ operation }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button color="primary" [disabled]="!form || !form.valid || !form.dirty" (click)="save()">
-        Save
+      <ion-button color="primary" [disabled]="!form || !form.valid || !form.dirty || saving" (click)="save()">
+        <ion-spinner *ngIf="saving"></ion-spinner>
+        <span *ngIf="!saving">Save</span>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <loading-modal [loading]="loading" type="candidate-form"></loading-modal>
   <form [formGroup]="form" *ngIf="form">
     <!-- Grid for Required File Uploads -->
     <ion-grid id='uploads'>
@@ -73,7 +74,7 @@
           <ion-label  position="floating">Birth Date</ion-label>
           <ion-datetime displayFormat="YYYY-MM-DD" pickerFormat="YYYY-MM-DD" [min]="minBirthDate" [max]="maxBirthDate" formControlName="birth_date"></ion-datetime>
         </ion-item>
-        
+
         <app-select-search-input
           *ngIf="countrylistData"
           formControlName="country_id"

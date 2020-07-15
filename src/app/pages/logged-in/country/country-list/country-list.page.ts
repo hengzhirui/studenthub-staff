@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {Country} from "src/app/models/country";
-import {LoadingController, NavController} from "@ionic/angular";
-import {CountryService} from "src/app/providers/logged-in/country.service";
-import {ActivatedRoute} from "@angular/router";
+import {Country} from 'src/app/models/country';
+import {LoadingController, NavController} from '@ionic/angular';
+import {CountryService} from 'src/app/providers/logged-in/country.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-country-list',
@@ -39,20 +39,21 @@ export class CountryListPage implements OnInit {
 
         this.pages = [];
 
-        for(var i = 1; i <= this.pageCount; i++){
+        for (let i = 1; i <= this.pageCount; i++){
           this.pages.push(i);
         }
 
-        //hide if no page = 1
+        // hide if no page = 1
 
-        if(this.pageCount == 1)
+        if (this.pageCount == 1) {
           this.pages = [];
+        }
 
         this.countries = response.body;
 
       },
       error => {},
-      () => {this.loading = false;}
+      () => {this.loading = false; }
     );
   }
 
@@ -61,17 +62,18 @@ export class CountryListPage implements OnInit {
    */
   rowSelected(model){
     // Load Detail Page
-    this.navCtrl.navigateForward('country-view/'+model.country_id, {
+    this.navCtrl.navigateForward('country-view/' + model.country_id, {
       state : {
-        model: model
+        model
       }
     });
   }
 
   pageLinkColor(page: number) {
 
-    if(page == this.currentPage)
+    if (page == this.currentPage) {
       return 'light';
+    }
 
     return '';
   }
