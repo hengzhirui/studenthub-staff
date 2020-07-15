@@ -38,7 +38,8 @@
     </ion-item>
 
   <ion-item>
-    <ion-button expand="full" color="danger" (click)="resetPassword()">Send new password to candidate</ion-button>
+    <ion-button *ngIf="!sendingPassword" expand="full" color="danger" (click)="resetPassword()">Send new password to candidate</ion-button>
+    <ion-spinner *ngIf="sendingPassword"></ion-spinner>
   </ion-item>
 
   <ion-item-divider color="light">Store Assignment</ion-item-divider>
@@ -53,7 +54,7 @@
     </ion-label>
   </ion-item>
 
-  <app-select-search-input *ngIf="!candidate.store_id"
+  <app-select-search-input *ngIf="!candidate.store_id && !assigning"
                        placeholder="Assign to work at store"
                        [(ngModel)]="candidate.store_id"
                        (ngModelChange)="assignCandidateToStore($event)"
@@ -61,10 +62,12 @@
                        valueAttr="store_id"
                        labelAttr="storeWithCompany">
   </app-select-search-input>
+    <ion-spinner *ngIf="assigning"></ion-spinner>
   <ion-item [hidden]="!candidate.store_id">
-    <ion-button *ngIf="candidate.store" expand="full" color="danger" (click)="unassignCandidateFromStore()">
+    <ion-button *ngIf="!unassinging && candidate.store" expand="full" color="danger" (click)="unassignCandidateFromStore()">
       Unassign candidate from {{ candidate.store.store_name }}
     </ion-button>
+    <ion-spinner *ngIf="unassinging"></ion-spinner>
   </ion-item>
 
   <ion-item>
@@ -81,10 +84,11 @@
       <p>{{ candidate.age }}</p>
     </ion-label>
   </ion-item>
-  <ion-item *ngIf="candidate.country">
+  <ion-item>
     <ion-label>
       <h5>Nationality</h5>
-      <p>{{ candidate.country.country_name_en }}</p>
+      <p *ngIf="candidate.country">{{ candidate.country.country_name_en }}</p>
+      <p *ngIf="!candidate.country">-</p>
     </ion-label>
   </ion-item>
   <ion-item *ngIf="candidate.university">

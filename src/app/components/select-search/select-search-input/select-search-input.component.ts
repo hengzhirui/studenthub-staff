@@ -1,7 +1,7 @@
 import {Component, forwardRef, Input} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {PopoverController} from "@ionic/angular";
-import {SelectSearchPageComponent} from "../select-search-page/select-search-page.component";
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {PopoverController} from '@ionic/angular';
+import {SelectSearchPageComponent} from '../select-search-page/select-search-page.component';
 
 @Component({
   selector: 'app-select-search-input',
@@ -22,7 +22,7 @@ export class SelectSearchInputComponent implements ControlValueAccessor {
   public selectedItem: any;
 
   // Input placeholder
-  @Input() placeholder: string = "Select a value";
+  @Input() placeholder = 'Select a value';
   // Attribute for "Value" within collection array objects
   @Input() valueAttr: string;
   // Attribute for "Label" within collection array objects
@@ -50,7 +50,7 @@ export class SelectSearchInputComponent implements ControlValueAccessor {
    * When component clicked
    */
   async onClick($ev){
-    let selectPage = await this._popoverCtrl.create({
+    const selectPage = await this._popoverCtrl.create({
       component : SelectSearchPageComponent,
       componentProps: {
         collection: this.collection,
@@ -62,8 +62,8 @@ export class SelectSearchInputComponent implements ControlValueAccessor {
     });
     selectPage.onDidDismiss()
       .then((data) => {
-        if(data && data['data']){
-          let selection = data['data'];
+        if (data && data.data){
+          const selection = data.data;
           this.value = selection[this.valueAttr];
           this.selectedItem = selection;
 
@@ -76,12 +76,12 @@ export class SelectSearchInputComponent implements ControlValueAccessor {
    * Update the collection and place the selected "value" as first item
    */
   putSelectedValueAsFirst(){
-    if(!this.collection || !this.value) return;
+    if (!this.collection || !this.value) { return; }
 
-    for (var i=0; i < this.collection.length; i++) {
+    for (let i = 0; i < this.collection.length; i++) {
       if (this.collection[i][this.valueAttr] === this.value) {
         this.selectedItem = this.collection[i]; // sets as the selected item
-        var removedItem = this.collection.splice(i,1);   // removes the item
+        const removedItem = this.collection.splice(i, 1);   // removes the item
         this.collection.unshift(removedItem[0]);         // adds it back to the beginning
         break;
       }
@@ -95,6 +95,7 @@ export class SelectSearchInputComponent implements ControlValueAccessor {
    * Getter for Value
    */
   get value() {
+
     return this._value;
   }
   /**

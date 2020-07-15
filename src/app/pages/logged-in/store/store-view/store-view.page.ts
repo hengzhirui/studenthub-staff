@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import {ModalController, NavController} from "@ionic/angular";
-import {ActivatedRoute} from "@angular/router";
+import {ModalController, NavController} from '@ionic/angular';
+import {ActivatedRoute} from '@angular/router';
 
-//model
-import {Store} from "../../../../models/store";
-import {Candidate} from "../../../../models/candidate";
-//page
-import {StoreFormPage} from "../store-form/store-form.page";
-//service
-import {StoreService} from "../../../../providers/logged-in/store.service";
+// model
+import {Store} from '../../../../models/store';
+import {Candidate} from '../../../../models/candidate';
+// page
+import {StoreFormPage} from '../store-form/store-form.page';
+// service
+import {StoreService} from '../../../../providers/logged-in/store.service';
 
 @Component({
   selector: 'app-store-view',
@@ -28,8 +28,8 @@ export class StoreViewPage implements OnInit {
   ) {
     this.store_id = this.activatedRoute.snapshot.paramMap.get('id');
     const state = window.history.state;
-    if (state['model']) {
-      this.store = state['model'];
+    if (state.model) {
+      this.store = state.model;
     } else {
       this.loadData();
     }
@@ -42,7 +42,7 @@ export class StoreViewPage implements OnInit {
    * On candidate selected from list
    */
   candidateSelected(candidate: Candidate){
-    this.navCtrl.navigateForward('candidate-view/'+candidate.candidate_id, {
+    this.navCtrl.navigateForward('candidate-view/' + candidate.candidate_id, {
       state : {
         model: candidate
       }
@@ -62,7 +62,7 @@ export class StoreViewPage implements OnInit {
     });
 
     modal.onDidDismiss().then(data => {
-      if(data && data.data && data.data.refresh){
+      if (data && data.data && data.data.refresh){
         this.loadData();
       }
     });
@@ -74,7 +74,7 @@ export class StoreViewPage implements OnInit {
     this.loading = true;
     this._storeService.detail(this.store_id).subscribe( response => {
       this.loading = false;
-      this.store = response
-    })
+      this.store = response;
+    });
   }
 }

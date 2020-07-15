@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import {AlertController, LoadingController, NavController, ToastController} from "@ionic/angular";
-import {ActivatedRoute} from "@angular/router";
+import {AlertController, NavController, ToastController} from '@ionic/angular';
+import {ActivatedRoute} from '@angular/router';
 
-//service
-import {CandidateService} from "src/app/providers/logged-in/candidate.service";
-import {CountryService} from "src/app/providers/logged-in/country.service";
+// service
+import {CandidateService} from 'src/app/providers/logged-in/candidate.service';
+import {CountryService} from 'src/app/providers/logged-in/country.service';
 
-//models
-import {Country} from "src/app/models/country";
-import {Candidate} from "src/app/models/candidate";
+// models
+import {Country} from 'src/app/models/country';
+import {Candidate} from 'src/app/models/candidate';
 
 @Component({
   selector: 'app-country-view',
@@ -22,6 +22,7 @@ export class CountryViewPage implements OnInit {
   public pages: number[] = [];
   public loading = true;
   public loadingDetail = false;
+  public deletingCandidate = false;
 
   public country: Country;
   public candidates: Candidate[];
@@ -30,7 +31,6 @@ export class CountryViewPage implements OnInit {
     public navCtrl: NavController,
     private candidateService: CandidateService,
     private countryService: CountryService,
-    private _loadingCtrl: LoadingController,
     public activatedRoute: ActivatedRoute,
     public toastCtrl: ToastController,
     public alertCtrl: AlertController,
@@ -41,8 +41,8 @@ export class CountryViewPage implements OnInit {
   ngOnInit() {
 
     const state = window.history.state;
-    if (state['model']) {
-      this.country = state['model'];
+    if (state.model) {
+      this.country = state.model;
     }
 
     if (this.country) {
@@ -62,14 +62,15 @@ export class CountryViewPage implements OnInit {
 
       this.pages = [];
 
-      for(var i = 1; i <= this.pageCount; i++){
+      for (let i = 1; i <= this.pageCount; i++){
         this.pages.push(i);
       }
 
-      //hide if no page = 1
+      // hide if no page = 1
 
-      if(this.pageCount == 1)
+      if (this.pageCount == 1) {
         this.pages = [];
+      }
 
       this.candidates = response.body;
 
@@ -79,7 +80,7 @@ export class CountryViewPage implements OnInit {
 
   candidateSelected(candidate) {
     // Load Detail Page
-    this.navCtrl.navigateForward('candidate-view/'+candidate.candidate_id, {
+    this.navCtrl.navigateForward('candidate-view/' + candidate.candidate_id, {
       state : {
         model: candidate
       }
@@ -100,20 +101,19 @@ export class CountryViewPage implements OnInit {
    * Delete the provided model
    */
   async deleteCandidates(candidate: Candidate) {
-    let confirm = await this.alertCtrl.create({
+    const confirm = await this.alertCtrl.create({
       header: 'Delete Candidate?',
       message: 'Are you sure you want to delete this Candidate?',
       buttons: [
         {
           text: 'Yes',
           handler: async () => {
-            let loader = await this._loadingCtrl.create();
-            loader.present();
+            this.deletingCandidate = true;
             this.candidateService.delete(candidate).subscribe(async jsonResp => {
-              loader.dismiss();
+              this.deletingCandidate = false;
 
               if (jsonResp.operation == 'error') {
-                let alert = await this.alertCtrl.create({
+                const alert = await this.alertCtrl.create({
                   header: 'Deletion Error!',
                   subHeader: jsonResp.message,
                   buttons: ['OK']
@@ -122,7 +122,7 @@ export class CountryViewPage implements OnInit {
               }
 
               if (jsonResp.operation == 'success') {
-                let toast = await this.toastCtrl.create({
+                const toast = await this.toastCtrl.create({
                   message: jsonResp.message,
                   duration: 3000
                 });
@@ -148,8 +148,9 @@ export class CountryViewPage implements OnInit {
    */
   pageLinkColor(page: number) {
 
-    if(page == this.currentPage)
+    if (page == this.currentPage) {
       return 'light';
+    }
 
     return '';
   }
@@ -164,6 +165,6 @@ export class CountryViewPage implements OnInit {
       this.loadingDetail = false;
       this.country = response;
       this.loadData(this.currentPage);
-    })
+    });
   }
 }

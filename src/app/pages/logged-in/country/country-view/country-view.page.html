@@ -53,9 +53,10 @@
       </ion-item>
 
       <ion-item-options side="end">
-        <ion-button color="danger" (click)="deleteCandidates(candidate)">
-          <ion-icon name="trash"></ion-icon>
-          Delete
+        <ion-button color="danger" (click)="deleteCandidates(candidate)" [disabled]="deletingCandidate">
+          <ion-icon *ngIf="!deletingCandidate" name="trash"></ion-icon>
+          <span *ngIf="!deletingCandidate">Delete</span>
+          <ion-spinner *ngIf="deletingCandidate"></ion-spinner>
         </ion-button>
       </ion-item-options>
     </ion-item-sliding>

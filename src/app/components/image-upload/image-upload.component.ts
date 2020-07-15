@@ -1,8 +1,8 @@
 import {Component, ElementRef, forwardRef, Input, OnInit, Renderer2, ViewChild} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {ActionSheetController, AlertController, Platform} from "@ionic/angular";
-import {CameraService} from "../../providers/camera.service";
-import {AwsService} from "../../providers/aws.service";
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ActionSheetController, AlertController, Platform} from '@ionic/angular';
+import {CameraService} from '../../providers/camera.service';
+import {AwsService} from '../../providers/aws.service';
 
 @Component({
   selector: 'app-image-upload',
@@ -18,18 +18,18 @@ import {AwsService} from "../../providers/aws.service";
 })
 export class ImageUploadComponent implements ControlValueAccessor {
   // File input used for browser fallback when no cordova is available
-  @ViewChild('fileInput') fileInput:ElementRef;
+    @ViewChild('fileInput') fileInput: ElementRef;
 
   // Default value the form element should have
   // (In case an image has already been uploaded for it)
   _value: string;
 
   // Icon to use, by default its a regular image icon
-  @Input() label: string = "Photo";
+  @Input() label = 'Photo';
   // Icon to use, by default its a regular image icon
-  @Input() icon: string = "image-outline";
+  @Input() icon = 'image-outline';
   // File prefix when uploading to S3
-  @Input() prefix: string = "image";
+  @Input() prefix = 'image';
 
   // Used for link generation after upload
   public bucketUrl: string;
@@ -46,7 +46,7 @@ export class ImageUploadComponent implements ControlValueAccessor {
 
   constructor(
     private _platform: Platform,
-    private _renderer:Renderer2,
+    private _renderer: Renderer2,
     private _awsService: AwsService,
     private _cameraService: CameraService,
     private _actionSheetCtrl: ActionSheetController,
@@ -66,12 +66,12 @@ export class ImageUploadComponent implements ControlValueAccessor {
    */
   async uploadBtnClicked(event){
     // If already uploading, do nothing, just return
-    if(this.isUploading) return;
+    if (this.isUploading) { return; }
 
-    if(this._platform.is("cordova")){
+    if (this._platform.is('cordova')){
       // Display action sheet giving user option of camera vs local filesystem.
-      let actionSheet = await this._actionSheetCtrl.create({
-        header: "Select image source",
+      const actionSheet = await this._actionSheetCtrl.create({
+        header: 'Select image source',
         buttons: [
           {
             text: 'Load from Library',
@@ -82,7 +82,7 @@ export class ImageUploadComponent implements ControlValueAccessor {
               }, (err) => {
                 // Error getting picture
                 // alert("Error getting picture from Library: " + JSON.stringify(err));
-                console.log("Error getting picture from Library: " + JSON.stringify(err));
+                console.log('Error getting picture from Library: ' + JSON.stringify(err));
               });
             }
           },
@@ -95,7 +95,7 @@ export class ImageUploadComponent implements ControlValueAccessor {
               }, (err) => {
                 // Error getting picture
                 // alert("Error getting picture from Camera: " + JSON.stringify(err));
-                console.log("Error getting picture from Camera: " + JSON.stringify(err));
+                console.log('Error getting picture from Camera: ' + JSON.stringify(err));
               });
             }
           }
@@ -121,14 +121,14 @@ export class ImageUploadComponent implements ControlValueAccessor {
    * @param  {any} $event
    */
   uploadFileViaHtmlFileInput($event){
-    let fileList: FileList = $event.target.files;
+    const fileList: FileList = $event.target.files;
 
     // Check if files available
-    if(fileList.length > 0){
-      let file = fileList.item(0);
+    if (fileList.length > 0){
+      const file = fileList.item(0);
 
       // Upload The File
-      let uploadObservable = this._awsService.uploadFile(this.prefix, file);
+      const uploadObservable = this._awsService.uploadFile(this.prefix, file);
       this.processFileUpload(uploadObservable);
     }
   }
@@ -155,9 +155,9 @@ export class ImageUploadComponent implements ControlValueAccessor {
    */
   processFileUpload(uploadObservable){
     // Create Temporary Transfer Record
-    let newUpload = {
-      name: "Preparing file for upload",
-      status: "uploading",
+    const newUpload = {
+      name: 'Preparing file for upload',
+      status: 'uploading',
       loaded: 0,
       total: 100,
       link: ''
@@ -169,23 +169,23 @@ export class ImageUploadComponent implements ControlValueAccessor {
     // Process Upload and Display Progress
     uploadObservable.subscribe((progress) => {
       // Update progress, possibly create emitter for this data if needed
-      if(progress.loaded &&  progress.loaded != progress.total){
-        newUpload.status = "uploading";
+      if (progress.loaded &&  progress.loaded != progress.total){
+        newUpload.status = 'uploading';
         newUpload.loaded = progress.loaded;
         newUpload.total = progress.total;
       }
       // If Multipart upload (big file), Key with capital "K"
-      if(progress.key || progress.Key){
-        newUpload.name = progress.key? progress.key : progress.Key;
+      if (progress.key || progress.Key){
+        newUpload.name = progress.key ? progress.key : progress.Key;
         newUpload.link = this._bucketUrlTemporary + newUpload.name;
       }
     }, (err) => {
-      console.log("Error", err);
-      newUpload.status = "error";
+      console.log('Error', err);
+      newUpload.status = 'error';
       // Hide File Upload Indicator based on which file is being uploaded
       this.isUploading = false;
     }, () => {
-      newUpload.status = "complete";
+      newUpload.status = 'complete';
       // Hide File Upload Indicator based on which file is being uploaded
       this.isUploading = false;
       // Switch to temporary bucket url

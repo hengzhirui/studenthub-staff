@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {AlertController, LoadingController} from "@ionic/angular";
-//service
-import {CandidateIdCardService} from "src/app/providers/logged-in/candidate.id.card.service";
+import {FormBuilder, FormGroup} from '@angular/forms';
+import {AlertController} from '@ionic/angular';
+// service
+import {CandidateIdCardService} from 'src/app/providers/logged-in/candidate.id.card.service';
 
 @Component({
   selector: 'app-generate-id',
@@ -11,12 +11,13 @@ import {CandidateIdCardService} from "src/app/providers/logged-in/candidate.id.c
 })
 export class GenerateIdPage implements OnInit {
 
-  public pageCount: number = 0;
-  public currentPage: number = 1;
+  public pageCount = 0;
+  public currentPage = 1;
   public pages: number[] = [];
   public loading = false;
-  public searchBar: string = '';
-  public cndSegment: string = 'not-generated';
+  public downloading = false;
+  public searchBar = '';
+  public cndSegment = 'not-generated';
   public candidates: any = [];
 
   public form: FormGroup;
@@ -25,7 +26,6 @@ export class GenerateIdPage implements OnInit {
   constructor(
     public candidateIdCardService: CandidateIdCardService,
     private _fb: FormBuilder,
-    private _loadingCtrl: LoadingController,
     private _alertCtrl: AlertController
   ) {
     this.form = this._fb.group({
@@ -42,24 +42,23 @@ export class GenerateIdPage implements OnInit {
    */
   async generate() {
 
-    if(this.candidates.length == 0)
+    if (this.candidates.length == 0)
     {
-      let prompt = await this._alertCtrl.create({
+      const prompt = await this._alertCtrl.create({
         message: 'Please select candidate(s)',
-        buttons: ["Ok"]
+        buttons: ['Ok']
       });
       prompt.present();
 
       return false;
     }
 
-    let loader = await this._loadingCtrl.create();
-    loader.present();
+    this.downloading = true;
 
     this.candidateIdCardService.generate(this.candidates).subscribe(response => {
     }, (err) => {
     }, () => {
-      loader.dismiss();
+      this.downloading = false;
     });
   }
 
@@ -76,7 +75,7 @@ export class GenerateIdPage implements OnInit {
    * @param page
    */
   loadData(page: number) {
-    if(this.cndSegment == 'not-generated') {
+    if (this.cndSegment == 'not-generated') {
       this.loadNotGenerated(page);
     } else {
       this.loadGenerated(page);
@@ -85,8 +84,9 @@ export class GenerateIdPage implements OnInit {
 
   pageLinkColor(page: number) {
 
-    if(page == this.currentPage)
+    if (page == this.currentPage) {
       return 'light';
+    }
 
     return '';
   }
@@ -108,14 +108,15 @@ export class GenerateIdPage implements OnInit {
 
         this.pages = [];
 
-        for(var i = 1; i <= this.pageCount; i++){
+        for (let i = 1; i <= this.pageCount; i++){
           this.pages.push(i);
         }
 
-        //hide if no page = 1
+        // hide if no page = 1
 
-        if(this.pageCount == 1)
+        if (this.pageCount == 1) {
           this.pages = [];
+        }
 
         this.candidatelistData = response.body;
 
@@ -127,7 +128,7 @@ export class GenerateIdPage implements OnInit {
 
       },
       error => {},
-      ()=>{this.loading = false;}
+      () => {this.loading = false; }
     );
   }
 
@@ -147,14 +148,15 @@ export class GenerateIdPage implements OnInit {
 
         this.pages = [];
 
-        for(var i = 1; i <= this.pageCount; i++){
+        for (let i = 1; i <= this.pageCount; i++){
           this.pages.push(i);
         }
 
-        //hide if no page = 1
+        // hide if no page = 1
 
-        if(this.pageCount == 1)
+        if (this.pageCount == 1) {
           this.pages = [];
+        }
 
         this.candidatelistData = response.body;
 
@@ -166,11 +168,11 @@ export class GenerateIdPage implements OnInit {
 
       },
       error => {},
-      ()=>{this.loading = false;}
+      () => {this.loading = false; }
     );
   }
 
-  segmentChanged ($ev) {
+  segmentChanged($ev) {
     if ($ev.detail.value == 'not-generated') {
       this.loadNotGenerated(1);
     } else  {

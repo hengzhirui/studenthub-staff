@@ -7,8 +7,9 @@
     <ion-title>Generate ID Card</ion-title>
 
     <ion-buttons slot="end">
-      <ion-button color="primary" [disabled]="!form.valid" (click)="generate()">
-        Download Zip
+      <ion-button color="primary" [disabled]="!form.valid && downloading" (click)="generate()">
+        <span *ngIf="!downloading">Download Zip</span>
+        <ion-spinner *ngIf="downloading"></ion-spinner>
       </ion-button>
     </ion-buttons>
 
