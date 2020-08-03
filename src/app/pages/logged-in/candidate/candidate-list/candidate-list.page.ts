@@ -20,8 +20,7 @@ export class CandidateListPage implements OnInit {
   public pageCountUnAssign = 0;
   public currentPageAssign = 1;
   public currentPageUnAssign = 1;
-  public totalCountAssign = 0;
-  public totalCountUnAssign = 0;
+  public totalCount = 0;
   public pages: number[] = [];
 
   public assignedSearchBar = '';
@@ -107,7 +106,7 @@ export class CandidateListPage implements OnInit {
     // Load list of candidates
     this.loading = true;
     this.candidateService.listNotAssigned(search, page).subscribe(response => {
-      this.totalCountUnAssign = response.headers.get('X-Pagination-Total-Count');
+      this.totalCount = response.headers.get('X-Pagination-Total-Count');
       this.pageCountUnAssign = response.headers.get('X-Pagination-Page-Count');
       this.currentPageUnAssign = response.headers.get('X-Pagination-Current-Page');
 
@@ -146,7 +145,7 @@ export class CandidateListPage implements OnInit {
     this.loading = true;
     this.candidateService.listAssigned(search, page).subscribe(response => {
 
-      this.totalCountAssign = response.headers.get('X-Pagination-Total-Count');
+      this.totalCount = response.headers.get('X-Pagination-Total-Count');
       this.pageCountAssign = response.headers.get('X-Pagination-Page-Count');
       this.currentPageAssign = response.headers.get('X-Pagination-Current-Page');
 
@@ -201,7 +200,7 @@ export class CandidateListPage implements OnInit {
       this.currentPageAssign ++;
       this.candidateService.listAssigned(this.assignedSearchBar, this.currentPageAssign).subscribe(response => {
           this.loading = false;
-          this.totalCountAssign = response.headers.get('X-Pagination-Total-Count');
+          this.totalCount = response.headers.get('X-Pagination-Total-Count');
           this.pageCountAssign = response.headers.get('X-Pagination-Page-Count');
           this.currentPageAssign = response.headers.get('X-Pagination-Current-Page');
 
@@ -216,7 +215,7 @@ export class CandidateListPage implements OnInit {
 
       this.candidateService.listNotAssigned(this.unassignedSearchBar, this.currentPageUnAssign).subscribe(response => {
           this.loading = false;
-          this.totalCountUnAssign = response.headers.get('X-Pagination-Total-Count');
+          this.totalCount = response.headers.get('X-Pagination-Total-Count');
           this.pageCountUnAssign = response.headers.get('X-Pagination-Page-Count');
           this.currentPageUnAssign = response.headers.get('X-Pagination-Current-Page');
           this.candidates = this.candidates.concat(response.body);
