@@ -41,4 +41,6 @@ export class Candidate {
     university: University;
     country: Country;
     bank: Bank;
+    candidateExperiences: any;
+    candidateSkills: any;
 }

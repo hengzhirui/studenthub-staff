@@ -9,6 +9,8 @@ import { UniversityService } from 'src/app/providers/logged-in/university.servic
 import { CountryService } from 'src/app/providers/logged-in/country.service';
 // model
 import { Candidate } from 'src/app/models/candidate';
+import {SkillFormPage} from "../skill-form/skill-form.page";
+import {ExperienceFormPage} from "../experience-form/experience-form.page";
 
 
 @Component({
@@ -51,9 +53,9 @@ export class CandidateFormPage implements OnInit {
 
     const state = window.history.state;
 
-    if (state.model) {
-      this.model = state.model;
-    }
+    // if (state.model) {
+    //   this.model = state.model;
+    // }
 
     if (this.candidate_id) {
       this.candidateDetail();
@@ -230,7 +232,9 @@ export class CandidateFormPage implements OnInit {
         hourly_rate: ['', Validators.required],
         objective: ['', Validators.required],
         gender: ['', Validators.required],
-        license: ['', Validators.required]
+        license: ['', Validators.required],
+        skills: ['', Validators.required],
+        experiences: ['', Validators.required]
       });
     } else { // Show Update Form
       this.operation = 'Update';
@@ -252,7 +256,9 @@ export class CandidateFormPage implements OnInit {
         hourly_rate: [this.model.candidate_hourly_rate, Validators.required],
         objective: [this.model.candidate_objective, Validators.required],
         gender: [this.model.candidate_gender, Validators.required],
-        license: [this.model.candidate_driving_license, Validators.required]
+        license: [this.model.candidate_driving_license, Validators.required],
+        skills: [this.model.skill, Validators.required],
+        experiences: [this.model.experience, Validators.required]
       });
     }
   }
@@ -278,6 +284,13 @@ export class CandidateFormPage implements OnInit {
       }
     });
     modal.present();
+    const { data } = await modal.onWillDismiss();
+
+    if (data.skills) {
+      this.form.controls.skills.setValue(data.skills);
+      this.form.controls.skills.markAsDirty();
+      this.model.skill = data.skills;
+    }
   }
 
   async updateExperiences() {
@@ -289,5 +302,12 @@ export class CandidateFormPage implements OnInit {
       }
     });
     modal.present();
+    const { data } = await modal.onWillDismiss();
+
+    if (data.experiences) {
+      this.form.controls.experiences.setValue(data.experiences);
+      this.form.controls.experiences.markAsDirty();
+      this.model.experience = data.experiences;
+    }
   }
 }

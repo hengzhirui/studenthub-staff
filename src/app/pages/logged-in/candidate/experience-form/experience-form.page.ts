@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController, ToastController, AlertController } from '@ionic/angular';
-// services
-// import { AccountService } from 'src/app/providers/logged-in/account.service';
 
 @Component({
   selector: 'app-experience-form',
@@ -22,14 +20,14 @@ export class ExperienceFormPage implements OnInit {
   public maxExperiencesAllowed = 40;
 
   constructor(
-    // public accountService: AccountService,
     public alertCtrl: AlertController,
     public toastCtrl: ToastController,
     public modalCtrl: ModalController
   ) { }
 
   ngOnInit() {
-    this.addToExperienceList(JSON.parse(JSON.stringify(this.candidate.candidateExperiences)));
+    this.addToExperienceList(this.candidate.candidateExperiences);
+    // this.addToExperienceList(JSON.parse(JSON.stringify(this.candidate.candidateExperiences)));
   }
 
   // add experience in temp
@@ -207,6 +205,8 @@ export class ExperienceFormPage implements OnInit {
       const params = {
         experiences: experiences.join(',')
       };
+      this.candidate.candidateExperiences = experiences.join(',');
+      this.dismiss(params);
 
       // this.accountService.updateExperiences(params).subscribe(jsonResponse => {
       //

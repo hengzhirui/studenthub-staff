@@ -144,14 +144,14 @@
           </ion-buttons>
         </ion-item>
 
-        <ion-item>
+        <ion-item (click)="updateSkills()">
           <ion-label position="floating">Skill</ion-label>
-          <ion-input type="text" formControlName="skill"></ion-input>
+          <ion-input type="text" formControlName="skills"></ion-input>
         </ion-item>
 
-        <ion-item>
+        <ion-item (click)="updateExperiences()">
           <ion-label position="floating">Experience</ion-label>
-          <ion-input type="text" formControlName="experience"></ion-input>
+          <ion-input type="text" formControlName="experiences"></ion-input>
         </ion-item>
       </ion-card-content>
     </ion-card>

@@ -7,7 +7,6 @@ import { IonicModule } from '@ionic/angular';
 import { ExperienceFormPageRoutingModule } from './experience-form-routing.module';
 
 import { ExperienceFormPage } from './experience-form.page';
-import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   imports: [
@@ -15,7 +14,6 @@ import { TranslateModule } from '@ngx-translate/core';
     FormsModule,
     ReactiveFormsModule,
     IonicModule,
-    TranslateModule.forChild(),
     ExperienceFormPageRoutingModule
   ],
   declarations: [ExperienceFormPage]

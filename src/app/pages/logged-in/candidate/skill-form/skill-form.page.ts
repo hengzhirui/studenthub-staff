@@ -26,7 +26,8 @@ export class SkillFormPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.addToSkillList(JSON.parse(JSON.stringify(this.candidate.candidateSkills)));
+    // this.addToSkillList(JSON.parse(JSON.stringify(this.candidate.candidateSkills)));
+    this.addToSkillList(this.candidate.candidateSkills);
   }
 
   // add skill in temp
@@ -204,7 +205,8 @@ export class SkillFormPage implements OnInit {
       const params = {
         skills: skills.join(',')
       };
-
+      this.candidate.candidateSkills = skills.join(',');
+      this.dismiss(params);
       // this.accountService.updateSkills(params).subscribe(jsonResponse => {
       //
       //   // On Success
