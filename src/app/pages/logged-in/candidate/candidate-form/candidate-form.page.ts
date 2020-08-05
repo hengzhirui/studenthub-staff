@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import { AlertController, NavController, ToastController } from '@ionic/angular';
+import {AlertController, ModalController, NavController, ToastController} from '@ionic/angular';
 import { CustomValidator } from 'src/app/validators/custom.validator';
 // service
 import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
@@ -9,6 +9,8 @@ import { UniversityService } from 'src/app/providers/logged-in/university.servic
 import { CountryService } from 'src/app/providers/logged-in/country.service';
 // model
 import { Candidate } from 'src/app/models/candidate';
+import {SkillFormPage} from "../skill-form/skill-form.page";
+import {ExperienceFormPage} from "../experience-form/experience-form.page";
 
 
 @Component({
@@ -39,6 +41,7 @@ export class CandidateFormPage implements OnInit {
     public universityService: UniversityService,
     public countryService: CountryService,
     private _fb: FormBuilder,
+    private modalCtrl: ModalController,
     private _alertCtrl: AlertController,
     private _toastCtrl: ToastController,
   ) {
@@ -50,9 +53,9 @@ export class CandidateFormPage implements OnInit {
 
     const state = window.history.state;
 
-    if (state.model) {
-      this.model = state.model;
-    }
+    // if (state.model) {
+    //   this.model = state.model;
+    // }
 
     if (this.candidate_id) {
       this.candidateDetail();
@@ -93,6 +96,7 @@ export class CandidateFormPage implements OnInit {
     this.model.candidate_personal_photo = this.form.value.photo;
     this.model.candidate_civil_photo_front = this.form.value.civilfront;
     this.model.candidate_civil_photo_back = this.form.value.civilback;
+    this.model.candidate_objective = this.form.value.objective;
   }
 
   /**
@@ -129,7 +133,7 @@ export class CandidateFormPage implements OnInit {
         // open view page
         this.navCtrl.navigateForward('candidate-view/' + jsonResponse.candidate.candidate_id, {
           state: {
-            model: jsonResponse.candidate
+            model: this.model
           }
         });
 
@@ -225,7 +229,12 @@ export class CandidateFormPage implements OnInit {
         civilfront: ['', Validators.required],
         civilback: ['', Validators.required],
         expiry_date: ['', Validators.required],
-        hourly_rate: ['', Validators.required]
+        hourly_rate: ['', Validators.required],
+        objective: ['', Validators.required],
+        gender: ['', Validators.required],
+        license: ['', Validators.required],
+        skills: ['', Validators.required],
+        experiences: ['', Validators.required]
       });
     } else { // Show Update Form
       this.operation = 'Update';
@@ -244,8 +253,84 @@ export class CandidateFormPage implements OnInit {
         civilfront: [this.model.candidate_civil_photo_front, Validators.required],
         civilback: [this.model.candidate_civil_photo_back, Validators.required],
         expiry_date: [this.model.candidate_civil_expiry_date, Validators.required],
-        hourly_rate: [this.model.candidate_hourly_rate, Validators.required]
+        hourly_rate: [this.model.candidate_hourly_rate, Validators.required],
+        objective: [this.model.candidate_objective, Validators.required],
+        gender: [this.model.candidate_gender, Validators.required],
+        license: [this.model.candidate_driving_license, Validators.required],
+        skills: [this.model.skill, Validators.required],
+        experiences: [this.model.experience, Validators.required]
       });
+      this.loadExp();
+      this.loadSkill();
     }
   }
+
+  setGenderOption(value) {
+    this.form.controls.gender.setValue(value);
+    this.form.controls.gender.markAsDirty();
+    this.model.candidate_gender = value;
+  }
+
+  setLicenseOption(value) {
+    this.form.controls.license.setValue(value);
+    this.form.controls.license.markAsDirty();
+    this.model.candidate_driving_license = value;
+  }
+
+  async updateSkills() {
+    const modal = await this.modalCtrl.create({
+      component: SkillFormPage,
+      componentProps: {
+        candidate: this.model,
+      }
+    });
+    modal.present();
+    const { data } = await modal.onWillDismiss();
+
+    if (data.skills) {
+      this.form.controls.skills.setValue(data.skills);
+      this.form.controls.skills.markAsDirty();
+      this.model.skill = data.skills;
+    }
+  }
+
+  async updateExperiences() {
+
+    const modal = await this.modalCtrl.create({
+      component: ExperienceFormPage,
+      componentProps: {
+        candidate: this.model,
+      }
+    });
+    modal.present();
+    const { data } = await modal.onWillDismiss();
+
+    if (data.experiences) {
+      this.form.controls.experiences.setValue(data.experiences);
+      this.form.controls.experiences.markAsDirty();
+      this.model.experience = data.experiences;
+    }
+  }
+
+  loadSkill() {
+    const skills = [];
+    if (this.model.candidateSkills && this.model.candidateSkills.length > 0) {
+      for (let skl of this.model.candidateSkills) {
+          skills.push(skl.skill);
+          this.form.controls.skills.setValue(skills.join(','));
+          this.model.experience = skills.join(',');
+        }
+      }
+    }
+
+  loadExp() {
+    const experiences = [];
+    if (this.model.candidateExperiences && this.model.candidateExperiences.length > 0) {
+      for (let exp of this.model.candidateExperiences) {
+          experiences.push(exp.experience);
+          this.form.controls.experiences.setValue(experiences.join(','));
+          this.model.experience = experiences.join(',');
+        }
+      }
+    }
 }
