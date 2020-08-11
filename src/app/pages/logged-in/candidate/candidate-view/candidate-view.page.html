@@ -128,7 +128,7 @@
     <ion-label>
       <h5>Skills</h5>
       <div *ngIf="candidate.candidateSkills && candidate.candidateSkills.length > 0">
-        <p *ngFor="let skills of candidate.candidateSkills">
+        <p class="sub-span" *ngFor="let skills of candidate.candidateSkills">
           {{skills.skill}}
         </p>
       </div>
@@ -139,7 +139,7 @@
     <ion-label>
       <h5>Experiences</h5>
       <div *ngIf="candidate.candidateExperiences && candidate.candidateExperiences.length > 0">
-        <p *ngFor="let exp of candidate.candidateExperiences">
+        <p class="sub-span" *ngFor="let exp of candidate.candidateExperiences">
           {{exp.experience}}
         </p>
       </div>
@@ -150,7 +150,7 @@
     <ion-label>
       <h5>Candidate CV</h5>
       <a target="_blank" *ngIf="candidate.candidate_resume"
-         href="{{ aws.permanentBucketUrl }}candidate-resume/{{ candidate.candidate_resume }}">
+         href="{{ aws.urlResume }}{{ candidate.candidate_resume }}">
         {{ candidate.candidate_resume }}
       </a>
     </ion-label>
@@ -229,9 +229,9 @@
       <p *ngIf="salary.bonus > 0">Bonus: <b>KWD {{salary.candidate_bonus | number:'1.3-3' }}</b></p>
 
       <p>Confirmation ID: <b>{{ salary.transfer_confirmation_id }}</b></p>
-      
+
       <p *ngIf="salary.bank">Bank: <b>{{ salary.transfer_benef_iban }} @ {{ salary.bank.bank_name }}</b></p>
-  
+
       <p>Account name: <b>{{ salary.transfer_benef_name }}</b></p>
 
     </ion-label>

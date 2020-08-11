@@ -251,7 +251,6 @@ export class AuthhttpService {
    */
   _buildAuthHeaders() {
     const bearerToken = this._auth.getAccessToken();
-
     // Build Headers with Bearer Token
     return new HttpHeaders({
       'Authorization': 'Bearer ' + bearerToken,

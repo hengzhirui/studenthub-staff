@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
   }
 
   initializeApp() {
-    
+
     //this language will be used as a fallback when a translation isn't found in the current language
     this.translateService.setDefaultLang('en');
 
@@ -111,7 +111,6 @@ export class AppComponent implements OnInit {
 
     // service worker watcher
     if (!this.platform.is('capacitor')) {
-
       if ('serviceWorker' in navigator && environment.serviceWorker && window.location.hostname != 'localhost') {
 
         navigator.serviceWorker.register('./ngsw-worker.js');
