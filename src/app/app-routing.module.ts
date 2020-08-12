@@ -30,6 +30,11 @@ const routes: Routes = [
     canActivate: [AuthService],
   },
   {
+    path: 'incomplete-candidate-list',
+    loadChildren: () => import('./pages/logged-in/candidate/incomplete-candidate-list/incomplete-candidate-list.module').then( m => m.IncompleteCandidateListPageModule),
+    canActivate: [AuthService],
+  },
+  {
     path: 'candidate-view',
     loadChildren: () => import('./pages/logged-in/candidate/candidate-view/candidate-view.module').then( m => m.CandidateViewPageModule),
     canActivate: [AuthService],

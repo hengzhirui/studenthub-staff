@@ -48,8 +48,8 @@ export class CandidateService {
    * List of all candidates asigned to store
    * @returns {Observable<any>}
    */
-  listAssigned(candidate_name: string, page: number): Observable<any> {
-    const url = this._candidateEndpoint + '/assigned?candidate_name=' + candidate_name + '&page=' + page + '&expand=candidateSkills,candidateExperiences';
+  listAssigned(candidate_name: string, page: number, incompleteProfile = 0): Observable<any> {
+    const url = this._candidateEndpoint + '/assigned?candidate_name=' + candidate_name + '&page=' + page + '&incomplete_profile=' + incompleteProfile + '&expand=candidateSkills,candidateExperiences';
     return this._authhttp.getRaw(url);
   }
 
@@ -57,8 +57,8 @@ export class CandidateService {
    * List of all candidates not asigned to store
    * @returns {Observable<any>}
    */
-  listNotAssigned(candidate_name: string, page: number): Observable<any> {
-    const url = this._candidateEndpoint + '/not-assigned?candidate_name=' + candidate_name + '&page=' + page + '&expand=candidateSkills,candidateExperiences';
+  listNotAssigned(candidate_name: string, page: number, incompleteProfile = 0): Observable<any> {
+    const url = this._candidateEndpoint + '/not-assigned?candidate_name=' + candidate_name + '&page=' + page + '&incomplete_profile=' + incompleteProfile + '&expand=candidateSkills,candidateExperiences';
     return this._authhttp.getRaw(url);
   }
 
