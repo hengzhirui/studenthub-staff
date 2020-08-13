@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import {AuthService} from "./providers/auth.service";
+import {AuthService} from './providers/auth.service';
+import {LoginGuard} from './providers/guards/login-guard.service';
 
 const routes: Routes = [
   {
@@ -10,11 +11,13 @@ const routes: Routes = [
   },
   {
     path: 'login',
-    loadChildren: () => import('./pages/start-pages/login/login.module').then( m => m.LoginPageModule)
+    loadChildren: () => import('./pages/start-pages/login/login.module').then( m => m.LoginPageModule),
+    canActivate: [LoginGuard]
   },
   {
     path: 'change-password',
-    loadChildren: () => import('./pages/logged-in/change-password/change-password.module').then( m => m.ChangePasswordPageModule)
+    loadChildren: () => import('./pages/logged-in/change-password/change-password.module').then( m => m.ChangePasswordPageModule),
+    canActivate: [LoginGuard]
   },
   {
     path: 'candidate-form',
@@ -24,6 +27,11 @@ const routes: Routes = [
   {
     path: 'candidate-list',
     loadChildren: () => import('./pages/logged-in/candidate/candidate-list/candidate-list.module').then( m => m.CandidateListPageModule),
+    canActivate: [AuthService],
+  },
+  {
+    path: 'incomplete-candidate-list',
+    loadChildren: () => import('./pages/logged-in/candidate/incomplete-candidate-list/incomplete-candidate-list.module').then( m => m.IncompleteCandidateListPageModule),
     canActivate: [AuthService],
   },
   {

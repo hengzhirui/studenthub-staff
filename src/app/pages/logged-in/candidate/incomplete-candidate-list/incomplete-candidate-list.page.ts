@@ -10,11 +10,11 @@ import { CandidateIdCardService } from 'src/app/providers/logged-in/candidate.id
 
 
 @Component({
-  selector: 'app-candidate-list',
-  templateUrl: './candidate-list.page.html',
-  styleUrls: ['./candidate-list.page.scss'],
+  selector: 'app-incomplete-candidate-list',
+  templateUrl: './incomplete-candidate-list.page.html',
+  styleUrls: ['./incomplete-candidate-list.page.scss'],
 })
-export class CandidateListPage implements OnInit {
+export class IncompleteCandidateListPage implements OnInit {
 
   public pageCountAssign = 0;
   public pageCountUnAssign = 0;
@@ -105,7 +105,7 @@ export class CandidateListPage implements OnInit {
 
     // Load list of candidates
     this.loading = true;
-    this.candidateService.listNotAssigned(search, page).subscribe(response => {
+    this.candidateService.listNotAssigned(search, page, 1).subscribe(response => {
       this.totalCount = response.headers.get('X-Pagination-Total-Count');
       this.pageCountUnAssign = response.headers.get('X-Pagination-Page-Count');
       this.currentPageUnAssign = response.headers.get('X-Pagination-Current-Page');
@@ -125,7 +125,7 @@ export class CandidateListPage implements OnInit {
       this.candidates = response.body;
     },
       error => { },
-      () => { 
+      () => {
         this.loading = false;
       }
     );
@@ -142,7 +142,7 @@ export class CandidateListPage implements OnInit {
 
     // Load list of candidates
     this.loading = true;
-    this.candidateService.listAssigned(search, page).subscribe(response => {
+    this.candidateService.listAssigned(search, page, 1).subscribe(response => {
 
       this.totalCount = response.headers.get('X-Pagination-Total-Count');
       this.pageCountAssign = response.headers.get('X-Pagination-Page-Count');
@@ -195,9 +195,9 @@ export class CandidateListPage implements OnInit {
   doInfinite(event, type) {
     this.loading = true;
     if (type == 'assigned') {
-     
+
       this.currentPageAssign ++;
-      this.candidateService.listAssigned(this.assignedSearchBar, this.currentPageAssign).subscribe(response => {
+      this.candidateService.listAssigned(this.assignedSearchBar, this.currentPageAssign, 1).subscribe(response => {
           this.loading = false;
           this.totalCount = response.headers.get('X-Pagination-Total-Count');
           this.pageCountAssign = response.headers.get('X-Pagination-Page-Count');
@@ -211,7 +211,7 @@ export class CandidateListPage implements OnInit {
     } else {
       this.currentPageUnAssign ++;
 
-      this.candidateService.listNotAssigned(this.unassignedSearchBar, this.currentPageUnAssign).subscribe(response => {
+      this.candidateService.listNotAssigned(this.unassignedSearchBar, this.currentPageUnAssign, 1).subscribe(response => {
           this.loading = false;
           this.totalCount = response.headers.get('X-Pagination-Total-Count');
           this.pageCountUnAssign = response.headers.get('X-Pagination-Page-Count');
@@ -222,8 +222,6 @@ export class CandidateListPage implements OnInit {
         () => { event.target.complete(); }
       );
     }
-
-
   }
 }
 

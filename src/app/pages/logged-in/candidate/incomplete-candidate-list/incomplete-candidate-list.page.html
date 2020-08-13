@@ -1,0 +1,66 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Incomplete Candidates <span *ngIf="!loading && totalCount">({{totalCount}})</span></ion-title>
+
+<!--    <ion-buttons slot="end">-->
+<!--      <ion-button color="primary" [disabled]="candidateIdCardService.candidates.length == 0 || downloading" (click)="generate()">-->
+<!--        <span *ngIf="!downloading">Download Zip</span>-->
+<!--        <ion-spinner *ngIf="downloading"></ion-spinner>-->
+<!--      </ion-button>-->
+<!--    </ion-buttons>-->
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-segment (ionChange)="loadSegment($event)" [value]="cndSegment"  color="primary">
+    <ion-segment-button value="assigned">
+      Already Assigned
+    </ion-segment-button>
+    <ion-segment-button value="not-assigned">
+      Not Assigned
+    </ion-segment-button>
+  </ion-segment>
+
+  <ion-searchbar *ngIf="cndSegment == 'assigned'"
+    [(ngModel)]="assignedSearchBar"
+    animated
+    debounce="200"
+    (ionChange)="search()">
+  </ion-searchbar>
+
+  <ion-searchbar *ngIf="cndSegment == 'not-assigned'"
+    [(ngModel)]="unassignedSearchBar"
+    animated
+    debounce="200"
+    (ionChange)="search()">
+  </ion-searchbar>
+
+  <ion-list>
+
+    <candidate [candidate]="candidate" (refresh)="search()" *ngFor="let candidate of candidates"></candidate>
+
+    <no-items *ngIf="candidates && candidates.length == 0" message="No candidate data available"></no-items>
+
+    <loading-modal [loading]="loading" type="candidate-list"></loading-modal>
+
+  </ion-list>
+
+  <ion-infinite-scroll *ngIf="cndSegment == 'not-assigned' && currentPageUnAssign < pageCountUnAssign" (ionInfinite)="doInfinite($event, 'no-assigned')">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <ion-infinite-scroll *ngIf="cndSegment == 'assigned' && currentPageAssign < pageCountAssign" (ionInfinite)="doInfinite($event , 'assigned')">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content>
+
+<!--<ion-footer *ngIf="!loading">-->
+<!--  <ion-button expand="full" (click)="create()">-->
+<!--    Create-->
+<!--  </ion-button>-->
+<!--</ion-footer>-->
