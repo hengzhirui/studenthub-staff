@@ -107,7 +107,7 @@ export class CandidateFormPage implements OnInit {
   async save() {
 
     this.saving = true;
-    
+
     this.updateModelDataFromForm();
 
     let action;
@@ -126,11 +126,7 @@ export class CandidateFormPage implements OnInit {
       if (jsonResponse.operation == 'success') {
 
         // open view page
-        this.navCtrl.navigateForward('candidate-view/' + jsonResponse.candidate.candidate_id, {
-          state: {
-            model: this.model
-          }
-        });
+        this.navCtrl.navigateForward('candidate-view/' + jsonResponse.candidate.candidate_id);
 
         const toast = await this._toastCtrl.create({
           message: this.model.candidate_name + '\'s account saved successfully',
@@ -217,9 +213,9 @@ export class CandidateFormPage implements OnInit {
         country_id: ['', Validators.required],
         iban: [''],
         name_ar: ['', Validators.required],
-        phone: ['', Validators.required],
+        phone: ['', [Validators.required, Validators.pattern('^[0-9]{8}$')]],
         birth_date: ['', Validators.required],
-        civil_id: ['', Validators.required],
+        civil_id: ['', [Validators.required, Validators.pattern('^[0-9]{12}$')]],
         photo: ['', Validators.required],
         civilfront: ['', Validators.required],
         civilback: ['', Validators.required],
@@ -242,9 +238,9 @@ export class CandidateFormPage implements OnInit {
         country_id: [this.model.country_id + '', Validators.required],
         iban: [this.model.candidate_iban],
         name_ar: [this.model.candidate_name_ar, Validators.required],
-        phone: [this.model.candidate_phone, Validators.required],
+        phone: [this.model.candidate_phone, [Validators.required, Validators.pattern('^[0-9]{10}$')]],
         birth_date: [this.model.candidate_birth_date, Validators.required],
-        civil_id: [this.model.candidate_civil_id, Validators.required],
+        civil_id: [this.model.candidate_civil_id, [Validators.required, Validators.pattern('^[0-9]{12}$')]],
         photo: [this.model.candidate_personal_photo, Validators.required],
         civilfront: [this.model.candidate_civil_photo_front, Validators.required],
         civilback: [this.model.candidate_civil_photo_back, Validators.required],

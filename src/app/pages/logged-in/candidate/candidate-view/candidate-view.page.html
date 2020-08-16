@@ -13,6 +13,7 @@
 </ion-header>
 
 <ion-content>
+  <loading-modal [loading]="loading" type="candidate-view"></loading-modal>
   <ion-list *ngIf="candidate">
     <ion-item>
       <ion-avatar slot="start">
@@ -39,14 +40,16 @@
     </ion-item>
 
   <ion-item>
-    <ion-button *ngIf="!sendingPassword" expand="full" color="danger" (click)="resetPassword()">Send new password to candidate</ion-button>
+    <ion-button *ngIf="!sendingPassword" expand="full" color="danger" (click)="resetPassword()">
+      Send password reset email to candidate
+    </ion-button>
     <ion-spinner *ngIf="sendingPassword"></ion-spinner>
   </ion-item>
 
   <ion-item-divider color="light">Store Assignment</ion-item-divider>
 
   <ion-item *ngIf="workHistory">
-    <ion-label>
+    <ion-label *ngIf="!assigning">
       <p *ngFor="let history of workHistory">
         <label tappable [routerLink]="['/store-view', history.store.store_id]" >{{ history.store.store_name }}: {{ history.start_date | date }} </label> to
         <label *ngIf="history.end_date" >{{ history.end_date | date }}</label>
