@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Platform } from '@ionic/angular';
+import { Platform, ModalController } from '@ionic/angular';
 //services
 import { StoreService } from 'src/app/providers/logged-in/store.service';
 import { CompanyService } from 'src/app/providers/logged-in/company.service';
@@ -8,7 +8,9 @@ import { AwsService } from 'src/app/providers/aws.service';
 //services
 import { Company } from 'src/app/models/company';
 import { Store } from 'src/app/models/store';
-import { Brand } from 'src/app/models/brand';
+import { Brand } from 'src/app/models/brand'; 
+//pages
+import { UploadFilePage } from "../upload-file/upload-file.page";
 
 
 @Component({
@@ -32,6 +34,7 @@ export class CompanyViewPage implements OnInit {
 
   constructor(
     public platform: Platform,
+    public modalCtrl: ModalController,
     public router: Router,
     public activatedRoute: ActivatedRoute, 
     public companyService: CompanyService,
@@ -117,5 +120,20 @@ export class CompanyViewPage implements OnInit {
       this.loading = false;
       this.company = response;
     });
+  }
+
+  async uploadDocument() {
+    const modal = await this.modalCtrl.create({
+      component: UploadFilePage,
+      componentProps: {
+        company: this.company,
+      }
+    });
+    modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data && data.refresh) {
+      this.loadData();
+    }
   }
 }

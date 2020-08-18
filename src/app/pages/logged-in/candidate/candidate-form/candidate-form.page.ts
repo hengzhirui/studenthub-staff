@@ -281,7 +281,7 @@ export class CandidateFormPage implements OnInit {
     
     const { data } = await modal.onWillDismiss();
 
-    if (data.skills) {
+    if (data && data.skills) {
       this.form.controls.skills.setValue(data.skills);
       this.form.controls.skills.markAsDirty();
       this.model.skill = data.skills;
@@ -299,7 +299,7 @@ export class CandidateFormPage implements OnInit {
     modal.present();
     const { data } = await modal.onWillDismiss();
 
-    if (data.experiences) {
+    if (data && data.experiences) {
       this.form.controls.experiences.setValue(data.experiences);
       this.form.controls.experiences.markAsDirty();
       this.model.experience = data.experiences;
