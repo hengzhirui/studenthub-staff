@@ -16,6 +16,7 @@ export class Company{
     company_hourly_rate: number;
     company_bonus_commission: number;
     company_followup: any;
+    company_last_followup_datetime: any;
     currency_pref: number;
     subcompanies: Company[];
     subCompanies: Company[];
