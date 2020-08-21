@@ -12,11 +12,12 @@
         {{ candidate.store.store_name }}
         <span *ngIf="candidate.company">@ {{ candidate.company.company_name }}</span>
       </p>
-      <ion-badge *ngIf="candidate.approved" color="success">
-        Approved
+      <ion-badge *ngIf="!candidate.approved && candidate.isProfileCompleted" color="warning">
+        Requires Approval
       </ion-badge>
-      <ion-badge *ngIf="!candidate.approved" color="warning">
-        Un-Approved
+
+      <ion-badge *ngIf="!candidate.isProfileCompleted" color="danger">
+        Incomplete Profile
       </ion-badge>
     </ion-label>
 
