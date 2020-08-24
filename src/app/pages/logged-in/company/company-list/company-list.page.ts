@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ModalController, NavController, Platform} from '@ionic/angular';
+import {ModalController, NavController, Platform, ToastController} from '@ionic/angular';
 import {ActivatedRoute} from '@angular/router';
 // model
 import {Company} from 'src/app/models/company';
@@ -7,6 +7,9 @@ import {Company} from 'src/app/models/company';
 import {CompanyService} from 'src/app/providers/logged-in/company.service';
 import {AwsService} from '../../../../providers/aws.service';
 import {UploadFilePage} from '../upload-file/upload-file.page';
+import {CompanyNoteFormPage} from "../company-note-form/company-note-form.page";
+import {Note} from "../../../../models/note";
+import {CompanyNoteService} from "../../../../providers/logged-in/company-note.service";
 
 @Component({
   selector: 'app-company-list',
@@ -31,8 +34,10 @@ export class CompanyListPage implements OnInit {
     public navCtrl: NavController,
     public modalCtrl: ModalController,
     public companyService: CompanyService,
+    public noteService: CompanyNoteService,
     public platform: Platform,
     public aws: AwsService,
+    public toastCtrl: ToastController,
   ) {
       this.company_id = this.activatedRoute.snapshot.paramMap.get('id');
   }
@@ -183,5 +188,46 @@ export class CompanyListPage implements OnInit {
         event.target.complete();
       }
     );
+  }
+
+  async addNote(note: Note) {
+    const modal = await this.modalCtrl.create({
+      component: CompanyNoteFormPage,
+      componentProps: {
+        company: this.company,
+        note: note,
+      }
+    });
+    modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data && data.refresh) {
+      this.viewDetail(false);
+    }
+  }
+
+  /**
+   * removing note
+   * @param event
+   * @param note
+   */
+  async remoteNote(event, note) {
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.noteService.delete(note).subscribe(async response => {
+
+      if (response.operation == 'success') {
+        this.viewDetail(false);
+      } else {
+        this.toastCtrl.create({
+          message: response.message,
+          buttons: ['Ok']
+        }).then(prompt => {
+          prompt.present();
+        });
+      }
+    });
   }
 }
