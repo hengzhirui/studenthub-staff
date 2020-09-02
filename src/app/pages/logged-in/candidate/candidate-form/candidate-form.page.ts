@@ -332,7 +332,7 @@ export class CandidateFormPage implements OnInit {
       for (const skl of this.model.candidateSkills) {
           skills.push(skl.skill);
           this.form.controls.skills.setValue(skills.join(','));
-          this.model.experience = skills.join(',');
+          this.model.skill = skills.join(',');
         }
       }
     }
