@@ -4,21 +4,25 @@ import { ActivatedRoute } from '@angular/router';
 // model
 import { Company } from 'src/app/models/company';
 import { CompanyContact } from 'src/app/models/company-contact';
-import { Note } from "../../../../models/note";
+import { Note } from '../../../../models/note';
 import { Request } from 'src/app/models/request';
+import {Brand} from 'src/app/models/brand';
 // service
 import { CompanyService } from 'src/app/providers/logged-in/company.service';
 import { AwsService } from '../../../../providers/aws.service';
-import { CompanyNoteService } from "../../../../providers/logged-in/company-note.service";
+import { CompanyNoteService } from '../../../../providers/logged-in/company-note.service';
 import { CompanyContactService } from 'src/app/providers/logged-in/company-contact.service';
 import { AuthService } from 'src/app/providers/auth.service';
 import { CompanyRequestService } from 'src/app/providers/logged-in/company-request.service';
-//pages
+import { EventService } from 'src/app/providers/event.service';
+import { BrandService } from 'src/app/providers/logged-in/brand.service';
+// pages
 import { UploadFilePage } from '../upload-file/upload-file.page';
-import { CompanyNoteFormPage } from "../company-note-form/company-note-form.page";
+import { CompanyNoteFormPage } from '../company-note-form/company-note-form.page';
 import { CompanyContactFormPage } from '../company-contact-form/company-contact-form.page';
 import { CompanyFollowupNotePage } from '../company-followup-note/company-followup-note.page';
 import { CompanyRequestFormPage } from '../company-request-form/company-request-form.page';
+import {BrandFormPage} from "../brand-form/brand-form.page";
 
 
 @Component({
@@ -28,11 +32,13 @@ import { CompanyRequestFormPage } from '../company-request-form/company-request-
 })
 export class CompanyListPage implements OnInit {
 
+  public brands: Brand[] = [];
   public pageCount = 0;
   public currentPage = 1;
   public pages: number[] = [];
   public loading = false;
   public loadingMore = false;
+  public deleting = false;
   public company_id = null;
   public company: Company;
   public companies: Company[];
@@ -55,11 +61,17 @@ export class CompanyListPage implements OnInit {
     public platform: Platform,
     public aws: AwsService,
     public toastCtrl: ToastController,
+    public eventService: EventService,
+    public brandService: BrandService,
   ) {
   }
 
   ngOnInit() {
     this.company_id = this.activatedRoute.snapshot.paramMap.get('id');
+
+    this.eventService.reloadCandidateHistory$.subscribe(response => {
+      this.loadCompanyList(this.currentPage);
+    });
   }
 
   async onContactSelected(companyContact) {
@@ -77,7 +89,7 @@ export class CompanyListPage implements OnInit {
         window['history-back-from'] = 'onDidDismiss';
         window.history.back();
       }
-  
+
       if (e && e.data && e.data.refresh) {
         this.loadContacts();
       }
@@ -93,7 +105,7 @@ export class CompanyListPage implements OnInit {
 
     const modal = await this.modalCtrl.create({
       component: CompanyFollowupNotePage,
-      componentProps: { 
+      componentProps: {
         company_id: this.company_id
       }
     });
@@ -103,7 +115,7 @@ export class CompanyListPage implements OnInit {
         window['history-back-from'] = 'onDidDismiss';
         window.history.back();
       }
-   
+
       if (e && e.data && e.data.company_last_followup_datetime && this.company) {
         this.company.company_last_followup_datetime = e.data.company_last_followup_datetime;
         this.viewDetail(false);
@@ -130,7 +142,7 @@ export class CompanyListPage implements OnInit {
         window['history-back-from'] = 'onDidDismiss';
         window.history.back();
       }
-    
+
       if (e && e.data && e.data.refresh) {
         this.loadContacts();
       }
@@ -176,17 +188,17 @@ export class CompanyListPage implements OnInit {
       this.companies = state.companies;
       this.loadCompaniesSegmentData();
     }
-    
+
     if (!this.companies && !this.company_id) {
       this.loadCompanyList(this.currentPage);
     }
 
-    if(this.company_id) {
+    if (this.company_id) {
 
-      if(this.company) {
-        this.viewDetail(false);//silent loading 
+      if (this.company) {
+        this.viewDetail(false); // silent loading
       } else {
-        this.viewDetail(true);//loading with loader
+        this.viewDetail(true); // loading with loader
       }
 
       this.loadContacts();
@@ -256,7 +268,7 @@ export class CompanyListPage implements OnInit {
       this.company = response;
 
       this.companies = response.subCompanies;
-
+      this.brands = response.brands;
       this.loadCompaniesSegmentData();
     });
   }
@@ -285,8 +297,9 @@ export class CompanyListPage implements OnInit {
    * @param date
    */
   toDate(date) {
-    if (date)
+    if (date) {
       return new Date(date.replace(/-/g, '/'));
+    }
   }
 
   async uploadDocument() {
@@ -306,7 +319,7 @@ export class CompanyListPage implements OnInit {
         window.history.back();
       }
     });
-    
+
     const { data } = await modal.onWillDismiss();
     if (data && data.refresh) {
       this.viewDetail(false);
@@ -345,7 +358,7 @@ export class CompanyListPage implements OnInit {
       component: CompanyNoteFormPage,
       componentProps: {
         company: this.company,
-        note: note,
+        note,
       }
     });
     modal.present();
@@ -398,7 +411,7 @@ export class CompanyListPage implements OnInit {
       component: CompanyRequestFormPage,
       componentProps: {
         company: this.company,
-        request: request,
+        request,
       }
     });
     modal.present();
@@ -409,7 +422,7 @@ export class CompanyListPage implements OnInit {
         window.history.back();
       }
     });
-    
+
     const { data } = await modal.onWillDismiss();
 
     if (data && data.refresh) {
@@ -420,7 +433,7 @@ export class CompanyListPage implements OnInit {
   async addRequest() {
     window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
 
-    let request = new Request;
+    const request = new Request;
 
     this.company.companyContacts = this.companyContacts;
 
@@ -428,7 +441,7 @@ export class CompanyListPage implements OnInit {
       component: CompanyRequestFormPage,
       componentProps: {
         company: this.company,
-        request: request,
+        request,
       }
     });
     modal.present();
@@ -439,7 +452,7 @@ export class CompanyListPage implements OnInit {
         window.history.back();
       }
     });
-    
+
     const { data } = await modal.onWillDismiss();
 
     if (data && data.refresh) {
@@ -505,5 +518,114 @@ export class CompanyListPage implements OnInit {
         });
       }
     });
+  }
+
+  async deleteBrand(event, brand) {
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const confirm = await this.alertCtrl.create({
+      header: 'Delete Brand?',
+      message: 'Do you want to delete this brand?',
+      buttons: [
+        {
+          text: 'Yes',
+          handler: () => {
+
+            this.deleting = true;
+
+            this.brandService.delete(brand).subscribe(async jsonResp => {
+
+              // On Success
+              if (jsonResp.operation == 'success') {
+                const toast = await this.toastCtrl.create({
+                  message: jsonResp.message,
+                  duration: 3000
+                });
+                toast.present();
+
+                this.viewDetail(true);
+              }
+
+              // On Failure
+              if (jsonResp.operation == 'error') {
+
+                this.deleting = false;
+
+                // failer text
+                const prompt = await this.alertCtrl.create({
+                  header: 'Deletion Error!',
+                  message: jsonResp.message,
+                  buttons: ['Ok']
+                });
+                prompt.present();
+              }
+
+            });
+          }
+        },
+        {
+          text: 'No'
+        }
+      ]
+    });
+    confirm.present();
+  }
+
+  /**
+   * open brand edit page
+   * @param brand
+   */
+  async brandSelected(brand) {
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: BrandFormPage,
+      componentProps: {
+        model: brand
+      }
+    });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+
+      if (e && e.data && e.data.refresh) {
+        this.viewDetail(true);
+      }
+    });
+    modal.present();
+  }
+
+  /**
+   * form to add new brand
+   */
+  async addBrand() {
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const brand = new Brand;
+    brand.company_id = this.company_id;
+
+    const modal = await this.modalCtrl.create({
+      component: BrandFormPage,
+      componentProps: {
+        model: brand
+      }
+    });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+
+      if (e && e.data && e.data.refresh) {
+        this.viewDetail(true);
+      }
+    });
+    modal.present();
   }
 }

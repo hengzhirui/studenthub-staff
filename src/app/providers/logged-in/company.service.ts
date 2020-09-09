@@ -37,7 +37,7 @@ export class CompanyService {
    * @param company_id
    */
   view(company_id) {
-    return this._authhttp.get(this._companyEndpoint + '/' + company_id + '?expand=brands,subCompanies,subCompanies.stores,stores,subCompanies.stores.candidates,files,requests,notes');
+    return this._authhttp.get(this._companyEndpoint + '/' + company_id + '?expand=brands,subCompanies,subCompanies.stores,stores,subCompanies.stores.candidates,files,requests,notes,brands');
   }
 
   /**
@@ -50,8 +50,8 @@ export class CompanyService {
 
   /**
    * add followup note
-   * @param note 
-   * @param company_id 
+   * @param note
+   * @param company_id
    */
   addFollowupNote(note: string, company_id: number): Observable<any> {
     const url = `${this._companyEndpoint}/add-followup-note/${company_id}`;

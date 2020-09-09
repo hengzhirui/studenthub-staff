@@ -130,30 +130,6 @@
       </ion-item>
     </div>
 
-    <!-- Brand List -->
-
-    <section *ngIf="company.brands && company.brands.length > 0">
-
-      <ion-item-divider color="light">
-        <ion-label>
-          Brands
-        </ion-label>
-      </ion-item-divider>
-
-      <ion-list>
-        <ion-item tappable *ngFor="let brand of company.brands">
-          <ion-thumbnail slot="start">
-            <ion-img *ngIf="brand.brand_logo" [src]="aws.cloudinaryUrl + 'company-brand/' + brand.brand_logo">
-            </ion-img>
-            <ion-img *ngIf="!brand.brand_logo" src="assets/images/placeholder.png"></ion-img>
-          </ion-thumbnail>
-          <ion-label>
-            {{ brand.brand_name_en }}
-          </ion-label>
-        </ion-item>
-      </ion-list>
-    </section>
-
     <!-- Contact List -->
 
     <section>
@@ -211,8 +187,54 @@
       </ion-list>
     </section>
 
+    <!-- Brand List -->
+
+    <section>
+
+      <ion-item-divider color="light">
+        <ion-label>
+          Brands
+        </ion-label>
+      </ion-item-divider>
+
+      <ion-list>
+        <ion-item-sliding *ngFor="let brand of brands" [disabled]="platform.width() > 768">
+          <ion-item tappable (click)="brandSelected(brand)">
+            <ion-thumbnail slot="start">
+              <ion-img *ngIf="brand.brand_logo" [src]="aws.cloudinaryUrl + 'company-brand/' + brand.brand_logo">
+              </ion-img>
+              <ion-img *ngIf="!brand.brand_logo" src="assets/images/placeholder.png"></ion-img>
+            </ion-thumbnail>
+            <ion-label>
+              {{ brand.brand_name_en }}
+            </ion-label>
+
+            <ion-buttons slot="end" *ngIf="platform.width() > 768">
+              <ion-button color="danger" (click)="deleteBrand($event, brand)">
+                <ion-icon slot="start" name="trash-outline"></ion-icon>
+                Delete
+              </ion-button>
+            </ion-buttons>
+
+          </ion-item>
+
+          <ion-item-options side="end">
+            <ion-button color="danger" (click)="deleteBrand($event, brand)">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Delete
+            </ion-button>
+          </ion-item-options>
+        </ion-item-sliding>
+
+        <ion-item lines="none">
+          <ion-button (click)="addBrand()">
+            Add New Brand
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </section>
     <!-- request List -->
-    
+
     <section *ngIf="!loading && company">
 
       <ion-item-divider color="light">
@@ -246,7 +268,7 @@
                 <ion-icon slot="start" name="checkmark-outline"></ion-icon>
                 Mark delivered
               </ion-button>
-            
+
               <ion-button color="danger" (click)="cancelledRequest($event, request)">
                 <ion-icon slot="start" name="close-outline"></ion-icon>
                 Mark cancelled
@@ -259,7 +281,7 @@
               <ion-icon slot="start" name="play-outline"></ion-icon>
               Start working on this request
             </ion-button>
-            
+
             <ion-button (click)="deliveredRequest($event, request)" *ngIf="request.request_status == 'started'">
               <ion-icon slot="start" name="checkmark-outline"></ion-icon>
               Mark delivered
