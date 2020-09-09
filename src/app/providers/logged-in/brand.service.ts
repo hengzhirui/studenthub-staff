@@ -20,7 +20,7 @@ export class BrandService {
 
   /**
    * load brand detail
-   * @param brand_uuid 
+   * @param brand_uuid
    */
   view(brand_uuid) {
     let url = this._brandEndpoint + '/' + brand_uuid;
@@ -33,7 +33,7 @@ export class BrandService {
    */
   list(page: number): Observable<any>{
     let url = this._brandEndpoint + '?page=' + page;
-    return this._authhttp.get(url, true);
+    return this._authhttp.getRaw(url);
   }
 
   /**
