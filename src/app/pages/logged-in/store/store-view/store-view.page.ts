@@ -9,6 +9,7 @@ import { StoreFormPage } from "../store-form/store-form.page";
 //service
 import { StoreService } from "../../../../providers/logged-in/store.service";
 import { AwsService } from 'src/app/providers/aws.service';
+import {EventService} from "../../../../providers/event.service";
 
 
 @Component({
@@ -27,7 +28,8 @@ export class StoreViewPage implements OnInit {
     private _modalCtrl: ModalController,
     private activatedRoute: ActivatedRoute,
     public aws: AwsService,
-    private _storeService: StoreService
+    private _storeService: StoreService,
+    private eventService: EventService
   ) {
   }
 
@@ -41,6 +43,9 @@ export class StoreViewPage implements OnInit {
     } else {
       this.loadData();
     }
+    this.eventService.reloadCandidateHistory$.subscribe(response => {
+      this.loadData();
+    });
   }
 
   /**
@@ -73,7 +78,7 @@ export class StoreViewPage implements OnInit {
         window['history-back-from'] = 'onDidDismiss';
         window.history.back();
       }
-   
+
       if (e.data && e.data.refresh) {
         this.loadData();
       }

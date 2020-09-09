@@ -22,6 +22,7 @@ import { CompanyNoteService } from '../../../../providers/logged-in/company-note
 import { CompanyFollowupNotePage } from '../../company/company-followup-note/company-followup-note.page';
 import { CompanyRequestService } from 'src/app/providers/logged-in/company-request.service';
 import { CompanyRequestFormPage } from '../../company/company-request-form/company-request-form.page';
+import {EventService} from "../../../../providers/event.service";
 
 
 
@@ -56,7 +57,8 @@ export class StoreListPage implements OnInit {
     public aws: AwsService,
     public requestService: CompanyRequestService,
     public authService: AuthService,
-    public companyContactService: CompanyContactService
+    public companyContactService: CompanyContactService,
+    public eventService: EventService
   ) {
     this.company_id = this.activatedRoute.snapshot.paramMap.get('id');
   }
@@ -65,6 +67,12 @@ export class StoreListPage implements OnInit {
     this.loadData(this.currentPage);
     this.loadCompany();
     this.loadContacts();
+
+    this.eventService.reloadCandidateHistory$.subscribe(response => {
+      this.loadData(this.currentPage);
+      this.loadCompany();
+      this.loadContacts();
+    });
   }
 
   loadContacts() {
@@ -98,7 +106,7 @@ export class StoreListPage implements OnInit {
         window['history-back-from'] = 'onDidDismiss';
         window.history.back();
       }
-    
+
       if (e && e.data && e.data.refresh) {
         this.loadContacts();
       }
@@ -124,7 +132,7 @@ export class StoreListPage implements OnInit {
         window['history-back-from'] = 'onDidDismiss';
         window.history.back();
       }
-   
+
       if (e && e.data && e.data.refresh) {
         this.loadContacts();
       }
@@ -174,7 +182,7 @@ export class StoreListPage implements OnInit {
         window['history-back-from'] = 'onDidDismiss';
         window.history.back();
       }
-    
+
       if (e && e.data && e.data.company_last_followup_datetime && this.company) {
         this.company.company_last_followup_datetime = e.data.company_last_followup_datetime;
         this.loadCompany();
@@ -261,7 +269,7 @@ export class StoreListPage implements OnInit {
         window['history-back-from'] = 'onDidDismiss';
         window.history.back();
       }
-    
+
       if (e.data && e.data.refresh) {
         this.loadData(this.currentPage);
       }
@@ -277,7 +285,6 @@ export class StoreListPage implements OnInit {
     event.preventDefault();
     event.stopPropagation();
 
-    this.loading = true;
     const confirm = await this.alertCtrl.create({
       header: 'Delete Store?',
       message: 'Are you sure you want to delete this Store?',
@@ -285,6 +292,7 @@ export class StoreListPage implements OnInit {
         {
           text: 'Yes',
           handler: () => {
+            this.loading = true;
             this.storeService.delete(store).subscribe(async jsonResp => {
               this.loading = false;
 
@@ -372,7 +380,7 @@ export class StoreListPage implements OnInit {
         window.history.back();
       }
     });
-    
+
     const { data } = await modal.onWillDismiss();
     if (data && data.refresh) {
       this.loadCompany();
@@ -454,7 +462,7 @@ export class StoreListPage implements OnInit {
         window.history.back();
       }
     });
-    
+
     const { data } = await modal.onWillDismiss();
 
     if (data && data.refresh) {
