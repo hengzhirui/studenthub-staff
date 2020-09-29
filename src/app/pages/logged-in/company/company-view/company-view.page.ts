@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Platform, ModalController, AlertController, ToastController } from '@ionic/angular';
+import { Chart } from 'chart.js';
 //services
 import { StoreService } from 'src/app/providers/logged-in/store.service';
 import { CompanyService } from 'src/app/providers/logged-in/company.service';
@@ -34,6 +35,7 @@ import { StoreFormPage } from '../../store/store-form/store-form.page';
 })
 export class CompanyViewPage implements OnInit {
 
+  @ViewChild('barChart') barChart;
   public company_id;
 
   public company: Company;
@@ -51,7 +53,8 @@ export class CompanyViewPage implements OnInit {
   public sendingNewPassword = false;
 
   public segment: string = 'info';
-
+  bars: any;
+  colorArray: any;
   constructor(
     public platform: Platform,
     public modalCtrl: ModalController,
@@ -67,13 +70,16 @@ export class CompanyViewPage implements OnInit {
     public companyContactService: CompanyContactService,
     public storeService: StoreService,
     public awsService: AwsService
-  ) { }
+  ) {
+    this.generateColorArray(8);
+  }
 
   ngOnInit() {
 
     // Load the passed model if available
     if (window && window.history.state) {
       this.company = window.history.state.model;
+      this.loadChartStats();
     }
 
     this.company_id = this.activatedRoute.snapshot.paramMap.get('company_id');
@@ -110,6 +116,7 @@ export class CompanyViewPage implements OnInit {
       this.stores = response.stores;
 
       this.brands = response.brands;
+      this.loadChartStats();
 
     }, () => {
       this.loading = false;
@@ -273,7 +280,7 @@ export class CompanyViewPage implements OnInit {
   }
 
   async editBrandSelected(event, brand) {
-    
+
     event.preventDefault();
     event.stopPropagation();
 
@@ -373,7 +380,7 @@ export class CompanyViewPage implements OnInit {
           handler: () => {
 
             this.deleting = true;
-                    
+
             this.noteService.delete(note).subscribe(async response => {
 
               this.deleting = false;
@@ -381,7 +388,7 @@ export class CompanyViewPage implements OnInit {
               if (response.operation == 'success') {
                 this.loadData(true);
               } else {
-                
+
                 this.deleting = false;
 
                 // failer text
@@ -528,7 +535,7 @@ export class CompanyViewPage implements OnInit {
 
     event.preventDefault();
     event.stopPropagation();
-    
+
     const confirm = await this.alertCtrl.create({
       header: 'Delete Contact',
       message: 'Do you want to delete this contact?',
@@ -563,12 +570,17 @@ export class CompanyViewPage implements OnInit {
         {
           text: 'No',
         }
-      ]      
+      ]
     });
     confirm.present();
   }
 
   segmentChanged($event) {
+    if ($event.detail.value == 'info') {
+      setTimeout(() => {
+        this.loadChartStats();
+      }, 150);
+    }
     this.segment = $event.detail.value;
   }
 
@@ -717,5 +729,132 @@ export class CompanyViewPage implements OnInit {
 
   loadLogo($event, company) {
     company.company_logo = null;
+  }
+
+  ionViewDidEnter() {
+    // this.createBarChart();
+  }
+
+  /**
+   * @param xAxis
+   * @param complete
+   * @param paymentReceived
+   * @param inProgress
+   * @param profit
+   * @param totalCandidates
+   */
+  createBarChart(xAxis, complete, paymentReceived, inProgress, profit, totalCandidates) {
+    if (this.barChart.nativeElement) {
+      this.bars = new Chart(this.barChart.nativeElement, {
+        type: 'line',
+        data: {
+          labels: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'],
+          datasets: [
+            {
+              label: 'Completed Transfer',
+              data: complete,
+              fill: false,
+              // backgroundColor: this.colorArray,
+              backgroundColor: 'rgb(38, 194, 129)',
+              borderColor: 'rgb(38, 194, 129)',
+              borderWidth: 1
+            }, {
+              label: 'Received Transfer',
+              fill: false,
+              data: paymentReceived,
+              backgroundColor: 'yellowgreen',
+              borderColor: 'yellowgreen',
+              borderWidth: 1
+            }, {
+              label: 'In Progress Transfer',
+              fill: false,
+              data: inProgress,
+              backgroundColor: '#387ef5',
+              borderColor: '#387ef5',
+              borderWidth: 1
+            }, {
+              label: 'Profit',
+              fill: false,
+              data: profit,
+              backgroundColor: 'red',
+              borderColor: 'red',
+              borderWidth: 1
+            }, {
+              label: 'Total Candidates',
+              fill: false,
+              data: totalCandidates,
+              backgroundColor: 'Blue',
+              borderColor: 'Blue',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          scales: {
+            xAxes: [{
+              type: 'category',
+              labels: xAxis
+            }],
+            yAxes: [{
+              ticks: {
+                beginAtZero: true
+              }
+            }]
+          }
+        }
+      });
+    }
+  }
+
+  generateColorArray(num) {
+    this.colorArray = [];
+    for (let i = 0; i < num; i++) {
+      this.colorArray.push('#' + Math.floor(Math.random() * 16777215).toString(16));
+    }
+  }
+
+  loadChartStats() {
+
+    const complete = [0];
+    const paymentReceived = [0];
+    const inprogress = [0];
+    const xAxis = [0];
+    const profit = [0];
+    const totalCandidates = [0];
+    const totalCandidatePaid = [0];
+    if (this.company) {
+      console.log(this.company.parentTransfers);
+      if (this.company.parentTransfers && this.company.parentTransfers.length > 0) {
+        for (const transfer of this.company.parentTransfers) {
+          // Complete/payment received/inprogress
+
+          if (transfer.transfer_status == 4) {
+            complete.push(transfer.company_total);
+          }
+
+          if (transfer.transfer_status == 1) {
+            paymentReceived.push(transfer.company_total);
+          }
+
+          if (transfer.transfer_status == 3) {
+            inprogress.push(transfer.company_total);
+          }
+
+          if (transfer.profit) {
+            profit.push(transfer.profit);
+          }
+          if (transfer.totalCandidateTransferTotal) {
+            totalCandidates.push(transfer.totalCandidateTransferTotal);
+          }
+
+          for (const candidatePaid of transfer.paidTransferCandidates) {
+            totalCandidatePaid.push(candidatePaid);
+          }
+
+          xAxis.push(transfer.transfer_updated_at_unix);
+        }
+        this.createBarChart(xAxis, complete, paymentReceived, inprogress, profit, totalCandidates);
+      }
+    }
   }
 }
