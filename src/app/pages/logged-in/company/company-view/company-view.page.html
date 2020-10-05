@@ -83,7 +83,7 @@
 <!--  </ion-list>-->
   <section *ngIf="segment == 'info'">
 
-    <ion-card class="welcome-card">
+    <ion-card class="welcome-card" [hidden]="!legendDisplay || (statsData && !statsData.length)">
       <ion-card-header>
         <ion-card-title> Completed / Received / InProgress Transfer/ Profit, Total Candidates, Total Paid Candidate, Candidate Average Payment,Average Profit/Candidate</ion-card-title>
       </ion-card-header>

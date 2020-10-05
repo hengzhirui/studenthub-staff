@@ -56,6 +56,7 @@ export class CompanyViewPage implements OnInit {
   public segment: string = 'info';
   bars: any;
   colorArray: any;
+  public legendDisplay = true;
   constructor(
     public platform: Platform,
     public modalCtrl: ModalController,
@@ -90,6 +91,9 @@ export class CompanyViewPage implements OnInit {
 
     this.loadData();
     this.loadContacts();
+    if (this.platform.is('mobile')) {
+      this.legendDisplay = false;
+    }
   }
 
   /**
@@ -781,6 +785,7 @@ export class CompanyViewPage implements OnInit {
           datasets: [
             {
               label: 'Completed Transfer (' + complete.length + ')',
+              display: false,
               data: complete,
               fill: false,
               backgroundColor: 'rgb(38, 194, 129)',
@@ -844,11 +849,12 @@ export class CompanyViewPage implements OnInit {
         },
         options: {
           legend: {
-              display: true,
+              display: this.legendDisplay,
               position: 'bottom'
             },
           scales: {
             xAxes: [{
+              // display: false,
               type: 'category',
               labels: xAxis,
             }],
