@@ -502,13 +502,36 @@
   <!-- note -->
 
   <section *ngIf="segment == 'notes'">
+
+    <form [formGroup]="noteForm" [class.editor-inactive]="!editorFocused" [class.editor-focused]="editorFocused" *ngIf="noteForm">
+      <ion-item lines="none">
+        
+        <ckeditor [config]="editorConfig" #ckeditor [editor]="Editor" (focus)="onEditorFocus()" (change)="onChange($event)"></ckeditor>
+
+      </ion-item>
+      <ion-item lines="none">
+        <ion-buttons slot="start">
+
+          <ion-button [disabled]="addingNote || !noteForm.valid" (click)="addNote()">
+            <span *ngIf="!addingNote">Submit</span>
+            <ion-spinner *ngIf="addingNote"></ion-spinner>
+          </ion-button>
+
+          <ion-button color="danger" (click)="cancelAddNote()">
+            <span>Cancel</span>
+          </ion-button>
+          
+        </ion-buttons>
+      </ion-item>
+    </form>
+
     <ion-list>
       <ion-item-sliding *ngFor="let note of company.notes" [disabled]="platform.width() > 768">
         <ion-item tappable (click)="addNote(note)">
           <div tabindex="0"></div>
 
           <ion-label>
-            {{ note.note_text }}<br />
+            <div [innerHTML]="note.note_text"></div>
             <small>{{ toDate(note.note_created_datetime) | date}}</small>
           </ion-label>
 
@@ -526,7 +549,7 @@
 
         </ion-item>
         <ion-item-options side="end">
-          <ion-button (click)="addNote(note)">
+          <ion-button (click)="editNote(note)">
             <ion-icon slot="start" name="pencil-outline"></ion-icon>
             Edit
           </ion-button>
@@ -538,12 +561,6 @@
         </ion-item-options>
       </ion-item-sliding>
 
-      <ion-item lines="none">
-        <div tabindex="0"></div>
-        <ion-button color="danger" (click)="addNote(null)">
-          <span>Add New Note</span>
-        </ion-button>
-      </ion-item>
     </ion-list>
   </section>
 
