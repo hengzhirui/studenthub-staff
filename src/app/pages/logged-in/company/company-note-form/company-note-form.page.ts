@@ -69,6 +69,7 @@ export class CompanyNoteFormPage implements OnInit {
     this.updateModelDataFromForm();
 
     let action;
+    
     if (!this.model.note_uuid) {
       // Create
       action = this.noteService.create(this.model);

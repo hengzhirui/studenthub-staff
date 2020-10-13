@@ -2,6 +2,9 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Platform, ModalController, AlertController, ToastController } from '@ionic/angular';
 import { Chart } from 'chart.js';
+//import { ChangeEvent } from '@ckeditor/ckeditor5-build-classic';
+import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 // services
 import { StoreService } from 'src/app/providers/logged-in/store.service';
 import { CompanyService } from 'src/app/providers/logged-in/company.service';
@@ -26,6 +29,7 @@ import { CompanyRequestFormPage } from '../company-request-form/company-request-
 import { CompanyNoteFormPage } from '../company-note-form/company-note-form.page';
 import { BrandFormPage } from '../brand-form/brand-form.page';
 import { StoreFormPage } from '../../store/store-form/store-form.page';
+
 import NumberFormat = Intl.NumberFormat;
 
 
@@ -37,6 +41,17 @@ import NumberFormat = Intl.NumberFormat;
 export class CompanyViewPage implements OnInit {
 
   @ViewChild('statsChart') statsChart;
+
+  @ViewChild('ckeditor') ckeditor;
+
+  public editorFocused: boolean = false; 
+
+  public Editor = ClassicEditor;
+
+  public editorConfig = {
+    placeholder: 'Click here to take notes...'
+  };
+
   public company_id;
 
   public company: Company;
@@ -53,9 +68,13 @@ export class CompanyViewPage implements OnInit {
   public loading = false;
   public updating = false;
 
+  public addingNote: boolean = false;
+  
   public sendingNewPassword = false;
   public statsData: any[];
   public segment = 'info';
+
+  public noteForm: FormGroup;
 
   bars: any;
   colorArray: any;
@@ -68,6 +87,7 @@ export class CompanyViewPage implements OnInit {
     public toastCtrl: ToastController,
     public alertCtrl: AlertController,
     public router: Router,
+    private fb: FormBuilder,
     public activatedRoute: ActivatedRoute,
     public companyService: CompanyService,
     public authService: AuthService,
@@ -100,6 +120,8 @@ export class CompanyViewPage implements OnInit {
     if (this.platform.is('mobile')) {
       this.legendDisplay = false;
     }
+
+    this.initNoteForm();
   }
 
   /**
@@ -360,7 +382,73 @@ export class CompanyViewPage implements OnInit {
     modal.present();
   }
 
-  async addNote(note: Note) {
+  onEditorFocus() {
+    this.editorFocused = true;
+  }
+
+  /**
+   * on note editor change
+   * @param param0 
+   */
+  public onChange( { editor } ) {
+    const data = editor.getData();
+
+    this.noteForm.controls.note.setValue(data);
+    this.noteForm.markAsDirty();
+    this.noteForm.updateValueAndValidity();
+  }
+
+  initNoteForm() {
+    this.noteForm = this.fb.group({
+      note: ['', Validators.required],
+    });
+  }
+
+  addNote() {
+    console.log(this.ckeditor.editorInstance.data);
+    console.log(this.Editor);//setData('')
+
+    this.addingNote = true;
+
+    let model = new Note;
+    model.company_id = this.company_id;
+    model.note_text = this.noteForm.controls.note.value;
+
+    this.noteService.create(model).subscribe(async jsonResponse => {
+
+      this.addingNote = false;
+
+      // On Success
+      if (jsonResponse.operation == 'success') {
+
+        this.editorFocused = false;
+
+        this.noteForm.reset();
+
+        this.ckeditor.editorInstance.setData('');
+
+        this.loadData(false);
+      }
+
+      // On Failure
+      if (jsonResponse.operation == 'error') {
+        const prompt = await this.alertCtrl.create({
+          message: this.authService._processResponseMessage(jsonResponse),
+          buttons: ['Ok']
+        });
+        prompt.present();
+      }
+    }, () => {
+      this.editorFocused = false;
+      this.addingNote = false;
+    });
+  }
+
+  cancelAddNote() {
+    this.editorFocused = false;
+  }
+
+  async editNote(note: Note) {
     window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
 
     const modal = await this.modalCtrl.create({
@@ -870,6 +958,7 @@ export class CompanyViewPage implements OnInit {
     }).then( alert => { alert.present(); });
 
   }
+
   loadLogo($event, company) {
     company.company_logo = null;
   }

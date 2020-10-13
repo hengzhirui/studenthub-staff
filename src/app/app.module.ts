@@ -3,7 +3,7 @@ import { BrowserModule, BrowserTransferStateModule } from '@angular/platform-bro
 import { RouteReuseStrategy } from '@angular/router';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
-
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 // import {IonicStorageModule, Storage} from '@ionic/storage';
@@ -64,6 +64,7 @@ export function createTranslateLoader(http: HttpClient) {
         }),
         UpdateAlertModule,
         ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.serviceWorker }),
+        CKEditorModule,
         SkillFormPageModule,
         ExperienceFormPageModule,
         UploadCvPageModule,
