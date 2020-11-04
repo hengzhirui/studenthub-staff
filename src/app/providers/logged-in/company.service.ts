@@ -35,6 +35,31 @@ export class CompanyService {
   }
 
   /**
+   * update follow up
+   * @param model
+   */
+  updateFollowup(model: Company): Observable<any>{
+    const url = `${this._companyEndpoint}/update-followup/${model.company_id}`;
+    const params = {
+      followup: model.company_followup
+    };
+    return this._authhttp.patch(url, params);
+  }
+
+  /**
+   * update follow up interval in weeks
+   * @param company_id
+   * @param company_followup_interval_weeks
+   */
+  updateFollowupInterval(company_id, company_followup_interval_weeks): Observable<any>{
+    const url = `${this._companyEndpoint}/update-followup-interval/${company_id}`;
+    const params = {
+      followup_interval_weeks: company_followup_interval_weeks
+    };
+    return this._authhttp.patch(url, params);
+  }
+
+  /**
    * List of all followup companies
    * @returns {Observable<any>}
    */
@@ -67,7 +92,7 @@ export class CompanyService {
   addFollowupNote(note: string, company_id: number): Observable<any> {
     const url = `${this._companyEndpoint}/add-followup-note/${company_id}`;
     const params = {
-      note
+      note: note
     };
     return this._authhttp.post(url, params);
   }
