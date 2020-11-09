@@ -85,7 +85,7 @@ export class CompanyViewPage implements OnInit {
 
   public legendDisplay = true;
   public editNoteData: Note = new Note();
-
+  public companyStatus = false;
   constructor(
     public platform: Platform,
     public modalCtrl: ModalController,
@@ -142,6 +142,7 @@ export class CompanyViewPage implements OnInit {
     }
 
     setTimeout(_=>{
+      this.companyStatus = !!(this.company && this.company.company_status);
       this.followup = !!(this.company && this.company.company_followup);
     },500);
 
@@ -160,6 +161,7 @@ export class CompanyViewPage implements OnInit {
       this.company = response;
 
       setTimeout(_=>{
+        this.companyStatus = !!(this.company.company_status);
         this.followup = !!(this.company.company_followup);
       },500);
 
@@ -1344,6 +1346,37 @@ export class CompanyViewPage implements OnInit {
       }
     });
     modal.present();
+  }
+
+  /**
+   * change company status
+   * @param $event
+   */
+  changeStatus($event) {
+
+    this.companyStatus = $event.detail.checked;
+
+    this.updating = true;
+
+    const status = ($event.detail.checked) ? 10 : 0;
+
+    this.companyService.changeStatus(this.company, status).subscribe(async response => {
+
+      this.updating = false;
+
+      if (response && response.operation == 'success') {
+
+        this.eventService.reloadCompanyList$.next();
+
+        const toast = await this._toastCtrl.create({
+          message: response.message,
+          duration: 3000
+        });
+        toast.present();
+      }
+    }, () => {
+      this.updating = false;
+    });
   }
 
 }
