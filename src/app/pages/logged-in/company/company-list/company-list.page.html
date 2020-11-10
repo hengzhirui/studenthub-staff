@@ -75,7 +75,10 @@
           </ion-avatar>
 
           <ion-label>
-            {{ company.company_name }}
+            {{ company.company_name }}<br/>
+            <ion-badge slot="start" color="danger" *ngIf="!company.last_40_days_transfer_count">
+              40 days passed without payment
+            </ion-badge>
           </ion-label>
           <ng-container *ngIf="platform.width() > 450">
             <ion-badge slot="end" *ngIf="company.total_candidates > 0">
