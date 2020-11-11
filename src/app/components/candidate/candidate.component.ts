@@ -141,7 +141,8 @@ export class CandidateComponent implements OnInit {
     } else { // on uncheck
       this.candidateService.candidates = this.candidateService.candidates.filter((c) => c.candidate_id != candidate_id);
     }
-
+    // removing store check as its not allowing to merge two account.
+    // https://www.pivotaltracker.com/story/show/175331075
     // for candidate id operations
 
     // if (!this.candidate.store) {
