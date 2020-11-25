@@ -49,7 +49,10 @@ export class CandidateCommittedFormPage implements OnInit {
       note: ['', Validators.required],
     });
 
-    setTimeout(() => this.ckeditor.editorInstance.editing.view.focus(), 1000);
+    setTimeout(() => {
+      if(this.ckeditor.editorInstance) 
+        this.ckeditor.editorInstance.editing.view.focus()
+    }, 1000);
   }
 
   /**
