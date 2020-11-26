@@ -61,7 +61,10 @@ export class CandidateNoteFormPage implements OnInit {
 
     this.operation = (this.model && this.model.candidate_note_uuid) ? 'Update' : 'Create';
 
-    setTimeout(() => this.ckeditor.editorInstance.editing.view.focus(), 1000);
+    setTimeout(() => {
+      if(this.ckeditor.editorInstance) 
+        this.ckeditor.editorInstance.editing.view.focus()
+    }, 1000);
   }
 
   ionViewDidEnter() {

@@ -49,7 +49,10 @@ export class CandidateCommittedFormPage implements OnInit {
       note: ['', Validators.required],
     });
 
-    setTimeout(() => this.ckeditor.editorInstance.editing.view.focus(), 1000);
+    setTimeout(() => {
+      if(this.ckeditor.editorInstance) 
+        this.ckeditor.editorInstance.editing.view.focus()
+    }, 1000);
   }
 
   /**
@@ -79,8 +82,6 @@ export class CandidateCommittedFormPage implements OnInit {
     this.updateModelDataFromForm();
 
     this.noteService.toggleCommitted(this.model).subscribe(async jsonResponse => {
-
-      console.log(jsonResponse);
 
       this.saving = false;
 
