@@ -5,7 +5,8 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 //services
 import { AuthService } from '../../../../providers/auth.service';
 import { CandidateNoteService } from '../../../../providers/logged-in/candidate-note.service';
-import { CandidateNote } from 'src/app/models/candidate.note';
+//models
+import { Note } from 'src/app/models/note';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class CandidateCommittedFormPage implements OnInit {
    
   @ViewChild('ckeditor', { static: false }) ckeditor: ClassicEditor;
  
-  public model: CandidateNote;
+  public model: Note;
 
   public Editor = ClassicEditor;
 
@@ -47,17 +48,22 @@ export class CandidateCommittedFormPage implements OnInit {
   ngOnInit() { 
     this.form = this.fb.group({
       note: ['', Validators.required],
+      type: ['Internal Note', Validators.required],
     });
 
-    setTimeout(() => this.ckeditor.editorInstance.editing.view.focus(), 1000);
+    setTimeout(() => {
+      if(this.ckeditor.editorInstance) 
+        this.ckeditor.editorInstance.editing.view.focus()
+    }, 1000);
   }
 
   /**
    * Update Model Data based on Form Input
    */
   updateModelDataFromForm() {
-    this.model = new CandidateNote;
+    this.model = new Note;
     this.model.note_text = this.form.value.note;
+    this.model.note_type = this.form.value.type;
     this.model.candidate_id = this.candidate.candidate_id;
   }
 
@@ -79,8 +85,6 @@ export class CandidateCommittedFormPage implements OnInit {
     this.updateModelDataFromForm();
 
     this.noteService.toggleCommitted(this.model).subscribe(async jsonResponse => {
-
-      console.log(jsonResponse);
 
       this.saving = false;
 

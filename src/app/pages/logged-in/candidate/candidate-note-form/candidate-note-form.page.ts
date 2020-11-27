@@ -6,7 +6,7 @@ import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { AuthService } from '../../../../providers/auth.service';
 import { CandidateNoteService } from '../../../../providers/logged-in/candidate-note.service';
 //models
-import { CandidateNote } from '../../../../models/candidate.note';
+import { Note } from '../../../../models/note';
 
 
 @Component({
@@ -22,7 +22,7 @@ export class CandidateNoteFormPage implements OnInit {
 
   @ViewChild('ckeditor', { static: false }) ckeditor: ClassicEditor;
 
-  public model: CandidateNote = new CandidateNote();
+  public model: Note = new Note();
 
   public operation: string;
 
@@ -56,12 +56,16 @@ export class CandidateNoteFormPage implements OnInit {
     }
 
     this.form = this.fb.group({
-      note: [(this.model && this.model.candidate_note_uuid) ? this.model.note_text : '', Validators.required],
+      note: [(this.model && this.model.note_uuid) ? this.model.note_text : '', Validators.required],
+      type: [(this.model && this.model.note_uuid) ? this.model.note_type : '', Validators.required],
     });
 
-    this.operation = (this.model && this.model.candidate_note_uuid) ? 'Update' : 'Create';
+    this.operation = (this.model && this.model.note_uuid) ? 'Update' : 'Create';
 
-    setTimeout(() => this.ckeditor.editorInstance.editing.view.focus(), 1000);
+    setTimeout(() => {
+      if(this.ckeditor.editorInstance) 
+        this.ckeditor.editorInstance.editing.view.focus()
+    }, 1000);
   }
 
   ionViewDidEnter() {
@@ -75,6 +79,7 @@ export class CandidateNoteFormPage implements OnInit {
    */
   updateModelDataFromForm() {
     this.model.note_text = this.form.value.note;
+    this.model.note_type = this.form.value.type;
     this.model.candidate_id = this.candidate.candidate_id;
   }
 
@@ -97,7 +102,7 @@ export class CandidateNoteFormPage implements OnInit {
 
     let action;
 
-    if (!this.model.candidate_note_uuid) {
+    if (!this.model.note_uuid) {
       // Create
       action = this.noteService.create(this.model);
     } else {

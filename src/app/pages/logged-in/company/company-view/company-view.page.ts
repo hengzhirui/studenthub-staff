@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Platform, ModalController, AlertController, ToastController } from '@ionic/angular';
+import { Platform, ModalController, AlertController, ToastController, IonContent } from '@ionic/angular';
 import { Chart } from 'chart.js';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -45,6 +45,8 @@ export class CompanyViewPage implements OnInit {
 
   @ViewChild('ckeditor') ckeditor;
 
+  @ViewChild(IonContent, { static: true }) content: IonContent;
+
   public followup = false;
 
   public editorFocused: boolean = false;
@@ -55,6 +57,13 @@ export class CompanyViewPage implements OnInit {
     placeholder: 'Click here to take notes...',
     toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'indent', 'outdent'],
   };
+
+  public loadingNotes: boolean = false;
+
+  public notePageCount;
+  public currentNotePage;
+
+  public notes: Note[] = [];
 
   public company_id;
 
@@ -70,7 +79,7 @@ export class CompanyViewPage implements OnInit {
 
   public deleting = false;
   public loading = false;
-  public updating = false;
+  public updating = null;
 
   public addingNote = false;
 
@@ -125,6 +134,7 @@ export class CompanyViewPage implements OnInit {
     this.loadData();
     this.loadContacts();
     this.loadRequests();
+    this.loadNotes();
 
     if (this.platform.is('mobile')) {
       this.legendDisplay = false;
@@ -138,13 +148,8 @@ export class CompanyViewPage implements OnInit {
    */
   async loadData(silent = false) {
 
-    if (!silent) {
-      this.loading = true;
-    } else {
-      this.updating = true;
-    }
-
     setTimeout(_ => {
+      this.loading = (!silent)
       this.companyStatus = !!(this.company && this.company.company_status);
       this.followup = !!(this.company && this.company.company_followup);
     }, 500);
@@ -183,6 +188,61 @@ export class CompanyViewPage implements OnInit {
       this.deleting = false;
       this.updating = false;
     });
+  }
+
+  /**
+   * load company notes
+   */
+  loadNotes() {
+    const searchParams = this.getNoteSearchParams();
+
+    this.loadingNotes = true;
+
+    this.noteService.list(1, searchParams).subscribe(response => {
+      
+      this.loadingNotes = false;
+
+      this.notePageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
+      this.currentNotePage = parseInt(response.headers.get('X-Pagination-Current-Page'));
+
+      this.notes = response.body;
+    }, () => {
+      this.loadingNotes = false;
+    });
+  }
+
+  /**
+   * load more notes on scroll to bottom
+   * @param event 
+   */
+  doInfiniteNoteLoading(event) {
+
+    this.loadingNotes = true;
+
+    this.currentNotePage++;
+
+    const urlParams = this.getNoteSearchParams();
+
+    this.noteService.list(this.currentNotePage, urlParams).subscribe(response => {
+
+      this.notePageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
+      this.currentNotePage = parseInt(response.headers.get('X-Pagination-Current-Page'));
+
+      this.notes = this.notes.concat(response.body);
+    },
+      error => { },
+      () => {
+        this.loadingNotes = false;
+        event.target.complete();
+      }
+    );
+  }
+
+  /**
+   * search params for note listing
+   */
+  getNoteSearchParams() {
+    return '&company_id=' + this.company_id;
   }
 
   loadRequests() {
@@ -252,6 +312,27 @@ export class CompanyViewPage implements OnInit {
     }, () => {
       this.updating = false;
     });
+  }
+
+  isFollowUpIntervalPassed() {
+  
+    if(this.company.company_followup_interval_weeks == 0) {
+      return true;
+    }
+
+    let followup_datetime = new Date(this.company.company_last_followup_datetime.replace(/-/g, '/') + ' UTC');
+
+    //date to follow 
+
+    followup_datetime.setDate(followup_datetime.getDate() + this.company.company_followup_interval_weeks * 7);
+    followup_datetime.setHours(0, 0, 0, 0);
+
+    //current date 
+
+    const currentDate = new Date(); 
+    currentDate.setHours(0, 0, 0, 0);
+
+    return followup_datetime.getTime() <= currentDate.getTime();
   }
 
   /**
@@ -515,15 +596,20 @@ export class CompanyViewPage implements OnInit {
   initNoteForm() {
     this.noteForm = this.fb.group({
       note: ['', Validators.required],
+      type: ['Internal Note', Validators.required],
     });
   }
 
+  /**
+   * add note
+   */
   addNote() {
     this.addingNote = true;
 
     const model = new Note;
     model.company_id = this.company_id;
     model.note_text = this.noteForm.controls.note.value;
+    model.note_type = this.noteForm.controls.type.value;
 
     this.noteService.create(model).subscribe(async jsonResponse => {
 
@@ -534,11 +620,11 @@ export class CompanyViewPage implements OnInit {
 
         this.editorFocused = false;
 
-        this.noteForm.reset();
+        this.noteForm.controls.note.reset();
 
         this.ckeditor.editorInstance.setData('');
 
-        this.loadData(false);
+        this.loadNotes();
       }
 
       // On Failure
@@ -657,7 +743,12 @@ export class CompanyViewPage implements OnInit {
 
       if (e && e.data && e.data.company_last_followup_datetime && this.company) {
         this.company.company_last_followup_datetime = e.data.company_last_followup_datetime;
-        this.loadData(true);
+        
+        //to update view 
+
+        this.content.scrollToPoint(0, 1);
+
+        this.loadNotes();
       }
     });
     modal.present();
@@ -1358,14 +1449,12 @@ export class CompanyViewPage implements OnInit {
 
     this.companyStatus = $event.detail.checked;
 
-    this.updating = true;
-
     const status = ($event.detail.checked) ? 10 : 0;
 
     if (status == this.company.company_status) {
       return;
     }
-
+    this.updating = true;
 
     // if (!status) {
     //   const prompt = await this.alertCtrl.create({
@@ -1404,8 +1493,8 @@ export class CompanyViewPage implements OnInit {
       this.updating = false;
     });
   }
-  
+
   logScrolling(e) {
-    this.borderLimit = (e.detail.scrollTop > 20) ? true : false;
+    this.borderLimit = (e.detail.scrollTop > 20);
   }
 }
