@@ -1,0 +1,74 @@
+<ion-header [class.add-border]="borderLimit" class="ion-no-border">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="close()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>{{ operation }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button color="primary"
+                  [disabled]="!form.dirty || !form.valid || loading"
+                  (click)="save()">
+        <span *ngIf="!loading">Save</span>
+        <ion-spinner *ngIf="loading"></ion-spinner>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content scrollEvents="true" (ionScroll)="logScrolling($event)" class="ion-padding">
+  <form [formGroup]="form">
+    <ion-list>
+   
+      <ion-item>
+        <ion-label position="floating">Name</ion-label>
+        <ion-input type="telephone" formControlName="name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="floating">Phone</ion-label>
+        <ion-input type="telephone" formControlName="phone"></ion-input>
+      </ion-item>
+      
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input type="email" formControlName="email"></ion-input>
+      </ion-item>
+
+      <app-select-search-input
+        *ngIf="countrylistData"
+        formControlName="nationality_id"
+        placeholder="Select Nationality"
+        [collection]="countrylistData"
+        valueAttr="nationality_id"
+        labelAttr="country_nationality_name_en">
+      </app-select-search-input>
+
+      <div class="error-wrapper" *ngIf="!form.controls.country_id.pristine">
+        <p class="error" *ngIf="form.controls.country_id.errors && form.controls.country_id.errors.required">
+          * required
+        </p>
+      </div>
+      
+      <ion-item (click)="updateResume()">
+        <ion-label position="floating">PDF CV</ion-label>
+        <ion-input type="text" readonly formControlName="pdf_cv"></ion-input>
+      </ion-item>
+
+      <div class="error-wrapper" *ngIf="!form.controls.pdf_cv.pristine">
+        <p class="error" *ngIf="form.controls.pdf_cv.errors && form.controls.pdf_cv.errors.required">
+          * required
+        </p>
+      </div>
+
+      country_id: model.country_id,
+      area_uuid: model.fulltimer_area_uuid,
+      latitude: model.fulltimer_latitude,
+      longitude: model.fulltimer_longitude,
+    
+      : model.fulltimer_pdf_cv,
+
+    </ion-list>
+  </form>
+</ion-content>
