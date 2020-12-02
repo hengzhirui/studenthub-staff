@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Platform, ModalController, AlertController, ToastController, IonContent } from '@ionic/angular';
+import {Router, ActivatedRoute, NavigationCancel} from '@angular/router';
+import {Platform, ModalController, AlertController, ToastController, IonContent, NavController} from '@ionic/angular';
 import { Chart } from 'chart.js';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -114,7 +114,8 @@ export class CompanyViewPage implements OnInit {
     public noteService: CompanyNoteService,
     public companyContactService: CompanyContactService,
     public storeService: StoreService,
-    public awsService: AwsService
+    public awsService: AwsService,
+    public navCtrl: NavController
   ) {
   }
 
@@ -247,7 +248,7 @@ export class CompanyViewPage implements OnInit {
 
   loadRequests() {
     this.requestService.list(this.company_id).subscribe(response => {
-      this.requests = response;
+        this.requests = response;
     });
   }
 
@@ -319,7 +320,7 @@ export class CompanyViewPage implements OnInit {
     if(this.company.company_followup_interval_weeks == 0 || !this.company.company_last_followup_datetime) {
       return true;
     }
-    
+
     let followup_datetime = new Date(this.company.company_last_followup_datetime.replace(/-/g, '/') + ' UTC');
 
     //date to follow
@@ -598,6 +599,7 @@ export class CompanyViewPage implements OnInit {
       note: ['', Validators.required],
       type: ['Internal Note', Validators.required],
       contact: [''],
+      request: [''],
     });
   }
 
@@ -612,6 +614,7 @@ export class CompanyViewPage implements OnInit {
     model.note_text = this.noteForm.controls.note.value;
     model.note_type = this.noteForm.controls.type.value;
     model.contact_uuid = this.noteForm.controls.contact.value;
+    model.request_uuid = this.noteForm.controls.request.value;
 
     this.noteService.create(model).subscribe(async jsonResponse => {
 
