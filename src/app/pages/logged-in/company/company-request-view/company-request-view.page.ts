@@ -18,7 +18,8 @@ import { CompanyRequestService } from 'src/app/providers/logged-in/company-reque
 // models
 import { Request } from 'src/app/models/request';
 import { Note } from 'src/app/models/note';
-import { SuggessionService } from 'src/app/providers/logged-in/suggession.service';
+import { SuggestionService } from 'src/app/providers/logged-in/suggestion.service';
+import { CompanyNoteFormPage } from '../company-note-form/company-note-form.page';
 
 
 @Component({
@@ -42,9 +43,6 @@ export class CompanyRequestViewPage implements OnInit {
   public loadingInvoice = false;
   public loadingActivities = false;
   public pickingUp = false;
-  public txtActivity = '';
-
-  public addingActivity = false;
 
   public borderLimit = false;
 
@@ -60,7 +58,7 @@ export class CompanyRequestViewPage implements OnInit {
     public menuCtrl: MenuController,
     public navCtrl: NavController,
     public location: Location,
-    public suggessionService: SuggessionService,
+    public suggestionService: SuggestionService,
     public translateLabelService: TranslateLabelService,
     public platform: Platform
   ) {
@@ -211,7 +209,7 @@ export class CompanyRequestViewPage implements OnInit {
   dismiss() {
     this.navCtrl.navigateBack('/company-request-dashboard');
     const state = window.history.state;
-    console.log(state);
+
     if (state && state.from == 'company-request-dashboard') {
       this.location.back();
     } else if (state && state.from == 'company-request-list') {
@@ -224,45 +222,6 @@ export class CompanyRequestViewPage implements OnInit {
   }
 
   /**
-   * add new activity to request
-   */
-  addActivity() {
-
-    if (this.txtActivity.length == 0) {
-      return null;
-    }
-
-    this.addingActivity = true;
-
-    const params = {
-      detail: this.txtActivity,
-      request_uuid: this.request_uuid
-    };
-
-    this.requestService.addActivity(params).subscribe(data => {
-
-      if (data.operation == 'success') {
-
-        this.loadRequestActivities();
-
-        this.txtActivity = '';
-
-        this.request.request_updated_datetime = data.request_updated_datetime;
-
-      } else {
-
-        this.alertCtrl.create({
-          message: this.translateLabelService.errorMessage(data.message),
-          buttons: ['Ok']
-        }).then(prompt => prompt.present());
-      }
-    }, () => {
-    }, () => {
-      this.addingActivity = false;
-    });
-  }
-
-  /**
    * load request detail
    */
   loadDetail() {
@@ -271,7 +230,7 @@ export class CompanyRequestViewPage implements OnInit {
     this.requestService.view(this.request_uuid).subscribe(data => {
       this.request = data;
       this.loadRequestActivities();
-      this.loadSuggessions();
+      this.loadSuggestions();
     }, () => {
     }, () => {
       this.loading = false;
@@ -294,11 +253,11 @@ export class CompanyRequestViewPage implements OnInit {
   /**
    * load candidate suggestions for this request 
    */
-  loadSuggessions() {
+  loadSuggestions() {
 
     const params = '&request_uuid=' + this.request_uuid;
 
-    this.suggessionService.list().subscribe(data => {
+    this.suggestionService.list(params).subscribe(data => {
 
       this.suggestedSuggestions = [];
 
@@ -318,33 +277,43 @@ export class CompanyRequestViewPage implements OnInit {
     });
   }
 
+  onSuggestionUpdate() {
+    this.loadSuggestions();
+  }
+
   /**
    * show alert to post update on request
    */
-  showUpdateAlert() {
-    this.alertCtrl.create({
-      message: 'Post update',
-      buttons: [{
-        text: 'Cancel',
-        role: 'cancel',
-        cssClass: 'secondary'
-      }, {
-        text: 'Ok',
-        handler: (data) => {
-          if (!data.activity) return null;
+  async showUpdateAlert() {
+   
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
 
-          this.txtActivity = data.activity;
-          this.addActivity();
-        }
-      }],
-      inputs: [
-        {
-          name: 'activity',
-          type: 'text',
-          placeholder: 'Enter update detail'
-        }
-      ]
-    }).then(prompt => prompt.present());
+    let note = new Note;
+    note.request_uuid = this.request_uuid;
+    note.company_id = this.request.company_id;
+
+    const modal = await this.modalCtrl.create({
+      component: CompanyNoteFormPage,
+      componentProps: {
+        note: note,
+      }
+    });
+    modal.present();
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data && data.refresh) {
+      this.loadRequestActivities();
+
+      this.request.request_updated_datetime = data.request_updated_datetime;
+    }
   }
 
   logScrolling(e) {
