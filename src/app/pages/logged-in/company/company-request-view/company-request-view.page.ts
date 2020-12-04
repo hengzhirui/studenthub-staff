@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Location } from "@angular/common";
 import {
@@ -8,7 +8,8 @@ import {
   MenuController,
   ModalController,
   NavController,
-  Platform
+  Platform,
+  IonContent
 } from '@ionic/angular';
 // services
 import { AuthService } from 'src/app/providers/auth.service';
@@ -28,6 +29,8 @@ import { CompanyNoteFormPage } from '../company-note-form/company-note-form.page
   styleUrls: ['./company-request-view.page.scss'],
 })
 export class CompanyRequestViewPage implements OnInit {
+
+  @ViewChild(IonContent, { static: true }) content: IonContent;
 
   public request: Request;
   public requestActivities: Note[] = [];
@@ -279,6 +282,7 @@ export class CompanyRequestViewPage implements OnInit {
 
   onSuggestionUpdate() {
     this.loadSuggestions();
+    this.content.scrollToPoint(0, 0);
   }
 
   /**
@@ -317,7 +321,7 @@ export class CompanyRequestViewPage implements OnInit {
   }
 
   logScrolling(e) {
-    //   this.borderLimit = (e.detail.scrollTop > 0) ?  true : false;
+    this.borderLimit = (e.detail.scrollTop > 0) ?  true : false;
   }
 
   startRequest(event, request) {
