@@ -211,18 +211,7 @@ export class CompanyRequestViewPage implements OnInit {
    * close this modal
    */
   dismiss() {
-    this.navCtrl.navigateBack('/company-request-dashboard');
-    const state = window.history.state;
-
-    if (state && state.from == 'company-request-dashboard') {
-      this.location.back();
-    } else if (state && state.from == 'company-request-list') {
-      this.location.back();
-    } else if (state && state.from == 'client') {
-      this.location.back();
-    } else {
-      this.navCtrl.navigateBack('/default');
-    }
+    this.location.back();
   }
 
   /**
