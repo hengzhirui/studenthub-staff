@@ -47,7 +47,7 @@ export class TeamViewPage implements OnInit {
 
   ionViewWillEnter() {
     if (this.staffID) {
-      this.loadNotes(1);
+      this.loadNotes();
     }
   }
 
@@ -66,13 +66,12 @@ export class TeamViewPage implements OnInit {
   /**
    * load store list
    * @param page
-   * @param loading
    */
-  async loadNotes(page: number, loading = true) {
+  async loadNotes(loading = true) {
 
     this.loading = loading;
 
-    this.noteService.listByStaff(this.currentPage, this.staffID).subscribe(response => {
+    this.noteService.listByStaff(1, this.staffID).subscribe(response => {
 
         this.pageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
         this.currentPage = parseInt(response.headers.get('X-Pagination-Current-Page'));
