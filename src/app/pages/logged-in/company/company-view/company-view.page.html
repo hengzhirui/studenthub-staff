@@ -320,41 +320,7 @@
         Companies under this company
       </ion-label>
     </ion-item-divider>
-
-    <ion-item tappable *ngFor="let company of subCompanies" (click)="rowSelected(company)">
-      <div tabindex="0"></div>
-
-      <ion-label>
-        {{ company.company_name }}
-      </ion-label>
-
-      <ng-container *ngIf="platform.width() > 450">
-        <ion-badge slot="end" *ngIf="company.total_candidate > 0">
-          {{ company.total_candidate }} candidates
-        </ion-badge>
-        <ion-badge slot="end" *ngIf="company.subCompanies && company.subCompanies.length > 0">
-          {{ company.subCompanies.length }} sub-companies
-        </ion-badge>
-        <ion-badge slot="end" *ngIf="stores.length > 0">
-          {{ stores.length }} stores
-        </ion-badge>
-      </ng-container>
-
-      <ng-container *ngIf="platform.width() <= 449">
-        <div slot="end" class="end">
-          <ion-badge *ngIf="company.total_candidate > 0">
-            {{ company.total_candidate }} candidates
-          </ion-badge>
-          <ion-badge *ngIf="company.subCompanies && company.subCompanies.length > 0">
-            {{ company.subCompanies.length }} sub-companies
-          </ion-badge>
-          <ion-badge *ngIf="stores.length > 0">
-            {{ stores.length }} stores
-          </ion-badge>
-        </div>
-      </ng-container>
-
-    </ion-item>
+    <app-company [company]="company" *ngFor="let company of subCompanies" (click)="rowSelected(company)"></app-company>
   </section>
 
   <!-- Store List -->
