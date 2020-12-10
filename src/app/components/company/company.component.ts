@@ -23,7 +23,6 @@ export class CompanyComponent implements OnInit {
     public aws: AwsService,
     public platform: Platform,
   ) {
-    console.log(this.company);
   }
 
   ngOnInit() {

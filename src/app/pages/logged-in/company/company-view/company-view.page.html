@@ -398,21 +398,21 @@
 
   <!-- Brand List -->
 
-  <section *ngIf="segment == 'brands'">
+  <section *ngIf="segment == 'brands'" Class="brand">
 
     <ion-list>
       <ion-item-sliding *ngFor="let brand of brands" [disabled]="platform.width() > 768">
-        <ion-item tappable (click)="brandSelected(brand)">
+        <ion-item tappable (click)="brandSelected(brand)" lines="none">
           <div tabindex="0"></div>
-          <ion-thumbnail slot="start">
+          <ion-thumbnail slot="start" *ngIf="brand.brand_logo">
             <ion-img *ngIf="brand.brand_logo" [src]="awsService.cloudinaryUrl + 'company-brand/' + brand.brand_logo">
             </ion-img>
             <ion-img *ngIf="!brand.brand_logo" src="assets/images/placeholder.png"></ion-img>
           </ion-thumbnail>
           <ion-label>
-            {{ brand.brand_name_en }}
+            <h2>{{ brand.brand_name_en }}</h2>
           </ion-label>
-          <ion-badge slot="end">{{brand.candidate_count}}</ion-badge>
+          <ion-badge slot="end" color="light">{{brand.candidate_count}} staff</ion-badge>
           <ion-buttons slot="end" *ngIf="platform.width() > 768">
             <ion-button color="primary" (click)="editBrandSelected($event, brand)">
               <ion-icon slot="start" name="pencil-outline"></ion-icon>
@@ -437,12 +437,9 @@
           </ion-button>
         </ion-item-options>
       </ion-item-sliding>
-
-      <ion-item lines="none">
         <ion-button (click)="addBrand()">
           Add New Brand
         </ion-button>
-      </ion-item>
     </ion-list>
   </section>
 
