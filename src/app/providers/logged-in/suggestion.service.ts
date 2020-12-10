@@ -17,7 +17,16 @@ export class SuggestionService {
    * @returns {Observable<any>}
    */
   list(params: string = ''): Observable<any> {
-    let url = this._endpoint + '?expand=note,candidate,fulltimer,request.staff' + params;
+    let url = this._endpoint + '?expand=note,candidate,fulltimer,updatedBy' + params;
+    return this._authhttp.get(url);
+  }
+
+  /**
+   * get suggestion details
+   * @returns {Observable<any>}
+   */
+  view(suggestion_uuid): Observable<any> {
+    let url = this._endpoint + '/' + suggestion_uuid + '?expand=note,candidate,fulltimer,updatedBy';
     return this._authhttp.get(url);
   }
 

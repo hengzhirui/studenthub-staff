@@ -50,6 +50,9 @@ export class CompanyRequestViewPage implements OnInit {
 
   public borderLimit = false;
   public backState = null;
+
+  public activityExpanded: boolean = false;
+
   constructor(
     public modalCtrl: ModalController,
     public alertCtrl: AlertController,
@@ -234,12 +237,19 @@ export class CompanyRequestViewPage implements OnInit {
   }
 
   /**
+   * toggle activity visiblities
+   */
+  toggleActivityExpanded() {
+    this.activityExpanded = !this.activityExpanded;
+  }
+
+  /**
    * load request detail
    */
   loadRequestActivities() {
     this.loadingActivities = true;
-    this.requestActivityService.list(1, this.request_uuid).subscribe(data => {
-      this.requestActivities = data.body;
+    this.requestActivityService.list(this.request_uuid).subscribe(data => {
+      this.requestActivities = data;
     }, () => {
     }, () => {
       this.loadingActivities = false;
@@ -280,20 +290,32 @@ export class CompanyRequestViewPage implements OnInit {
   }
 
   /**
+   * Make date readable by Safari
+   * @param date
+   */
+  toDate(date) {
+    if (date) {
+      return new Date(date.replace(/-/g, '/'));
+    }
+  }
+
+  /**
    * show alert to post update on request
    */
   async showUpdateAlert() {
 
     window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
 
-    const note = new Note;
+    const note = new Note();
     note.request_uuid = this.request_uuid;
     note.company_id = this.request.company_id;
+    note.contact_uuid = this.request.contact_uuid;
 
     const modal = await this.modalCtrl.create({
       component: CompanyNoteFormPage,
       componentProps: {
-        note,
+        note: note,
+        from: 'post-update'
       }
     });
     modal.present();
@@ -327,6 +349,7 @@ export class CompanyRequestViewPage implements OnInit {
 
       if (response.operation == 'success') {
         request.request_status = 'started';
+        request.staff_id = this.authService.staff_id;
         this.loadRequestActivities();
       } else {
         this.toastCtrl.create({
