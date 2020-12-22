@@ -30,7 +30,7 @@ export class CompanyListPage implements OnInit {
 
   public filters: {
     name: string
-    status: string
+    status: number
   } = {
       name: null,
       status: 4
