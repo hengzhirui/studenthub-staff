@@ -19,14 +19,6 @@ const routes: Routes = [
     }
   },
   {
-    path: 'change-password',
-    loadChildren: () => import('./pages/logged-in/change-password/change-password.module').then(m => m.ChangePasswordPageModule),
-    canActivate: [AuthService],
-    data: {
-      name: 'ChangePasswordPage'
-    }
-  },
-  {
     path: 'candidate-form',
     loadChildren: () => import('./pages/logged-in/candidate/candidate-form/candidate-form.module').then(m => m.CandidateFormPageModule),
     canActivate: [AuthService],

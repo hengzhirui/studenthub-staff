@@ -323,7 +323,7 @@ export class CandidateViewPage implements OnInit {
 
       this.loading = false;
       this.candidate = response;
-      if (this.candidate.pendingField.length > 0) {
+      if (this.candidate && this.candidate.pendingField && this.candidate.pendingField.length > 0) {
         this.pendingData = 'Total ' + this.candidate.pendingField.length + ' pending fields\n ' + this.candidate.pendingField.join(',');
       }
 

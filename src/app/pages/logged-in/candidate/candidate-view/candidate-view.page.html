@@ -368,29 +368,40 @@
 
 </ion-content>
 <ion-footer *ngIf="candidate && candidate.isProfileCompleted">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button class="btn-export-cv" (click)="exportCV()">
+          <ion-spinner *ngIf="exportingCV"></ion-spinner>
+          <span *ngIf="!exportingCV">Export CV as PDF</span>
+        </ion-button>
+      </ion-col>
+      <ion-col *ngIf="candidate.store" >
+        <ion-button class="btn-unassign" [disabled]="unassinging" (click)="unassignCandidateFromStore()">
+          <span *ngIf="!unassinging">Unassign from {{ candidate.store.store_name }}</span>
+          <ion-spinner *ngIf="unassinging"></ion-spinner>
+        </ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button class="btn-suggest" (click)="suggest()">
+          Suggest for client request
+        </ion-button>
+      </ion-col>
+      <ion-col *ngIf="candidate.candidate_hourly_rate && !candidate.store">
+        <ion-button class="btn-store" [disabled]="assigning" (click)="assingToStore($event)">
+          <span *ngIf="!assigning">Assign to store</span>
+          <ion-spinner *ngIf="assigning"></ion-spinner>
+        </ion-button>
+      </ion-col>
+      <ion-col *ngIf="!candidate.candidate_hourly_rate">
+        <ion-button class="btn-hourly-rate" (click)="updateRate($event)">
+          Set hourly rate
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-  <ion-button class="btn-export-cv" (click)="exportCV()">
-    <ion-spinner *ngIf="exportingCV"></ion-spinner>
-    <span *ngIf="!exportingCV">Export CV as PDF</span>
-  </ion-button>
 
-  <ion-button class="btn-unassign" [disabled]="unassinging" *ngIf="candidate.store" (click)="unassignCandidateFromStore()">
-    <span *ngIf="!unassinging">Unassign from {{ candidate.store.store_name }}</span>
-    <ion-spinner *ngIf="unassinging"></ion-spinner>
-  </ion-button>
-
-  <ion-button class="btn-store" [disabled]="assigning" (click)="assingToStore($event)" *ngIf="candidate.candidate_hourly_rate && !candidate.store">
-    <span *ngIf="!assigning">Assign to store</span>
-    <ion-spinner *ngIf="assigning"></ion-spinner>
-  </ion-button>
-
-  <ion-button class="btn-hourly-rate" (click)="updateRate($event)" *ngIf="!candidate.candidate_hourly_rate">
-    Set hourly rate
-  </ion-button>
-
-  <ion-button class="btn-suggest" (click)="suggest()">
-    Suggest for client request
-  </ion-button>
 
   <!--
   <ion-button expand="full" *ngIf="!candidate.approved" (click)="approve(candidate)">
