@@ -74,9 +74,13 @@ export class CompanyRequestViewPage implements OnInit {
   }
 
   ngOnInit() {
-    this.request_uuid = this.route.snapshot.params.request_uuid;
+
+    if(!this.request_uuid)
+      this.request_uuid = this.route.snapshot.params.request_uuid;
+
     this.backState = window.history.state;
     const model = window.history.state.model;
+
     this.loadDetail();
     // this.loadInvoice();
 
@@ -364,6 +368,7 @@ export class CompanyRequestViewPage implements OnInit {
         request.request_status = 'started';
         request.staff_id = this.authService.staff_id;
         this.loadRequestActivities();
+        this.eventService.reloadStats$.next();
       } else {
         this.toastCtrl.create({
           message: response.message,
@@ -420,6 +425,7 @@ export class CompanyRequestViewPage implements OnInit {
               if (response.operation == 'success') {
                 request.request_status = 'cancelled';
                 this.loadRequestActivities();
+                this.eventService.reloadStats$.next();
               } else {
                 this.toastCtrl.create({
                   message: response.message,
@@ -485,6 +491,7 @@ export class CompanyRequestViewPage implements OnInit {
               if (response.operation == 'success') {
                 request.request_status = 'delivered';
                 this.loadRequestActivities();
+                this.eventService.reloadStats$.next();
               } else {
                 this.toastCtrl.create({
                   message: response.message,
@@ -515,6 +522,7 @@ export class CompanyRequestViewPage implements OnInit {
       if (response.operation == 'success') {
         this.loadDetail();
         this.loadRequestActivities();
+        this.eventService.reloadStats$.next();
       } else {
         this.toastCtrl.create({
           message: response.message,

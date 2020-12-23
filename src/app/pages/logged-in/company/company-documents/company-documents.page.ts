@@ -17,10 +17,8 @@ import { UploadFilePage } from '../upload-file/upload-file.page';
 })
 export class CompanyDocumentsPage implements OnInit {
 
-  public company_id;
-
   public company: Company;
-  
+
   public borderLimit: boolean = false;
 
   constructor(
@@ -31,20 +29,11 @@ export class CompanyDocumentsPage implements OnInit {
   ) { }
 
   ngOnInit() {
-    
-    this.company_id = this.activatedRoute.snapshot.paramMap.get('company_id');
-    
-    const state = window.history.state;
-
-    if(state.company) {
-      this.company = state.company;
-    } 
-      
     this.loadData();
   }
 
   loadData() {
-    this.companyService.view(this.company_id).subscribe(data => {
+    this.companyService.view(this.company.company_id, 'files').subscribe(data => {
       this.company = data;
     });
   }
@@ -58,7 +47,7 @@ export class CompanyDocumentsPage implements OnInit {
       return new Date(date.replace(/-/g, '/'));
     }
   }
-  
+
   /**
    * retrun type name from mime type
    * @param file_type

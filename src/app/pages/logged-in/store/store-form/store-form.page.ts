@@ -10,6 +10,7 @@ import {MallService} from 'src/app/providers/logged-in/mall.service';
 import {Store} from 'src/app/models/store';
 import {Mall} from 'src/app/models/mall';
 import {Brand} from "../../../../models/brand";
+import {EventService} from "../../../../providers/event.service";
 
 
 @Component({
@@ -29,7 +30,7 @@ export class StoreFormPage implements OnInit {
   public loading = false;
 
   public borderLimit = false;
-  
+
   constructor(
     public activatedRoute: ActivatedRoute,
     public storeService: StoreService,
@@ -37,13 +38,15 @@ export class StoreFormPage implements OnInit {
     private _modelCtrl: ModalController,
     private _alertCtrl: AlertController,
     public mallService: MallService,
-    private authService: AuthService
+    private authService: AuthService,
+    private eventService: EventService
   ) {
   }
 
   ngOnInit() {
 
-    this.store_id = this.activatedRoute.snapshot.paramMap.get('id');
+    if(!this.store_id)
+      this.store_id = this.activatedRoute.snapshot.paramMap.get('id');
 
     // Load the passed model if available
     const state = window.history.state;
@@ -80,7 +83,7 @@ export class StoreFormPage implements OnInit {
 
   formInit() {
     // Init Form
- 
+
     if (!this.model || !this.model.store_id) { // Show Create Form
       this.operation = 'Create';
       this.form = this._fb.group({
@@ -130,14 +133,14 @@ export class StoreFormPage implements OnInit {
     this.updateModelDataFromForm();
 
     let action;
-  
+
     if (!this.model.store_id) // Create
     {
       action = this.storeService.create(this.model);
     }
     else // Update
     {
-      action = this.storeService.update(this.model); 
+      action = this.storeService.update(this.model);
     }
 
     action.subscribe(async jsonResponse => {
@@ -148,6 +151,7 @@ export class StoreFormPage implements OnInit {
         // Close the page
         const data = { refresh: true };
         this._modelCtrl.dismiss(data);
+        this.eventService.reloadStats$.next();
       }
 
       // On Failure
@@ -160,8 +164,8 @@ export class StoreFormPage implements OnInit {
       }
     });
   }
-  
+
   logScrolling(e) {
-    this.borderLimit = (e.detail.scrollTop > 20) ? true : false;
+    this.borderLimit = (e.detail.scrollTop > 20);
   }
 }

@@ -48,16 +48,20 @@ export class StoreViewPage implements OnInit {
   }
 
   ngOnInit() {
-    this.store_id = this.activatedRoute.snapshot.paramMap.get('id');
+
+    if(!this.store_id)
+      this.store_id = this.activatedRoute.snapshot.paramMap.get('id');
 
     const state = window.history.state;
 
     // if (state['model']) {
     //   this.store = state['model'];
     // } else {
+    // }
+
     this.loadData();
     this.loadMall();
-    // }
+
     this.eventService.reloadCandidateHistory$.subscribe(response => {
       this.loadData();
     });
@@ -254,6 +258,7 @@ export class StoreViewPage implements OnInit {
               }
 
               if (jsonResp.operation == 'success') {
+                this.eventService.reloadStats$.next();
                 const toast = await this.toastCtrl.create({
                   message: jsonResp.message,
                   duration: 3000

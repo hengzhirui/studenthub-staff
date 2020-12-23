@@ -1,10 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ModalController, AlertController, ToastController, IonContent } from '@ionic/angular';
 // services
 import { CompanyService } from 'src/app/providers/logged-in/company.service';
 import { NoteService } from 'src/app/providers/logged-in/note.service';
 import { EventService } from 'src/app/providers/event.service';
+import { AwsService } from 'src/app/providers/aws.service';
 // models
 import { Company } from 'src/app/models/company';
 import { Note } from 'src/app/models/note';
@@ -12,7 +13,16 @@ import { Note } from 'src/app/models/note';
 import { CompanyFollowupNotePage } from '../company-followup-note/company-followup-note.page';
 import { CompanyFormPage } from 'src/app/pages/logged-in/company/company-form/company-form.page';
 import { TransferChartPage } from '../../transfer/transfer-chart/transfer-chart.page';
-import { AwsService } from 'src/app/providers/aws.service';
+import { TransferListPage } from '../../transfer/transfer-list/transfer-list.page';
+import { CompanyDocumentsPage } from '../company-documents/company-documents.page';
+import { CompanyContactsPage } from '../company-contacts/company-contacts.page';
+import { CompanyBrandsPage } from '../company-brands/company-brands.page';
+import { CompanyNotesPage } from '../company-notes/company-notes.page';
+import { CompanyRequestsPage } from '../company-requests/company-requests.page';
+import { CompanyMallsPage } from '../company-malls/company-malls.page';
+import { CompanySubcompaniesPage } from '../company-subcompanies/company-subcompanies.page';
+import { CompanyStoresPage } from '../company-stores/company-stores.page';
+import { CompanyNavPage } from '../company-nav/company-nav.page';
 
 
 @Component({
@@ -38,19 +48,31 @@ export class CompanyViewPage implements OnInit {
 
   public notes: Note[] = [];
 
-  public loadingNotes: boolean = false;
+  public loadingNotes = false;
+  public stats = {
+    requests : 0,
+    subCompanies : 0,
+    stores : 0,
+    contacts : 0,
+    brands : 0,
+    malls : 0,
+    documents : 0,
+    transfers : 0
+  };
 
   constructor(
     public modalCtrl: ModalController,
     public toastCtrl: ToastController,
     public alertCtrl: AlertController,
-    public router: Router,
     public activatedRoute: ActivatedRoute,
     public companyService: CompanyService,
     public aws: AwsService,
     public eventService: EventService,
     public noteService: NoteService
   ) {
+    this.eventService.reloadStats$.subscribe(response => {
+      this.loadStats();
+    });
   }
 
   ngOnInit() {
@@ -60,7 +82,9 @@ export class CompanyViewPage implements OnInit {
       this.company = window.history.state.model;
     }
 
-    this.company_id = this.activatedRoute.snapshot.paramMap.get('company_id');
+    if (!this.company_id) {
+      this.company_id = this.activatedRoute.snapshot.paramMap.get('company_id');
+    }
 
     this.loadData();
 
@@ -74,75 +98,183 @@ export class CompanyViewPage implements OnInit {
   }
 
   async openStores() {
-    this.router.navigate(['company-stores', this.company_id], {
-      state: {
-        company: this.company
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: CompanyStoresPage,
+      componentProps: {
+        company: this.company,
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openSubCompanies() {
-    this.router.navigate(['company-subcompanies', this.company_id], {
-      state: {
-        company: this.company
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: CompanySubcompaniesPage,
+      componentProps: {
+        company: this.company,
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openMalls() {
-    this.router.navigate(['company-malls', this.company_id], {
-      state: {
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    /*const modal = await this.modalCtrl.create({
+      component: CompanyNavPage,
+      componentProps: {
+        activatedRoutePath: CompanyMallsPage,//'company-malls/' + this.company_id,
+        activatedRoutePathProps: {
+          company: this.company
+        }
+      }
+    });*/
+    const modal = await this.modalCtrl.create({
+      component: CompanyMallsPage,
+      componentProps: {
         company: this.company
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openDocuments() {
-    this.router.navigate(['company-documents', this.company_id], {
-      state: {
-        company: this.company
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: CompanyDocumentsPage,
+      componentProps: {
+        company: this.company,
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openContacts() {
-    this.router.navigate(['company-contacts', this.company_id], {
-      state: {
-        company: this.company
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: CompanyContactsPage,
+      componentProps: {
+        company: this.company,
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openBrands() {
-    this.router.navigate(['company-brands', this.company_id], {
-      state: {
-        company: this.company
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: CompanyBrandsPage,
+      componentProps: {
+        company: this.company,
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openNotes() {
-    this.router.navigate(['company-notes', this.company_id], {
-      state: {
-        company: this.company
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: CompanyNotesPage,
+      componentProps: {
+        company: this.company,
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openRequests() {
-    this.router.navigate(['company-requests', this.company_id], {
-      state: {
-        company: this.company
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: CompanyRequestsPage,
+      componentProps: {
+        company: this.company,
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openTransfers() {
-    this.router.navigate(['transfer-list', this.company_id], {
-      state: {
-        company: this.company
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: TransferListPage,
+      componentProps: {
+        company: this.company,
       }
     });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+    modal.present();
   }
 
   async openChart() {
@@ -151,7 +283,7 @@ export class CompanyViewPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: TransferChartPage,
       componentProps: {
-        model: this.company,
+        company: this.company,
       }
     });
     modal.onDidDismiss().then(e => {
@@ -182,12 +314,13 @@ export class CompanyViewPage implements OnInit {
       this.company.company_id = this.company_id;
     }
 
-    this.companyService.view(this.company_id).subscribe(response => {
+    this.companyService.view(this.company_id, 'stats').subscribe(response => {
 
       this.loading = false;
       this.deleting = false;
       this.updating = false;
       this.company = response;
+      this.stats = response.stats;
 
       setTimeout(_ => {
         this.followup = !!(this.company.company_followup);
@@ -240,14 +373,14 @@ export class CompanyViewPage implements OnInit {
       return true;
     }
 
-    let followup_datetime = new Date(this.company.company_last_followup_datetime.replace(/-/g, '/') + ' UTC');
+    const followup_datetime = new Date(this.company.company_last_followup_datetime.replace(/-/g, '/') + ' UTC');
 
-    //date to follow
+    // date to follow
 
     followup_datetime.setDate(followup_datetime.getDate() + this.company.company_followup_interval_weeks * 7);
     followup_datetime.setHours(0, 0, 0, 0);
 
-    //current date
+    // current date
 
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
@@ -327,7 +460,7 @@ export class CompanyViewPage implements OnInit {
       if (e && e.data && e.data.company_last_followup_datetime && this.company) {
         this.company.company_last_followup_datetime = e.data.company_last_followup_datetime;
 
-        //to update view
+        // to update view
 
         this.content.scrollToPoint(0, 1);
 
@@ -400,5 +533,15 @@ export class CompanyViewPage implements OnInit {
 
   logScrolling(e) {
     this.borderLimit = (e.detail.scrollTop > 20);
+  }
+
+  /**
+   * load company stats
+   */
+  loadStats(silent = false) {
+    this.companyService.stats(this.company_id).subscribe(response => {
+      this.stats = response.stats;
+    }, () => {
+    });
   }
 }
