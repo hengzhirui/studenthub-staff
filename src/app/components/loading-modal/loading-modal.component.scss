@@ -1048,30 +1048,49 @@
       padding-top: 0;
     }
   }
-
 }
+
 .contact-list {
 
+  ion-item {
+    margin: 0 1px 9px 1px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08), 2px 0 4px 0 rgba(0, 0, 0, 0.12);
+    background-color: #ffffff;
+    padding: 5px 0;
+    --inner-border-width: 0;
+  }
+  
   h4 ion-skeleton-text {
     width: 21%;
     height: 10px;
   }
-  h2 ion-skeleton-text {
-    height: 20px;
-    width: 36%;
+
+  h2 {
+    margin-bottom: 14px; 
+    
+    ion-skeleton-text {
+      height: 20px;
+      width: 36%;
+    }
   }
+  
   ion-icon {
     float: left;
     color: #000;
     font-size: 19px;
   }
+
   p {
+    margin-bottom: 10px;
+
     a ion-skeleton-text {
       width: 30%;
       margin-left: 32px;
       }
   }
-  ion-badge{
+
+  ion-badge {
     background-color: #f2f2f2;
     color: #000;
     border-radius: 2px;
@@ -1079,16 +1098,19 @@
     padding: 0;
     margin: 0;
     margin-right: 15px;
+
     ion-skeleton-text {
       padding: 0;
       margin: 0;
       height: 24px;
     }
   }
+
   .counts {
     margin-top: 17px;
   }
 }
+
 .brand-list {
   h1 {
     width: 38%;
@@ -1099,7 +1121,6 @@
 }
 
 .company-file-list {
-
 
   .document {
     --border-radius: 5px;
@@ -1138,6 +1159,7 @@
     width: 26%;
   }
 }
+
 .transfer-list {
   ion-list {
     background: transparent;
