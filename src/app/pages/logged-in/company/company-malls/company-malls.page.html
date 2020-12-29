@@ -9,9 +9,11 @@
 <ion-content scrollEvents="true" (ionScroll)="logScrolling($event)">
 
   <ion-list *ngIf="company">
+
     <h3 class="title">
       Mall presence
     </h3>
+
     <h4 class="company-name">
       {{ (company.company_common_name_en) ?  company.company_common_name_en:company.company_name }}
     </h4>
@@ -29,6 +31,12 @@
         {{ mall.candidate_count }} staff
       </ion-badge>
     </ion-item>
+
   </ion-list>
+  
+  <ion-list>
+    <loading-modal [loading]="loading" type="mall-list"></loading-modal>
+  </ion-list>
+
   <no-items *ngIf="!loading && company.malls.length ==0" message="~ No mall data available ~"></no-items>
 </ion-content>

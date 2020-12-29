@@ -3,7 +3,12 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>Dashboard</ion-title>
+    <ion-title>Tasks</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()" fill="clear">
+        logout
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -13,6 +18,7 @@
 
   <p class="sub-title">We need to work on the following:</p>
 
+  <loading-modal type="mall-list" [loading]="loading"></loading-modal>
   <div *ngIf="statistics && !loading">
 
     <ion-card class="danger stats" *ngIf="statistics.companyMoreThen40DaysWithoutPayment > 0" tappable (click)="companyList()">
@@ -20,15 +26,6 @@
         <div class="count">{{ statistics.companyMoreThen40DaysWithoutPayment }}</div>
         <div class="message">
           <b>Urgent! Companies with assigned staff that have not made a payment in 40 days</b>
-        </div>
-      </ion-card-content>
-    </ion-card>
-
-    <ion-card class="danger stats" *ngIf="statistics.totalPendingRequests > 0" tappable (click)="scrollToPending()">
-      <ion-card-content>
-        <div class="count">{{ statistics.totalPendingRequests }}</div>
-        <div class="message">
-          <b>Pending Requests</b> from companies to hire. Someone needs to pick up and handle it ASAP.
         </div>
       </ion-card-content>
     </ion-card>
@@ -61,7 +58,7 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-card class="stats" tappable *ngIf="statistics.last40daysNoRequest > 0" routerLink="/company-list">
+    <ion-card class="stats" tappable *ngIf="statistics.last40daysNoRequest > 0" routerLink="/view/company-list">
       <ion-card-content>
         <div class="count success">{{ statistics.last40daysNoRequest }}</div>
         <div class="message">
@@ -106,14 +103,14 @@
       </ion-card-content>
     </ion-card>
 
-    <ion-card class="stats" tappable *ngIf="statistics.profileApprovalRequire > 0" routerLink="/candidate-review-list">
-      <ion-card-content>
-        <div class="count warning">{{ statistics.profileApprovalRequire }}</div>
-        <div class="message">
-          Candidates with profile complete requiring their <b>profiles to be reviewed and approved.</b>
-        </div>
-      </ion-card-content>
-    </ion-card>
+<!--    <ion-card class="stats" tappable *ngIf="statistics.profileApprovalRequire > 0" routerLink="/candidate-review-list">-->
+<!--      <ion-card-content>-->
+<!--        <div class="count warning">{{ statistics.profileApprovalRequire }}</div>-->
+<!--        <div class="message">-->
+<!--          Candidates with profile complete requiring their <b>profiles to be reviewed and approved.</b>-->
+<!--        </div>-->
+<!--      </ion-card-content>-->
+<!--    </ion-card>-->
   </div>
 
 </ion-content>

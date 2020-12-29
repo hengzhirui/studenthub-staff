@@ -16,7 +16,6 @@ export class DefaultPage implements OnInit {
   public borderLimit = false;
 
   public statistics: {
-    totalPendingRequests: any;
     totalExpiredCards: any;
     assignedExpiredCivilID: any;
     activeRequests: any;
@@ -97,25 +96,29 @@ export class DefaultPage implements OnInit {
   }
 
   scrollToActive() {
-    this.navCtrl.navigateForward('/company-request-dashboard');
+    this.navCtrl.navigateForward('/view/company-request-dashboard');
   }
 
   /**
    * scroll to pending request
    */
   scrollToPending() {
-    this.navCtrl.navigateForward('/company-request-dashboard');
+    this.navCtrl.navigateForward('/view/company-request-dashboard');
   }
   /**
    * scroll to pending request
    */
   companyList() {
-    this.navCtrl.navigateForward('/company-list', {
+    this.navCtrl.navigateForward('/view/company-list', {
         state : {
           filter : 'last40days',
           value : '3'
         }
       }
     );
+  }
+
+  logout() {
+    this.authService.logout();
   }
 }

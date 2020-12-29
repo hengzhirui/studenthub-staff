@@ -1,22 +1,16 @@
-<ion-header [class.add-border]="borderLimit" class="ion-no-border" [attr.dir]="translateService.direction()">
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button text="{{ 'Back' | translate }}" *ngIf="showFilter" (click)="dismiss()"></ion-back-button>
-      <ion-back-button text="{{ 'Back' | translate }}" *ngIf="!showFilter" defaultHref="/"></ion-back-button>
-    </ion-buttons>
-
-    <ion-buttons slot="end" *ngIf="!loading && nbHits > 0 && !showFilter" class="mobile-only">
-      <ion-button (click)="openFilter()" class="btn-filter skip-hover"  fill="clear">
-              <span>
-                  <img src="assets/images/ic-filter.svg"> {{ "Filter" | translate }}
-              </span>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content #container scrollEvents="true" (ionScroll)="logScrolling($event)" class="source-browser-page" [attr.dir]="translateService.direction()">
 
+  <div class="btn-wrapper">
+    <!-- !loading && nbHits > 0 &&  -->
+    <ion-button (click)="openFilter()" class="btn-filter skip-hover mobile-only"  fill="clear"  *ngIf="!showFilter">
+      <ion-icon slot="start" src="assets/images/ic-filter.svg"></ion-icon> Filter
+    </ion-button>
+    <ion-button fill="clear" class="btn-all-candidates" (click)="allCandidate()">
+      All Candidates
+    </ion-button>
+  </div>
+  
   <!-- loader when config not available -->
 
   <ion-grid *ngIf="!instantSearchConfig" class="dummy">
@@ -50,28 +44,16 @@
 
   <instant-search #instantSearch *ngIf="instantSearchConfig" [config]="instantSearchConfig" [searchParameters]="searchParameters">
     <ion-grid>
-      <ion-row>
+      <ion-row [class.filter-closed]="!showFilter" [class.filter-opened]="showFilter">
 
-        <ion-col [class.hidden]="!showFilter">
-<!--        <ion-col size-sm="12" size-md="12" size-lg="12" size-xs="12" [class.hidden]="!showFilter">-->
-          <div class="filter-wrapper mobile">
-            <candidate-filter [class.hidden]="loading && !nbHits"></candidate-filter>
-          </div>
-        </ion-col>
-        <ion-col size-sm="0" size-md="4" size-lg="4" class="desktop-only">
+        <ion-col size-sm="12" size-md="4" size-lg="4" class="col-filter">
           <div class="filter-wrapper">
             <candidate-filter [class.hidden]="loading && !nbHits"></candidate-filter>
             <loading-modal [loading]="loading && !nbHits" type="candidate-filter"></loading-modal>
           </div>
         </ion-col>
-
-<!--        <ion-col size-xs="0" size-sm="0" size-md="0" size-lg="4" size-xl="4" class="desktop-only">-->
-<!--          <div class="filter-wrapper">-->
-<!--            <candidate-filter [class.hidden]="loading && !nbHits"></candidate-filter>-->
-<!--            <loading-modal [loading]="loading && !nbHits" type="candidate-filter"></loading-modal>-->
-<!--          </div>-->
-<!--        </ion-col>-->
-        <ion-col  size-xs="12" size-sm="12" size-md="12" size-lg="8" size-xl="8" class="employer-list-wrapper"  [class.hidden]="showFilter">
+        
+        <ion-col size-xs="12" size-sm="12" size-md="8" size-lg="8" size-xl="8" class="col-listing employer-list-wrapper">
 
           <is-infinite-hits class="cv-list">
             <ng-template let-results="results" let-showMore="showMore" let-hits="hits">
@@ -121,6 +103,7 @@
 
 </ion-content>
 <ion-footer *ngIf="showFilter || candidateService.candidates.length > 0">
+  
   <ion-toolbar class="mobile-only ion-no-padding" *ngIf="showFilter">
     <ion-button [disabled]="loading || nbHits == 0" (click)="dismiss()" expands="full"
                 class="btn-view-candidates">
@@ -140,7 +123,7 @@
       <ion-spinner *ngIf="merging"></ion-spinner>
     </ion-button>
 
-    <ion-button class="btn-generate" 
+    <ion-button class="btn-generate"
       [disabled]="candidateIdCardService.candidates.length == 0 || merging || downloading"
       (click)="generate()">
       <span *ngIf="!downloading">Download Zip</span>

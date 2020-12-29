@@ -86,6 +86,10 @@ export class FulltimerSearchPage implements OnInit {
         this.isMobile = true;
       }
     });
+
+    /*window.onresize = (e) => {
+      this.onResize();
+    };*/
   }
 
   ionViewWillEnter() {
@@ -121,6 +125,10 @@ export class FulltimerSearchPage implements OnInit {
     this.showFilter = !this.showFilter;
   }
 
+  allFulltimers() {
+    this.navCtrl.navigateForward('/fulltimer-list');
+  }
+
   ionViewDidEnter() {
 
     if (!this.instantSearchConfig) { // on first time app load
@@ -150,6 +158,10 @@ export class FulltimerSearchPage implements OnInit {
         'aroundRadius': 'all'
       };*/
     }
+  }
+
+  onResize() {
+    this.showFilter = false;
   }
 
   /**

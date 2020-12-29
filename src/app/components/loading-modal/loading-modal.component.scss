@@ -156,26 +156,12 @@
 
 /*---------------------- candidate-filter --------------------*/
 
-[dir="ltr"] {
-  .fulltimer-filter,
-  .candidate-filter {
-    .wrapper {
-      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08), 2px 0 4px 0 rgba(0, 0, 0, 0.12);
-    }
-  }
-}
-
-[dir="rtl"] {
-  .fulltimer-filter,
-  .candidate-filter {
-    .wrapper {
-      box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.08), 2px 0 4px 0 rgba(0, 0, 0, 0.12);
-    }
-  }
-}
-
 .fulltimer-filter,
 .candidate-filter {
+  .wrapper {
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08), 2px 0 4px 0 rgba(0, 0, 0, 0.12);
+  }
+
   .background-masker {
     animation-duration: 1s;
     animation-fill-mode: forwards;
@@ -200,6 +186,15 @@
     display: block;
     position: relative;
     top: 15px;
+  }
+}
+
+[dir="rtl"] {
+  .fulltimer-filter,
+  .candidate-filter {
+    .wrapper {
+      box-shadow: 0 0 4px 2px rgba(0, 0, 0, 0.08), 2px 0 4px 0 rgba(0, 0, 0, 0.12);
+    }
   }
 }
 
@@ -326,24 +321,17 @@
       }
 
       h1 {
-        font-size: 18px;
-        font-weight: bold;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.65;
-        letter-spacing: normal;
-        text-align: left;
-        color: #000000;
+        height: 18px;
+        width: 220px;
+        margin-bottom: 10px;
+        margin-top: 5px;
       }
 
       h3 {
-        font-size: 16px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: 1.65;
-        letter-spacing: normal;
-        text-align: left;
+        height: 16px;
+        width: 320px;
+        margin-bottom: 17px;
+        margin-top: 16px;
       }
 
       h5 {
@@ -978,6 +966,7 @@
     }
 
     h5 {
+      font-weight: bold;
       margin: 27px 0 24px 0;
     }
 
@@ -1056,4 +1045,215 @@
     }
   }
 
+  .last-activity {
+    h5 ion-skeleton-text {
+      height: 22px;
+      width: 38%;
+    }
+    .txt-time {
+      margin-bottom: 12px;
+      width: 39%;
+    }
+    ion-badge {
+      background: gainsboro;
+      width: 96px;
+    }
+  }
+  label ion-skeleton-text {
+    height: 31px;
+    width: 55%;
+    margin-bottom: 13px;
+  }
+  .company-name-english ion-skeleton-text {
+    height: 21px;
+    margin-bottom: 23px;
+    width: 55%;
+  }
+
+  .company-name-arabic ion-skeleton-text {
+    height: 16px;
+    width: 55%;
+    margin-bottom: 21px;
+  }
+  .last-activity  p{
+    width:69%
+  }
+  p.email {
+    width: 36%;
+  }
+
+  .hourly-rate,.description,.website {
+    width: 49%;
+  }
+}
+
+.contact-list {
+
+  ion-item {
+    margin: 0 1px 9px 1px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08), 2px 0 4px 0 rgba(0, 0, 0, 0.12);
+    background-color: #ffffff;
+    padding: 5px 0;
+    --inner-border-width: 0;
+  }
+
+  h4 ion-skeleton-text {
+    width: 21%;
+    height: 10px;
+  }
+
+  h2 {
+    margin-bottom: 14px;
+
+    ion-skeleton-text {
+      height: 20px;
+      width: 36%;
+    }
+  }
+
+  ion-icon {
+    float: left;
+    color: #000;
+    font-size: 19px;
+  }
+
+  p {
+    margin-bottom: 10px;
+
+    a ion-skeleton-text {
+      width: 30%;
+      margin-left: 32px;
+      }
+  }
+
+  ion-badge {
+    background-color: #f2f2f2;
+    color: #000;
+    border-radius: 2px;
+    width: 25%;
+    padding: 0;
+    margin: 0;
+    margin-right: 15px;
+
+    ion-skeleton-text {
+      padding: 0;
+      margin: 0;
+      height: 24px;
+    }
+  }
+
+  .counts {
+    margin-top: 17px;
+  }
+}
+
+.brand-list {
+  h1 {
+    width: 38%;
+    margin-left: 15px;
+    margin-top: 0;
+    height: 20px;
+  }
+}
+
+.company-file-list {
+
+  .document {
+    --border-radius: 5px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08), 2px 0 4px 0 rgba(0, 0, 0, 0.12);
+    background-color: #ffffff;
+    margin: 0 0 13.5px;
+
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      margin: 3px 120px 5px 0;
+      object-fit: contain;
+    }
+
+    .meta-data {
+      margin: 0 6px 0 120px;
+      padding: 1px 9px 2px;
+      background-color: #f2f2f2;
+      float: right;
+      margin-left: 6px;
+      width: 12%;
+    }
+  }
+  h5 ion-skeleton-text {
+    height: 16px;
+    width: 40%;
+  }
+  .document-detail ion-skeleton-text {
+    margin-top: 15px;
+    height: 38px;
+    width: 40%;
+  }
+  .date ion-skeleton-text {
+    margin-top: 19px;
+    width: 26%;
+  }
+}
+
+.transfer-list {
+  ion-list {
+    background: transparent;
+  }
+  h1 {
+    width: 16%;
+  }
+  h2 {
+    width: 28%;
+    height: 18px;
+  }
+  h3 {
+    width: 31%;
+  }
+  h4 {
+    width: 46%;
+  }
+}
+.chart {
+  p ion-skeleton-text {
+      height: 202px;
+      margin-top: 18px;
+  }
+  small ion-skeleton-text {
+    width: 14%;
+    float: left;
+    margin-right: 12px;
+    height: 17px;
+  }
+}
+
+.mall-list {
+  h1 {
+    margin-left: 0;
+  }
+  ion-badge {
+    width: 52px;
+    background: gainsboro;
+    border-radius: 0;
+  }
+}
+.store-list {
+  ion-card {
+    margin: 13px 32px
+  }
+  p {
+    margin-top: 15px;
+    ion-icon {
+      float: left;
+    }
+    ion-skeleton-text {
+      margin-left: 22px;
+      width: 38%;
+    }
+  }
+  h5 ion-skeleton-text {
+      height: 16px;
+      width: 30%;
+  }
 }
