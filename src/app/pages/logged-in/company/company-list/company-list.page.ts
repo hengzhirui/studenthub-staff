@@ -67,9 +67,7 @@ export class CompanyListPage implements OnInit {
     //   this.loadCompaniesSegmentData();
     // }
 
-    if (!this.companies) {
-      this.loadData(1);
-    }
+    this.loadData(1);
   }
 
   /**
