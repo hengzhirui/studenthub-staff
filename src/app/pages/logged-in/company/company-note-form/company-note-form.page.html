@@ -22,7 +22,7 @@
       <ion-item *ngIf="['Suggested', 'Accepted', 'Rejected'].indexOf(form.controls.type.value) == -1">
         <div tabindex="0"></div>
         <ion-label position="floating">Note Type</ion-label>
-        <ion-select formControlName="type">
+        <ion-select formControlName="type" interface="popover">
           <ion-select-option>Internal Note</ion-select-option>
           <ion-select-option>Phone Call</ion-select-option>
           <ion-select-option>Email</ion-select-option>
@@ -52,8 +52,11 @@
       </ng-container>
 
       <ion-item-divider class="ckeditor-title">
-        <ion-label>
-          Candidate or fulltimer note is about
+        <ion-label *ngIf="fulltimer && fulltimer.fulltimer_uuid">
+          {{fulltimer.fulltimer_name}} (Fulltimer) note is about
+        </ion-label>
+        <ion-label *ngIf="candidate && candidate.candidate_id">
+          {{candidate.candidate_name}} (Candidate) note is about
         </ion-label>
       </ion-item-divider>
 
