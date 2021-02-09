@@ -693,7 +693,8 @@ export class CandidateViewPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: CompanyNoteFormPage,
       componentProps: {
-        note: note
+        note,
+        candidate: this.candidate
       }
     });
     modal.present();
@@ -714,7 +715,7 @@ export class CandidateViewPage implements OnInit {
 
   /**
    * add new note for candidate
-   *
+
   addNote() {
     this.addingNote = true;
 
