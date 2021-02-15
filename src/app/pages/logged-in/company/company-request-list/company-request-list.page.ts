@@ -42,7 +42,7 @@ export class CompanyRequestListPage implements OnInit {
     requestStatus: string,
     startDate: string
     endDate: string
-    position_type: string
+    position_type: any
   } = {
       companyName: null,
       requestStatus: null,
