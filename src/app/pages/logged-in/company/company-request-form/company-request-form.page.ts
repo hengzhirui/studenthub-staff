@@ -184,5 +184,7 @@ export class CompanyRequestFormPage implements OnInit {
     this.form.controls.position_title.setValue(null);
     this.form.controls.number_of_employees.setValue(null);
     this.form.controls.additional_info.setValue(null);
+    this.form.controls.job_description.setValue(null);
+    this.form.controls.compensation.setValue(null);
   }
 }
