@@ -1,9 +1,9 @@
-import { Pipe, PipeTransform, NgZone, ChangeDetectorRef, OnDestroy } from "@angular/core";
+import { Pipe, PipeTransform, NgZone, ChangeDetectorRef, OnDestroy } from '@angular/core';
 
 
 @Pipe({
-	name:'timeAgo',
-	pure:false
+	name: 'timeAgo',
+	pure: false
 })
 export class TimeAgoPipe implements PipeTransform, OnDestroy {
 
@@ -16,27 +16,26 @@ export class TimeAgoPipe implements PipeTransform, OnDestroy {
 
 	transform(value: string) {
 		this.removeTimer();
-    let GMTDate = new Date();
-		let d = (value) ? new Date(value.replace(/-/g, '/') + ' GMT') : this.toUTC();
-    let now = this.toUTC();
-		// let now = temp['toGMTString']();
-    let seconds = Math.round(Math.abs((now.getTime() - d.getTime())/1000));
-		let timeToUpdate = (Number.isNaN(seconds)) ? 1000 : this.getSecondsUntilUpdate(seconds) * 1000;
+    const GMTDate = new Date();
+		const d = (value) ? new Date(value.replace(/-/g, '/') + ' GMT') : GMTDate['toGMTString']();
+    const utcTimeNow = Date.parse(GMTDate.toUTCString());
+    const seconds = Math.round(Math.abs((utcTimeNow - d.getTime()) / 1000));
+		const timeToUpdate = (Number.isNaN(seconds)) ? 1000 : this.getSecondsUntilUpdate(seconds) * 1000;
 
-        this.timer = this.ngZone.runOutsideAngular(() => {
-			if (typeof window !== 'undefined') {
-				return window.setTimeout(() => {
-					this.ngZone.run(() => this.changeDetectorRef.markForCheck());
-				}, timeToUpdate);
-			}
-			return null;
-        });
+    this.timer = this.ngZone.runOutsideAngular(() => {
+        if (typeof window !== 'undefined') {
+          return window.setTimeout(() => {
+            this.ngZone.run(() => this.changeDetectorRef.markForCheck());
+          }, timeToUpdate);
+        }
+        return null;
+    });
 
-		let minutes = Math.round(Math.abs(seconds / 60));
-		let hours = Math.round(Math.abs(minutes / 60));
-		let days = Math.round(Math.abs(hours / 24));
-		let months = Math.round(Math.abs(days/30.416));
-		let years = Math.round(Math.abs(days/365));
+		const minutes = Math.round(Math.abs(seconds / 60));
+		const hours = Math.round(Math.abs(minutes / 60));
+		const days = Math.round(Math.abs(hours / 24));
+		const months = Math.round(Math.abs(days / 30.416));
+		const years = Math.round(Math.abs(days / 365));
 
 		if (Number.isNaN(seconds)){
 			return '';
@@ -76,10 +75,10 @@ export class TimeAgoPipe implements PipeTransform, OnDestroy {
 		}
     }
 
-	public getSecondsUntilUpdate(seconds:number) {
-		let min = 60;
-		let hr = min * 60;
-		let day = hr * 24;
+	public getSecondsUntilUpdate(seconds: number) {
+		const min = 60;
+		const hr = min * 60;
+		const day = hr * 24;
 		if (seconds < min) { // less than 1 min, update every 2 secs
 			return 2;
 		} else if (seconds < hr) { // less than an hour, update every 30 secs
@@ -92,7 +91,7 @@ export class TimeAgoPipe implements PipeTransform, OnDestroy {
 	}
 
   toUTC(/*Date*/date = new Date()) {
-    return new Date(Date.UTC(
+    const UTCDate  = Date.UTC(
       date.getFullYear()
       , date.getMonth()
       , date.getDate()
@@ -100,7 +99,9 @@ export class TimeAgoPipe implements PipeTransform, OnDestroy {
       , date.getMinutes()
       , date.getSeconds()
       , date.getMilliseconds()
-    ));
+    );
+    console.log(new Date(date.toUTCString()));
+    return new Date(UTCDate);
   }
 }
 
