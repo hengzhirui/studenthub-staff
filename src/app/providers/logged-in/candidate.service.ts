@@ -7,7 +7,6 @@ import { Candidate } from 'src/app/models/candidate';
 import { Country } from 'src/app/models/country';
 import { Note } from 'src/app/models/note';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -345,5 +344,15 @@ export class CandidateService {
   assignedIdleCandidate(candidateName: string, page: number): Observable<any>{
     const url = this._candidateEndpoint + '/assigned-idle-candidate?candidate_name=' + candidateName + '&page=' + page + '&expand=store,company,workHistory';
     return this._authhttp.getRaw(url);
+  }
+
+  /**
+   * download candidate appreciation certificate
+   * @param candidateID
+   * @param workHistoryID
+   */
+  downloadCertificate(candidateID: number, workHistoryID: number): Observable<any> {
+    let url = `${this._candidateEndpoint}/appreciation-certificate/${candidateID}/${workHistoryID}`;
+    return this._authhttp.pdfget(url, 'appreciation-certification-' + candidateID + '.pdf');
   }
 }
