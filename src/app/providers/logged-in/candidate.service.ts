@@ -6,8 +6,6 @@ import { AuthHttpService } from './authhttp.service';
 import { Candidate } from 'src/app/models/candidate';
 import { Country } from 'src/app/models/country';
 import { Note } from 'src/app/models/note';
-import {Invoice} from "../../../../../studenthub-admin/src/app/models/transfer";
-
 
 @Injectable({
   providedIn: 'root'
