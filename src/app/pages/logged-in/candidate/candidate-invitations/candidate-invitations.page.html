@@ -15,7 +15,7 @@
     </h4>
 
     <ng-container *ngFor="let invitation of invitations">
-      <invitation [model]="invitation" (onUpdate)="loadInvitations()"></invitation>
+      <invitation [model]="invitation" (click)="suggest(invitation)" (onUpdate)="loadInvitations()"></invitation>
     </ng-container>
 
     <loading-modal [loading]="loading" type="note-list"></loading-modal>

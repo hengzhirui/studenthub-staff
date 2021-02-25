@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ModalController } from '@ionic/angular';
+import {AlertController, ModalController} from '@ionic/angular';
 // models
 import { Invitation } from 'src/app/models/invitation';
 import { EventService } from 'src/app/providers/event.service';
 import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
 // services
 import { InvitationService } from 'src/app/providers/logged-in/invitation.service';
+import {SuggestionService} from "../../../../providers/logged-in/suggestion.service";
+import {AuthService} from "../../../../providers/auth.service";
 
 
 @Component({
@@ -17,15 +19,15 @@ import { InvitationService } from 'src/app/providers/logged-in/invitation.servic
 export class CandidateInvitationsPage implements OnInit {
 
   public borderLimit;
-  
+
   public loading = false;
 
   public candidate_id;
-  
+
   public status; // 1:Invited, 2:Rejected, 3:Accepted
-  
+
   public candidate;
-  
+
   public invitations: Invitation[] = [];
 
   constructor(
@@ -33,9 +35,11 @@ export class CandidateInvitationsPage implements OnInit {
     public activatedRoute: ActivatedRoute,
     public eventService: EventService,
     public candidateService: CandidateService,
-    public invitationService: InvitationService
-  ) {
-  }
+    public invitationService: InvitationService,
+    public suggestionService: SuggestionService,
+    public alertCtrl: AlertController,
+    public authService: AuthService
+  ) { }
 
   ngOnInit() {
 
@@ -91,5 +95,43 @@ export class CandidateInvitationsPage implements OnInit {
 
   logScrolling(e) {
     this.borderLimit = (e.detail.scrollTop > 20);
+  }
+
+  /**
+   * save suggestion
+   */
+  suggest(invitation: Invitation) {
+    this.loading = true;
+
+    const param = {
+      suggestion: 'Candidate Suggestion',
+      request_uuid: invitation.request_uuid,
+      fulltimer_uuid: null,
+      candidate_id: invitation.candidate_id
+    };
+    this.suggestionService.create(param).subscribe(async response => {
+
+      this.loading = false;
+
+      // On Success
+      if (response.operation == 'success') {
+        const prompt = await this.alertCtrl.create({
+          message: 'Suggested successfully',
+          buttons: ['Okay']
+        });
+        prompt.present();
+      }
+
+      // On Failure
+      if (response.operation == 'error') {
+        const prompt = await this.alertCtrl.create({
+          message: this.authService.errorMessage(response.message),
+          buttons: ['Okay']
+        });
+        prompt.present();
+      }
+    }, () => {
+      this.loading = false;
+    });
   }
 }
