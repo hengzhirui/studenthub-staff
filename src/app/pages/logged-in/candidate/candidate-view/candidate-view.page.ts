@@ -941,13 +941,13 @@ export class CandidateViewPage implements OnInit {
    * @param status
    */
   invitationListPage(status: number) {
-    if (status == 1 && this.candidate.invited < 1) { // Suggested
+    if (status == 1 && parseInt(this.candidate.invited) < 1) { // Suggested
       return false;
     }
-    if (status == 2 && this.candidate.invitationAccepted < 1) { // Rejected
+    if (status == 2 && parseInt(this.candidate.invitationRejected) < 1) { // Rejected
       return false;
     }
-    if (status == 3 && this.candidate.invitationRejected < 1) { // Accepted
+    if (status == 3 && parseInt(this.candidate.invitationAccepted) < 1) { // Accepted
       return false;
     }
 
