@@ -15,7 +15,7 @@ export class RequestListingComponent implements OnInit {
 
   @Input() request: Request;
   @Input() invitation: Invitation;
-  @Input() showStatus = true;
+  @Input() showStatus = false;
 
   public active = false;
 

@@ -16,7 +16,8 @@
 
     <ng-container *ngFor="let invitation of invitations">
 <!--      <invitation [model]="invitation" (click)="suggest(invitation)" (onUpdate)="loadInvitations()"></invitation>-->
-      <request-listing [request]="invitation.request" [invitation]="invitation" (click)="suggest(invitation)"></request-listing>
+      <request-listing [request]="invitation.request" [invitation]="invitation" [showStatus]="status == 1" (click)="requestDetail(invitation.request)"></request-listing>
+<!--      <request-listing [request]="invitation.request" [invitation]="invitation" (click)="suggest(invitation)"></request-listing>-->
     </ng-container>
 
     <loading-modal [loading]="loading" type="note-list"></loading-modal>
