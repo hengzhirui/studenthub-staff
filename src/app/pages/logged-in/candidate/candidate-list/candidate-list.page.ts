@@ -72,6 +72,7 @@ export class CandidateListPage implements OnInit {
   }
 
   ngOnInit() {
+    this.loadData(1);
   }
 
   /**
@@ -166,7 +167,7 @@ export class CandidateListPage implements OnInit {
     });
 
     popover.onDidDismiss().then(e => {
-      
+
       if(!e.data || !e.data.candidate) {
         return false;
       }
@@ -193,7 +194,7 @@ export class CandidateListPage implements OnInit {
   }
 
   ionViewWillEnter() {
-    this.loadData(1);
+    // this.loadData(1);
   }
 
   search() {
@@ -256,7 +257,7 @@ export class CandidateListPage implements OnInit {
       () => { event.target.complete(); }
     );
   }
-  
+
   /**
    * When its selected
    */
@@ -267,7 +268,7 @@ export class CandidateListPage implements OnInit {
       }
     });
   }
-  
+
   logScrolling(e) {
     this.borderLimit = (e.detail.scrollTop > 20) ? true : false;
   }

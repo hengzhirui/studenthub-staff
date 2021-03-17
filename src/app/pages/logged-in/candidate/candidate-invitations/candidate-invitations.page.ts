@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import {AlertController, ModalController} from '@ionic/angular';
+import {AlertController, ModalController, NavController} from '@ionic/angular';
 // models
 import { Invitation } from 'src/app/models/invitation';
 import { EventService } from 'src/app/providers/event.service';
@@ -37,7 +37,8 @@ export class CandidateInvitationsPage implements OnInit {
     public invitationService: InvitationService,
     public suggestionService: SuggestionService,
     public alertCtrl: AlertController,
-    public authService: AuthService
+    public authService: AuthService,
+    public navCtrl: NavController
   ) { }
 
   ngOnInit() {
@@ -137,6 +138,18 @@ export class CandidateInvitationsPage implements OnInit {
       }
     }, () => {
       this.loading = false;
+    });
+  }
+
+  /**
+   * open request detail page
+   * @param request
+   */
+  requestDetail(request) {
+    this.navCtrl.navigateForward('/request-view/' + request.request_uuid, {
+      state : {
+        from: 'company-request-dashboard'
+      }
     });
   }
 }
