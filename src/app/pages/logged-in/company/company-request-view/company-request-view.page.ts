@@ -29,6 +29,7 @@ import { CompanyRequestFormPage } from '../company-request-form/company-request-
 import {Fulltimer} from "../../../../models/fulltimer";
 import {FulltimerFormPage} from "../../fulltimer/fulltimer-form/fulltimer-form.page";
 import { FulltimerSearchPage } from '../../fulltimer/fulltimer-search/fulltimer-search.page';
+import { StaffPage } from '../../pickers/staff/staff.page';
 
 
 @Component({
@@ -254,6 +255,51 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
   toDate(date) {
     if (date) {
       return new Date(date.replace(/-/g, '/'));
+    } 
+  }
+
+  /**
+   * open popup to select consultants 
+   */
+  async assign() {
+
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: StaffPage,
+      componentProps: {
+        role: 2 //only consultants
+      }
+    });
+    modal.present();
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data && data.staff_uuid) {
+
+      this.requestService.assign(this.request_uuid, data.staff_uuid).subscribe(async res => {
+      
+        if(res.operation == 'success') 
+        {
+          this.request.staff = res.staff;
+        }
+        else 
+        {
+          this.alertCtrl.create({
+            message: this.translateLabelService.errorMessage(res.message),
+            buttons: ['Okay']
+          }).then(prompt => {
+            prompt.present();
+          });
+        }
+      });
     }
   }
 

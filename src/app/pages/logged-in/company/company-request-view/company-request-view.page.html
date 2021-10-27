@@ -4,7 +4,6 @@
       <ion-back-button icon="assets/images/ic_cancel.svg" defaultHref="/view/company-request-dashboard"></ion-back-button>
     </ion-buttons>
 
-
     <ion-button fill="clear" (click)="update()" slot="end" class="btn-update"
       *ngIf="request && ['delivered', 'cancelled'].indexOf(request.request_status) == -1">
       Update
@@ -26,6 +25,11 @@
                 class="btn-cv-search" routerLink="/view/candidate-search">
       {{"CV Search: Invite candidates to apply for this position"}}
     </ion-button>
+
+    <ion-button (click)="assign()" *ngIf="authService.role == 1 && !request.staff">
+      Assign staff
+    </ion-button>
+
     <br/>
 
     <div *ngIf="request && !loading">

@@ -9,6 +9,7 @@ export class Request {
     request_uuid: string;
     company_id: number;
     contact_uuid: string;
+    staff_uuid: string;
     request_created_by: number;
     request_updated_by: number;
     request_position_type: number;
@@ -29,6 +30,7 @@ export class Request {
     contact: Contact;
     company: Company;
     lastActivity: Note;
+    staff: Staff;
 }
 /*
 enum Status {
