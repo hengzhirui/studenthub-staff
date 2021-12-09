@@ -17,7 +17,7 @@ export class StoryService {
    */
   list(page: number = 1, urlParams = ''): Observable<any>{
     const url = `${this.storyEndpoint}/list?page=${page}${urlParams}`;
-    
+
     return this._authhttp.getRaw(url);
   }
 
@@ -45,6 +45,14 @@ export class StoryService {
     return this._authhttp.get(`${this.storyEndpoint}/active-story${urlParams}`);
   }
 
+ /**
+   * detail
+   * @param storyUuid
+   */
+  listAllOldHistory(urlParams='?expand=request,request.company'): Observable<any>{
+    return this._authhttp.get(`${this.storyEndpoint}/all-old-stories${urlParams}`);
+  }
+
   /**
    * detail
    * @param storyUuid
@@ -55,6 +63,6 @@ export class StoryService {
       story_uuid: story_uuid,
       status: status,
     });
-    
+
   }
 }

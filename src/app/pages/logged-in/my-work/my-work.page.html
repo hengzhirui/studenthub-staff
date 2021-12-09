@@ -1,0 +1,63 @@
+<ion-content>
+  <div class="container">
+    <ion-segment (ionChange)="segmentChanged($event)" value="current">
+
+      <ion-segment-button value="current">
+        <ion-label>Current Work</ion-label>
+      </ion-segment-button>
+
+      <ion-segment-button value="history">
+        <ion-label>Work History</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div *ngIf="segment == 'current'">
+      <ion-card tappable (click)="rowSelected(currentStory)" *ngIf="currentStory">
+
+        <ion-card-header>
+          <ion-card-subtitle>
+
+            <span *ngIf="currentStory.request.request_position_type == 1">Full-time -</span>
+            <span *ngIf="currentStory.request.request_position_type == 2">Part-time -</span>
+
+            {{currentStory.request.request_position_title}}</ion-card-subtitle>
+          <ion-card-title>for</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{currentStory.request.company.company_name}}
+        </ion-card-content>
+      </ion-card>
+      <h2 class="ion-text-center" *ngIf="!currentStory"> No Working Story</h2>
+    </div>
+
+    <div *ngIf="segment == 'history'">
+      <ion-card tappable *ngFor="let story of oldStories" (click)="rowSelected(story)">
+
+        <ion-card-header>
+          <ion-card-subtitle>
+
+            <span *ngIf="story.request.request_position_type == 1">Full-time -</span>
+            <span *ngIf="story.request.request_position_type == 2">Part-time -</span>
+
+            {{story.request.request_position_title}}</ion-card-subtitle>
+          <ion-card-title>for</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          {{story.request.company.company_name}}
+          <br/>
+          <strong *ngIf="story.story_status == 0">Status : Un started</strong>
+          <strong *ngIf="story.story_status == 1">Status : Started</strong>
+          <strong *ngIf="story.story_status == 2">Status : Finished</strong>
+          <strong *ngIf="story.story_status == 3">Status : Delivered</strong>
+          <strong *ngIf="story.story_status == 4">Status : Rejected</strong>
+          <strong *ngIf="story.story_status == 5">Status : Accepted</strong>
+          <br/>
+          <strong>
+            Time spent : {{ story.story_time_spent | timeSpent }}
+          </strong>
+        </ion-card-content>
+
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

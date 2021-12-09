@@ -127,7 +127,7 @@
                 <small *ngIf="story.story_status == 5">Status : Accepted</small>
                 <br/>
                 <ion-note>
-                  Time spent : {{ getTimeSpent(story.story_time_spent) }}
+                  Time spent : {{ story.story_time_spent | timeSpent }}
                 </ion-note>
               </ion-label>
               <ion-badge class="company_status_badge" slot="end" color="danger" *ngIf="!story.staff.staff_status">
