@@ -54,7 +54,7 @@ export class CompanyRequestService {
 
   /**
    * return request checklist
-   * @returns 
+   * @returns
    */
   listChecklist(): Observable<any> {
     const url = this.companyRequestEndpoint + '/list-checklist';
@@ -145,7 +145,11 @@ export class CompanyRequestService {
    */
   view(id): Observable<any> {
     const url = this.companyRequestEndpoint + '/' + id +
+<<<<<<< HEAD
       '?expand=staffs,staff,requestCreatedBy,requestUpdatedBy,contact,company,company.companyContact,requestActivities,requestActivities.staff';
+=======
+      '?expand=stories,stories.storyActivities,stories.storyActivities.staff,stories.staff,stories.staff,staffs,staff,requestCreatedBy,requestUpdatedBy,contact,company,company.companyContact,requestActivities,requestActivities.staff';
+>>>>>>> dev2
     return this._authhttp.get(url);
   }
 
@@ -168,10 +172,10 @@ export class CompanyRequestService {
   }
 
   /**
-   * assign staff to request 
-   * @param request_uuid 
-   * @param staff_id 
-   * @returns 
+   * assign staff to request
+   * @param request_uuid
+   * @param staff_id
+   * @returns
    */
    assign(request_uuid, staff_id): Observable<any>{
     return this._authhttp.patch(`${this.companyRequestEndpoint}/assign/${request_uuid}`, {

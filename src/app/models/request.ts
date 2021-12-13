@@ -36,6 +36,11 @@ export class Request {
     lastActivity: Note;
     staff: Staff;
     staffs: Staff[];
+<<<<<<< HEAD
+=======
+    storyOwners: Staff[];
+    stories: Story[];
+>>>>>>> dev2
 }
 /*
 enum Status {
@@ -44,3 +49,29 @@ enum Status {
     delivered,
     cancelled
 }*/
+
+export class Story {
+  story_uuid: string;
+  request_uuid: string;
+  suggestion_uuid: string;
+  staff_id: number;
+  story_status: string;
+  story_time_spent: number;
+  story_created_at: string;
+  story_last_updated_at: string;
+  request: Request;
+  staff: Staff;
+  storyActivities: StoryActivity[];
+}
+
+export class StoryActivity {
+  story_activity_uuid: string;
+  story_uuid: string;
+  staff_id: number;
+  activity_time_spent: number;
+  activity_status	: string;
+  activity_created_at: string;
+  activity_last_updated_at: string;
+  story: Story;
+  staff: Staff;
+}
