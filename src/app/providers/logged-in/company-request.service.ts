@@ -145,11 +145,7 @@ export class CompanyRequestService {
    */
   view(id): Observable<any> {
     const url = this.companyRequestEndpoint + '/' + id +
-<<<<<<< HEAD
-      '?expand=staffs,staff,requestCreatedBy,requestUpdatedBy,contact,company,company.companyContact,requestActivities,requestActivities.staff';
-=======
       '?expand=stories,stories.storyActivities,stories.storyActivities.staff,stories.staff,stories.staff,staffs,staff,requestCreatedBy,requestUpdatedBy,contact,company,company.companyContact,requestActivities,requestActivities.staff';
->>>>>>> dev2
     return this._authhttp.get(url);
   }
 

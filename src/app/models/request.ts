@@ -36,11 +36,8 @@ export class Request {
     lastActivity: Note;
     staff: Staff;
     staffs: Staff[];
-<<<<<<< HEAD
-=======
     storyOwners: Staff[];
     stories: Story[];
->>>>>>> dev2
 }
 /*
 enum Status {

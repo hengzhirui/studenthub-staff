@@ -41,18 +41,6 @@ const routes: Routes = [
           name: 'CompanyListPage',
         }
       },
-<<<<<<< HEAD
-
-=======
-      {
-        path: 'feedback-backlog',
-        loadChildren: () => import('../feedback-backlog/feedback-backlog.module').then( m => m.FeedbackBacklogPageModule),
-        canActivate: [AuthService],
-        data: {
-          name: 'FeedbackBacklogPage'
-        }
-      },
->>>>>>> dev2
       {
         path: 'company-request-dashboard',
         loadChildren: () => import('../company/company-request-dashboard/company-request-dashboard.module').then( m => m.CompanyRequestDashboardPageModule)

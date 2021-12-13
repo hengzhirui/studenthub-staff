@@ -776,4 +776,13 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     }
 
   }
+
+  staffSelected(model) {
+    // Load Detail Page
+    this.navCtrl.navigateForward('story-view/' + model.story_uuid, {
+      state: {
+        model
+      }
+    });
+  }
 }
