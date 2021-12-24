@@ -128,6 +128,10 @@ export class CandidateViewPage implements OnInit {
       this.story = state.story;
     }
 
+    if (this.authService.story) {
+      this.story = this.authService.story;
+    }
+
     if (!this.candidate_id) {
       this.candidate_id = this.activatedRoute.snapshot.paramMap.get('id');
     }
@@ -530,7 +534,7 @@ export class CandidateViewPage implements OnInit {
   }
 
   async addInvitation() {
-    
+
     const confirm = await this.alertCtrl.create({
       header: 'Please provide feedback',
       inputs: [
@@ -550,7 +554,7 @@ export class CandidateViewPage implements OnInit {
         {
           text: 'Ok',
           handler: async (data) => {
-                    
+
             //this.loading = true;
 
             const params = {

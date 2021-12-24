@@ -308,6 +308,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
    * show candidate to invite
    */
   showCandidates() {
+    console.log(this.request.request_position_type);
     if ([2, '2'].indexOf(this.request.request_position_type) > -1) {
       this.navCtrl.navigateForward('candidate-list', {
         state: {
@@ -315,7 +316,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
         }
       });
     } else {
-      this.navCtrl.navigateForward('fulltimer-list', {
+      this.navCtrl.navigateForward('fulltimer-search', {
         state: {
           story: this.story
         }

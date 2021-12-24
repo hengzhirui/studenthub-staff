@@ -30,7 +30,7 @@ const routes: Routes = [
   {
     path: 'candidate-list',
     loadChildren: () => import('./pages/logged-in/candidate/candidate-list/candidate-list.module').then(m => m.CandidateListPageModule),
-    canActivate: [AuthService],
+    canActivate: [AuthService, StoryGuard],
     data: {
       name: 'CandidateListPage'
     }
@@ -38,7 +38,7 @@ const routes: Routes = [
   {
     path: 'incomplete-candidate-list',
     loadChildren: () => import('./pages/logged-in/candidate/incomplete-candidate-list/incomplete-candidate-list.module').then(m => m.IncompleteCandidateListPageModule),
-    canActivate: [AuthService],
+    canActivate: [AuthService, StoryGuard],
     data: {
       name: 'IncompleteCandidateListPage'
     }
