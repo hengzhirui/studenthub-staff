@@ -13,6 +13,7 @@ import { NoteModule } from 'src/app/components/note/note.module';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { InvitationModule } from 'src/app/components/invitation/invitation.module';
 import {StoryViewOptionPage} from './story-view-option.page';
+import {StoryCloseConfirmationComponent} from './story-close-confirmation.component';
 
 @NgModule({
   imports: [
@@ -24,9 +25,9 @@ import {StoryViewOptionPage} from './story-view-option.page';
     InvitationModule,
     StoryViewPageRoutingModule,
     NoItemsModule,
-    LoadingModalModule,
+    LoadingModalModule
   ],
-  declarations: [StoryViewPage, StoryViewOptionPage],
+  declarations: [StoryViewPage, StoryViewOptionPage, StoryCloseConfirmationComponent],
   exports: [
     StoryViewOptionPage
   ]

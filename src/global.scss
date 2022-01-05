@@ -163,11 +163,11 @@ ion-router-outlet {
     text-transform: none;
   }
 
-  ion-title,
-  ion-header {
-      padding-left: 10px;
-      padding-right: 10px;
-  }
+  //ion-title,
+  //ion-header {
+  //    padding-left: 10px;
+  //    padding-right: 10px;
+  //}
 
   ion-title:not([size="small"]) {
       font-size: 18px;
@@ -401,4 +401,10 @@ ng5-slider {
   .modal-change-password .modal-wrapper {
     height: 490px;
   }
+  .close-story .modal-wrapper {
+    height: 237px;
+  }
+}
+.close-story .modal-wrapper {
+  height: 237px;
 }

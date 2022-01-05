@@ -13,6 +13,7 @@ import { TranslateLabelService } from 'src/app/providers/translate-label.service
 import { Request } from 'src/app/models/request';
 import { Invitation } from 'src/app/models/invitation';
 import {StoryViewOptionPage} from './story-view-option.page';
+import {StoryCloseConfirmationComponent} from "./story-close-confirmation.component";
 
 
 export interface TimeSpan {
@@ -38,21 +39,13 @@ export class StoryViewPage implements OnInit, OnDestroy {
   public loadMore = false;
 
   public suggestedSuggestions = [];
-
   public acceptedSuggestions = [];
-
   public rejectedSuggestions = [];
-
   public invitedCandidates: Invitation[] = [];
-
   public rejectedCandidates: Invitation[] = [];
-
   public acceptedInvitations: Invitation[] = [];
-
   public segment: string = 'detail';
-
   private destroyed$ = new Subject();
-
   private subscription: Subscription;
 
   public dateNow = new Date();
@@ -330,5 +323,25 @@ export class StoryViewPage implements OnInit, OnDestroy {
 
   requestView() {
     this.navCtrl.navigateForward('request-view/' +  this.request.request_uuid);
+  }
+
+  /**
+   * open filter
+   * @returns
+   */
+  async closeStoryConfirmation() {
+
+    const modal = await this._modalCtrl.create({
+      component: StoryCloseConfirmationComponent,
+      cssClass: 'modal-request-filter close-story',
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data.click) {
+      this.changeStoryStatus(0);
+    }
   }
 }
