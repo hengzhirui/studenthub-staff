@@ -95,7 +95,7 @@
           <div tabindex="0"></div>
           <ion-label>
             Download Invoice #{{ invoice.invoice_id }} - KWD {{ invoice.invoice_total | number:'1.0-3' }}
-            <small>{{ invoice.company.company_name }}</small>
+            <small *ngIf="invoice.company">{{ invoice.company.company_name }}</small>
           </ion-label>
         </ion-item>
       </ion-list>
@@ -109,7 +109,7 @@
           <div tabindex="0"></div>
           <ion-label>
             Download Receipt #{{ receipt.invoice_id }} - KWD {{ receipt.invoice_total | number:'1.0-3' }}<br />
-            <small>{{ receipt.company.company_name }}</small>
+            <small *ngIf="receipt.company">{{ receipt.company.company_name }}</small>
           </ion-label>
         </ion-item>
       </ion-list>

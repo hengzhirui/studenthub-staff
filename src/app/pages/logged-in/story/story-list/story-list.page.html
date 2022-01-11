@@ -21,15 +21,16 @@
         <h2 *ngIf="stories && stories.length == 0" >No Story Available</h2>
         <ion-card tappable *ngFor="let story of stories" (click)="rowSelected(story)">
 
-          <ion-card-header>
+          <ion-card-header *ngIf="story.request">
             <ion-card-subtitle>
                 <span *ngIf="story.request.request_position_type == 1">Full-time -</span>
                 <span *ngIf="story.request.request_position_type == 2">Part-time -</span>
               {{story.request.request_position_title}}</ion-card-subtitle>
             <ion-card-title>for</ion-card-title>
           </ion-card-header>
+
           <ion-card-content>
-            <p *ngIf="story.request.company">
+            <p *ngIf="story.request && story.request.company">
               {{story.request.company.company_name}}
             </p>
 
