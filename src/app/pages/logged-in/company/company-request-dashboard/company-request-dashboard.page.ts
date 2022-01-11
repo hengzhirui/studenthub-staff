@@ -198,11 +198,8 @@ export class CompanyRequestDashboardPage implements OnInit {
 
     this.loading = loading;
 
-    let param = '&expand=request,request.company,latestStoryActivity';
-
-    if (this.storyStatus) {
-      param += '&story_status=' + this.storyStatus;
-    }
+    let param = this.urlParams();
+    param += '&expand=request,request.company,latestStoryActivity';
 
     this.storyService.list(this.currentPage, param).subscribe(response => {
 
@@ -224,15 +221,11 @@ export class CompanyRequestDashboardPage implements OnInit {
    * @param event
    */
   doInfiniteStories(event) {
-    // this.loadMore = true;
 
     this.currentPage++;
 
-    let param = '&expand=request,request.company,latestStoryActivity';
-
-    if (this.storyStatus) {
-      param += '&story_status=' + this.storyStatus;
-    }
+    let param = this.urlParams();
+    param += '&expand=request,request.company,latestStoryActivity';
 
     this.storyService.list(this.currentPage, param).subscribe(response => {
 
@@ -281,14 +274,15 @@ export class CompanyRequestDashboardPage implements OnInit {
 
     const { data } = await modal.onWillDismiss();
 
+    console.log(data);
     if(data && (
+        data.storyStatus != this.filters.storyStatus ||
         data.requestStatus != this.filters.requestStatus ||
         data.position_type != this.filters.position_type ||
         data.startDate != this.filters.startDate ||
         data.endDate != this.filters.endDate
     )) {
       this.filters = data;
-      console.log(this.filters);
       if (this.segment == 'request') {
         this.loadRequests();
       } else {
