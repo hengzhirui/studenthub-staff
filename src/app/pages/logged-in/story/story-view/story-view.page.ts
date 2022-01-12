@@ -38,6 +38,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
   public loading = false;
   public loadMore = false;
 
+  public allSuggestions = [];
   public suggestedSuggestions = [];
   public acceptedSuggestions = [];
   public rejectedSuggestions = [];
@@ -152,9 +153,10 @@ export class StoryViewPage implements OnInit, OnDestroy {
    */
   loadSuggestions() {
 
-    const params = '&request_uuid=' + this.request.request_uuid;
+    const params = '&story_uuid=' + this.story_uuid;
 
     this.suggestionService.listAll(params).subscribe(data => {
+      this.allSuggestions = data;
       this.suggestedSuggestions = [];
       this.acceptedSuggestions = [];
       this.rejectedSuggestions = [];
@@ -283,7 +285,6 @@ export class StoryViewPage implements OnInit, OnDestroy {
   }
 
   loadTimer() {
-    console.log(this.story);
     this.dDay = this.toDate(this.story.story_last_updated_at);
     this.subscription = interval(1000)
       .subscribe(x => { this.getTimeDifference(); });
