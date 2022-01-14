@@ -341,12 +341,11 @@ export class CompanyRequestDashboardPage implements OnInit {
   }
 
   searchFilter(event) {
+    this.query = event.target.value;
     if (this.segment == 'request') {
       this.loadAllRequest();
     } else {
       this.loadStories(1);
     }
-    this.query = event.target.value;
-
   }
 }
