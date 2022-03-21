@@ -1185,4 +1185,12 @@ export class CandidateViewPage implements OnInit {
     document.execCommand('copy');
     document.body.removeChild(selBox);
   }
+
+  openSalary() {
+    this.router.navigate(['candidate-salary-list', this.candidate_id], {
+      state: {
+        candidate: this.candidate
+      }
+    });
+  }
 }

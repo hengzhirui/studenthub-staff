@@ -465,6 +465,14 @@ const routes: Routes = [
     }
   },
   {
+    path: 'candidate-salary-list',
+    loadChildren: () => import('./pages/logged-in/candidate/candidate-salary-list/candidate-salary-list-routing.module').then( m => m.CandidateSalaryListPageRoutingModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'CandidateSalaryListPage'
+    }
+  },
+  {
     path: 'app-error',
     loadChildren: () => import('./pages/errors/app-error/app-error.module').then( m => m.AppErrorPageModule)
   },

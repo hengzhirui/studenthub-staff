@@ -446,10 +446,15 @@
                 </ion-item>
               </div>
 
-              <h5 *ngIf="salaryTransfers.length > 0">Salary Transfers</h5>
+              <div class="note-wrapper">
+                <h5 *ngIf="salaryTransfers.length > 0">Salary Transfers</h5>
+                <transfer [transferCandidate]="salary" *ngFor="let salary of salaryTransfers | slice:0:3"></transfer>
 
-              <transfer [transferCandidate]="salary" *ngFor="let salary of salaryTransfers"></transfer>
+                <ion-button class="btn-view-notes" *ngIf="salaryTransfers.length > 3" (click)="openSalary()">
+                  <span>View all {{ salaryTransfers.length }} Transfers</span>
+                </ion-button>
 
+              </div>
             </div>
           </ion-col>
         </ion-row>
