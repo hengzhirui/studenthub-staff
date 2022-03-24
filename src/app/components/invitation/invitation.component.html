@@ -1,4 +1,4 @@
-<ion-card>
+<ion-card tappable>
   <ion-badge *ngIf="model.invitation_status == 1">
     Invited a candidate
   </ion-badge>
@@ -37,7 +37,7 @@
     first
 
     <ng-container *ngIf="
-        model.invitation_app_seen_at && 
+        model.invitation_app_seen_at &&
         (
           !model.invitation_email_seen_at ||
           toDate(model.invitation_app_seen_at) > toDate(model.invitation_email_seen_at)
@@ -49,9 +49,9 @@
     </ng-container>
 
     <ng-container *ngIf="
-        model.invitation_email_seen_at && 
+        model.invitation_email_seen_at &&
         (
-          !model.invitation_app_seen_at || 
+          !model.invitation_app_seen_at ||
           toDate(model.invitation_email_seen_at) > toDate(model.invitation_app_seen_at)
         )
         ">
@@ -69,12 +69,10 @@
 </ion-card>
 
 <!-- move to suggestion if not suggested and accepted -->
-
 <ion-button [disabled]="!model.invitation_created_by_company && (
     !model.story || authService.staff_id != model.story.staff_id
-  )" 
-  *ngIf="(!model.story || model.story.story_status == 1) && 
-    !model.is_suggested && model.invitation_status == 3" class="btn-suggestion"
+  )"
+  *ngIf="!model.is_suggested && model.invitation_status == 3" class="btn-suggestion"
   (click)="suggest($event)">
   Move to suggestion
 </ion-button>

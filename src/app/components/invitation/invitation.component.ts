@@ -71,7 +71,7 @@ export class InvitationComponent implements OnInit {
    */
   async suggest(ev) {
 
-    if (this.model.is_suggested) {
+    if (this.model.is_suggested || !this.authService.story) {
       return false;
     }
 
@@ -99,7 +99,7 @@ export class InvitationComponent implements OnInit {
             const param = {
               suggestion: data.feedback,
               request_uuid: this.model.request_uuid,
-              story_uuid: this.model.story_uuid,
+              story_uuid: this.authService.story.story_uuid,
               fulltimer_uuid: null,
               candidate_id: this.model.candidate_id
             };

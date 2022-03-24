@@ -159,7 +159,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
    * @param loading
    */
   loadStoryInvitations(loading = true) {
-    this.invitationService.list('&story_uuid=' + this.story_uuid).subscribe(invitations => {
+    this.invitationService.list('&request_uuid=' + this.request.request_uuid).subscribe(invitations => {
       this.allInvitedCandidates = invitations;
       this.invitedCandidates = invitations.filter(invitation => invitation.invitation_status == 1);
       this.rejectedCandidates = invitations.filter(invitation => invitation.invitation_status == 2);
