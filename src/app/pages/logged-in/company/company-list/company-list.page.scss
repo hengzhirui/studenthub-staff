@@ -104,3 +104,17 @@ ion-toolbar.title {
 ion-toolbar.search {
   padding: 4px 0 13px;
 }
+.add-request {
+  position: fixed;
+  bottom: 11px;
+  z-index: 999;
+  right: 17px;
+  font-size: 33px;
+  padding: 10px;
+  height: 53px;
+  border-radius: 50%;
+  background: #4c70f2;
+  ion-icon {
+    color:#fff;
+  }
+}
