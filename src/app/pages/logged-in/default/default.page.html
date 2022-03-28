@@ -17,6 +17,19 @@
 
     <ng-container *ngIf="!loading && statistics">
 
+      <div *ngIf="authService.story">
+
+        <h3>Continue where you left off</h3>
+        <ion-card class="stats pending-story" tappable [routerLink]="['/story-view/'+ authService.story.story_uuid]">
+          <ion-item class="ion" detail lines="none">
+            <ion-label>
+              <span>{{ authService.story.request.request_position_title }}</span>
+              <p *ngIf="authService.story && authService.story.company">{{ authService.story.company.company_name }}</p>
+            </ion-label>
+          </ion-item>
+        </ion-card>
+      </div>
+
 
       <div *ngIf="statistics.activeRequests > 0">
 
