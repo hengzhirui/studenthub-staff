@@ -137,4 +137,16 @@ export class CompanyBrandsPage implements OnInit {
   error(brand) {
     brand.brand_logo = null;
   }
+
+  show($event, brand) {
+    $event.preventDefault();
+    $event.stopPropagation();
+    brand.show = 1;
+  }
+
+  hide($event, brand) {
+    $event.preventDefault();
+    $event.stopPropagation();
+    brand.show = 0;
+  }
 }
