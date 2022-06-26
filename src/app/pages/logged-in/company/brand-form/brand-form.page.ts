@@ -56,6 +56,8 @@ export class BrandFormPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    window.analytics.page('Brand Form Page');
+
     this._initForm();
   }
 

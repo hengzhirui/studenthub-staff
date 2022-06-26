@@ -178,6 +178,11 @@ export class AuthService {
     this.name = response.name;
     this.email = response.email;
 
+    window.analytics.identify(this.staff_id, {
+      name: this.name,
+      email: this.email,
+    });
+
     // Save to Storage
     this.saveInStorage();
 

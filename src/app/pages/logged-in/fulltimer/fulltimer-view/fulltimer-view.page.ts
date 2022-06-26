@@ -46,6 +46,8 @@ export class FulltimerViewPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    window.analytics.page('Fulltimer View Page');
+
     this.fulltimer_uuid = this.activatedRoute.snapshot.paramMap.get('id');
 
     this.loadData();

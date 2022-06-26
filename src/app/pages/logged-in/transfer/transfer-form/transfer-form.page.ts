@@ -77,6 +77,7 @@ export class TransferFormPage implements OnInit {
   }
 
   ngOnInit() {
+    window.analytics.page('Transfer Form Page');
 
     this.min = '1930/01/01';
 

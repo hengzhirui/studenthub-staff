@@ -42,7 +42,8 @@ export class CompanyRequestDashboardPage implements OnInit {
   }
 
   ngOnInit() {
-    
+    window.analytics.page('Company Request Dashboard Page');
+
     /*const state = window.history.state;
 
     if(state && state.requestStatus) {

@@ -33,6 +33,8 @@ export class ValocityPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    window.analytics.page('Valocity Page');
+
     this.loadData(this.currentPage);
   }
 

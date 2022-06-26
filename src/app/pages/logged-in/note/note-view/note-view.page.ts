@@ -36,6 +36,8 @@ export class NoteViewPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    window.analytics.page('Note View Page');
+
     if(!this.note_uuid)
       this.note_uuid = this.route.snapshot.params.note_uuid;
 

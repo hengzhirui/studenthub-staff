@@ -56,6 +56,8 @@ export class UploadFilePage implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    window.analytics.page('Company Upload File Page');
+
     this._initForm();
   }
 

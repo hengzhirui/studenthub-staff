@@ -28,6 +28,8 @@ export class StoreManagerFormPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    window.analytics.page('Store Manager Form Page');
+
     this.loadData();
   }
 

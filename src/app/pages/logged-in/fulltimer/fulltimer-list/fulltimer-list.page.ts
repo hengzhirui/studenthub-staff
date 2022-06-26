@@ -34,6 +34,8 @@ export class FulltimerListPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    window.analytics.page('Fulltimer List Page');
+
     this.loadData(this.currentPage);
   }
 

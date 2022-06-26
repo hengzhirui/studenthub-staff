@@ -72,6 +72,8 @@ export class CandidateListPage implements OnInit {
   }
 
   ngOnInit() {
+    window.analytics.page('Candidate List Page');
+
     this.loadData(1);
   }
 
