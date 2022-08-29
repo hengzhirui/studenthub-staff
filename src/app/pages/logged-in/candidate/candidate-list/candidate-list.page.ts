@@ -53,8 +53,8 @@ export class CandidateListPage implements OnInit {
   public paginationLoading: boolean = false;
 
   public downloading: boolean = false;
-
   public merging: boolean = false;
+  public exporting: boolean = false;
 
   public borderLimit = false;
 
@@ -272,7 +272,40 @@ export class CandidateListPage implements OnInit {
   }
 
   logScrolling(e) {
-    this.borderLimit = (e.detail.scrollTop > 20) ? true : false;
+    this.borderLimit = (e.detail.scrollTop > 20);
+  }
+
+  /**
+   * export id cards
+   */
+  async export() {
+    const alert = await this.alertCtrl.create({
+      header: 'Are you sure you want to export the file?',
+      cssClass: 'custom-alert',
+      buttons: [
+        {
+          text: 'No',
+          cssClass: 'alert-button-cancel',
+        },
+        {
+          text: 'Yes',
+          cssClass: 'alert-button-confirm',
+          handler: async () => {
+            this.exporting = true;
+            const search = this.urlParams();
+            this.candidateService.export(search).subscribe(response => {
+              this.exporting = false;
+            }, (err) => {
+              this.exporting = false;
+            }, () => {
+              this.exporting = false;
+              this.deselect();
+            });
+          }
+        },
+      ],
+    });
+    await alert.present();
   }
 }
 
