@@ -410,9 +410,10 @@
 <ion-footer class="ion-no-border" *ngIf="candidate && candidate.isProfileCompleted && authService.story && authService.story.request && authService.story.story_status == 1
   && authService.story.staff_id == authService.staff_id && ['cancelled', 'delivered'].indexOf(authService.story.request.request_status) == -1">
   <div class="container">
-    <ion-button class="btn-invite" [disabled]="candidate.isAlreadyInvited" (click)="invite()">
-      <span *ngIf="!candidate.isAlreadyInvited">Invite for Client Request</span>
-      <span *ngIf="candidate.isAlreadyInvited">Invitation sent</span>
+    <ion-button class="btn-invite" [disabled]="candidate.isAlreadyInvited || inviting" (click)="invite()">
+      <span *ngIf="!candidate.isAlreadyInvited && !inviting">Invite for Client Request</span>
+      <span *ngIf="candidate.isAlreadyInvited && !inviting">Invitation sent</span>
+      <ion-spinner *ngIf="inviting"></ion-spinner>
     </ion-button>
   </div>
 </ion-footer>

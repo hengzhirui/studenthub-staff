@@ -68,6 +68,7 @@ export class CandidateViewPage implements OnInit {
   public approving = false;
   public unapproving = false;
   public downloading = false;
+  public inviting = false;
 
   public processing = null;
 
@@ -580,7 +581,7 @@ export class CandidateViewPage implements OnInit {
           text: 'Ok',
           handler: async (data) => {
 
-            //this.loading = true;
+            this.inviting = true;
 
             const params = {
               request_uuid: this.story.request_uuid,
@@ -591,7 +592,7 @@ export class CandidateViewPage implements OnInit {
 
             this.invitationService.create(params).subscribe(async response => {
 
-              this.loading = false;
+              this.inviting = false;
 
               // On Success
               if (response.operation == 'success') {
@@ -600,12 +601,24 @@ export class CandidateViewPage implements OnInit {
 
                 this.candidate.invited = response.invitedCount;
 
-                this.toastCtrl.create({
-                  message: this.authService.errorMessage(response.message),
-                  duration: 3000
-                }).then(toast => {
-                  toast.present();
-                });
+                  this.alertCtrl.create({
+                    header: 'Invitation Sent!',
+                    message: this.authService.errorMessage(response.message),
+                    buttons: [
+                      {
+                        text: 'No',
+                        role: 'cancel',
+                        handler: () => {}
+                      },
+                      {
+                        text: 'Back to story page',
+                        handler: () => {
+                          this.navCtrl.navigateBack('/story-view/' + this.story.story_uuid);
+                        }
+                      }
+                    ]
+                  }).then (alert => alert.present());
+
               }
 
               // On Failure

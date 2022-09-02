@@ -39,64 +39,64 @@
 
 </ion-header>
 
-<ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)">
+<ion-content [scrollEvents]="true">
 
   <div class="container" *ngIf="segment == 'detail'">
     <h2>Job Details</h2>
 
     <ng-container *ngIf="request && story">
-    <ion-badge *ngIf="request.request_position_type == 1">Full-time</ion-badge>
-    <ion-badge *ngIf="request.request_location">{{story.request.request_location}}</ion-badge>
-    <ion-badge *ngIf="request.request_position_type == 2">Part-time</ion-badge>
+      <ion-badge *ngIf="request.request_position_type == 1">Full-time</ion-badge>
+      <ion-badge *ngIf="request.request_location">{{story.request.request_location}}</ion-badge>
+      <ion-badge *ngIf="request.request_position_type == 2">Part-time</ion-badge>
 
-    <ion-badge *ngIf="story.staff">
-      {{ story.staff.staff_name }}
-    </ion-badge>
+      <ion-badge *ngIf="story.staff">
+        {{ story.staff.staff_name }}
+      </ion-badge>
 
-    <ion-grid>
-      <ion-row>
-        <ion-col class="lbl">
-          <ion-icon src="assets/images/Icon_Status.svg"></ion-icon>&nbsp;Status
-        </ion-col>
-        <ion-col class="value">
-          <span *ngIf="story.story_status == 0"> Unstarted </span>
-          <span *ngIf="story.story_status == 1"> Started </span>
-          <span *ngIf="story.story_status == 3"> Delivered </span>
-          <span *ngIf="story.story_status == 4"> Rejected </span>
-          <span *ngIf="story.story_status == 5"> Accepted </span>
-          <span *ngIf="story.story_status == 6">Cancelled </span>
-        </ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col class="lbl">
-          <ion-icon src="assets/images/icon-followup.svg"></ion-icon>&nbsp;Follow-up
-        </ion-col>
-        <ion-col class="value">{{request.num_hours_followup_interval}}</ion-col>
-      </ion-row>
-      <ion-row>
-        <ion-col class="lbl">
-          <ion-icon src="assets/images/Icon_Date_Compensation.svg"></ion-icon> &nbsp;Compensation
-        </ion-col>
-        <ion-col class="value">{{request.request_compensation}}</ion-col>
-      </ion-row>
-    </ion-grid>
+      <ion-grid>
+        <ion-row>
+          <ion-col class="lbl">
+            <ion-icon src="assets/images/Icon_Status.svg"></ion-icon>&nbsp;Status
+          </ion-col>
+          <ion-col class="value">
+            <span *ngIf="story.story_status == 0"> Unstarted </span>
+            <span *ngIf="story.story_status == 1"> Started </span>
+            <span *ngIf="story.story_status == 3"> Delivered </span>
+            <span *ngIf="story.story_status == 4"> Rejected </span>
+            <span *ngIf="story.story_status == 5"> Accepted </span>
+            <span *ngIf="story.story_status == 6">Cancelled </span>
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col class="lbl">
+            <ion-icon src="assets/images/icon-followup.svg"></ion-icon>&nbsp;Follow-up
+          </ion-col>
+          <ion-col class="value">{{request.num_hours_followup_interval}}</ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col class="lbl">
+            <ion-icon src="assets/images/Icon_Date_Compensation.svg"></ion-icon> &nbsp;Compensation
+          </ion-col>
+          <ion-col class="value">{{request.request_compensation}}</ion-col>
+        </ion-row>
+      </ion-grid>
 
-    <div class="desc">
-      <h2>Job Description</h2>
-      <p [innerHtml]="request.request_job_description"></p>
+      <div class="desc">
+        <h2>Job Description</h2>
+        <p [innerHtml]="request.request_job_description"></p>
 
-      <p class="txt-additional-info">
-        {{ request.no_of_employees_per_story }} no of employees per story
-      </p>
+        <p class="txt-additional-info">
+          {{ request.no_of_employees_per_story }} no of employees per story
+        </p>
 
-    </div>
+      </div>
 
-    <div class="requested-by">
-      Requested <ng-container *ngIf="request.contact">by <span class="requested-by-staff" tappable
-          [routerLink]="'/company-contact-view/' + request.contact_uuid">{{ request.contact.contact_name }}</span>
-        on {{ request.request_created_datetime | timeAgo }}
-      </ng-container>
-    </div>
+      <div class="requested-by">
+        Requested <ng-container *ngIf="request.contact">by <span class="requested-by-staff" tappable
+            [routerLink]="'/company-contact-view/' + request.contact_uuid">{{ request.contact.contact_name }}</span>
+          on {{ request.request_created_datetime | timeAgo }}
+        </ng-container>
+      </div>
     </ng-container>
   </div>
   <div class="container" *ngIf="request && story && segment == 'update'">

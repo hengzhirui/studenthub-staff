@@ -36,7 +36,7 @@ export interface TimeSpan {
   selector: 'app-story-view',
   templateUrl: './story-view.page.html',
   styleUrls: ['./story-view.page.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  // changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StoryViewPage implements OnInit, OnDestroy {
 
@@ -144,7 +144,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
     this.destroyed$.complete();
     this.stopTimer();
     if (this.internvalSubscribe) {
-      clearInterval(this.internvalSubscribe);
+      clearInterval(  this.internvalSubscribe);
     }
   }
 
