@@ -454,7 +454,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
 
     const { data } = await modal.onWillDismiss();
 
-    if (data.click) {
+    if (data && data.click) {
       this.changeStoryStatus(0);
     }
   }
