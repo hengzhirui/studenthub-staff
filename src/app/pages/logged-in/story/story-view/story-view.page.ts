@@ -20,9 +20,9 @@ import { TranslateLabelService } from 'src/app/providers/translate-label.service
 import {Request, Story} from 'src/app/models/request';
 import { Invitation } from 'src/app/models/invitation';
 import {StoryViewOptionPage} from './story-view-option.page';
-import {StoryCloseConfirmationComponent} from "./story-close-confirmation.component";
-import {NoteService} from "../../../../providers/logged-in/note.service";
-import {Note} from "../../../../models/note";
+import {StoryCloseConfirmationComponent} from './story-close-confirmation.component';
+import {NoteService} from '../../../../providers/logged-in/note.service';
+import {Note} from '../../../../models/note';
 import { StoryDeliveredComponent } from './story-delivered.component';
 
 
@@ -41,7 +41,7 @@ export interface TimeSpan {
 export class StoryViewPage implements OnInit, OnDestroy {
 
   public borderLimit = false;
-
+  public sortedNotes: any = [];
   public story_uuid: any;
   public story: Story;
   public request: Request;
@@ -57,7 +57,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
   public invitedCandidates: Invitation[] = [];
   public rejectedCandidates: Invitation[] = [];
   public acceptedInvitations: Invitation[] = [];
-  public segment: string = 'detail';
+  public segment = 'detail';
   private destroyed$ = new Subject();
   private subscription: Subscription;
   public alertConfirmReload;
@@ -97,14 +97,15 @@ export class StoryViewPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.internvalSubscribe = setInterval(_ => {
       this.isStoryUpdated();
-    }, 6 * 1000);//every 6 seconds
+    }, 6 * 1000); // every 6 seconds
 
   }
 
   ionViewWillEnter(){
 
-    if (!this.story_uuid)
+    if (!this.story_uuid) {
       this.story_uuid = this.activatedRoute.snapshot.paramMap.get('id');
+    }
 
     const state = window.history.state;
 
@@ -113,7 +114,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
     }
 
     interval(1000).subscribe(() => {
-      if (!this.changeDetector['destroyed']) {
+      if (!this.changeDetector.destroyed) {
         this.changeDetector.detectChanges();
       }
     });
@@ -121,13 +122,13 @@ export class StoryViewPage implements OnInit, OnDestroy {
     this.changeDetector.detectChanges();
 
     this.eventService.companyRequestCancelled$.subscribe((request: any) => {
-      if(this.story && request.request_uuid == this.story.request_uuid) {
+      if (this.story && request.request_uuid == this.story.request_uuid) {
         this.loadData();
       }
     });
 
     this.eventService.companyRequestDelivered$.subscribe((request: any) => {
-      if(this.story && request.request_uuid == this.story.request_uuid) {
+      if (this.story && request.request_uuid == this.story.request_uuid) {
         this.loadData();
       }
     });
@@ -156,8 +157,9 @@ export class StoryViewPage implements OnInit, OnDestroy {
       this.loadStoryInvitations();
       this.loadSuggestions();
       this.loadNotes();
+      this.sortNotes();
 
-      if(this.story.story_status == 1 && this.story.staff_id == this.authService.staff_id &&
+      if (this.story.story_status == 1 && this.story.staff_id == this.authService.staff_id &&
         ['cancelled', 'delivered'].indexOf(this.story.request.request_status) == -1)
       {
         this.authService.story = this.story;
@@ -247,8 +249,8 @@ export class StoryViewPage implements OnInit, OnDestroy {
         // story work started
         if (status == 1) {
           this.story.staff_id = this.authService.staff_id;
-            this.authService.story = this.story;
-            this.authService.saveInStorage();
+          this.authService.story = this.story;
+          this.authService.saveInStorage();
         }
 
         // story work stopped
@@ -257,7 +259,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
             this.authService.saveInStorage();
         }
 
-        if(status == 3) {
+        if (status == 3) {
           this.showStoryDelivered(
             response.newStoryActivity,
             response.totalDelivered,
@@ -321,8 +323,9 @@ export class StoryViewPage implements OnInit, OnDestroy {
    * @param date
    */
   toDate(date) {
-    if (!date)
+    if (!date) {
       return null;
+    }
 
     return new Date(date.replace(/-/g, '/'));
   }
@@ -408,10 +411,10 @@ export class StoryViewPage implements OnInit, OnDestroy {
     const modal = await this._modalCtrl.create({
       component: StoryDeliveredComponent,
       componentProps: {
-        totalDelivered: totalDelivered,
-        total: total,
-        storyActivity: storyActivity,
-        //nextStory: nextStory
+        totalDelivered,
+        total,
+        storyActivity,
+        // nextStory: nextStory
       },
       cssClass: 'modal-request-filter modal-delivered-story',
     });
@@ -420,15 +423,15 @@ export class StoryViewPage implements OnInit, OnDestroy {
 
     const { data } = await modal.onWillDismiss();
 
-    if (data.action == "request")
+    if (data.action == 'request')
     {
       this.navCtrl.navigateForward(['request-view', this.story.request_uuid]);
     }
-    else if (data.action == "next")
+    else if (data.action == 'next')
     {
       this.navCtrl.navigateForward(['story-view', nextStory.story_uuid]);
     }
-    else if (data.action = "back")
+    else if (data.action == 'back')
     {
       this.navCtrl.back();
     }
@@ -473,7 +476,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
         }, {
           text: 'Save',
           handler: (data) => {
-              let note = new Note();
+              const note = new Note();
               note.staff_id = this.authService.staff_id;
               note.company_id = this.story.request.company.company_id;
               note.request_uuid = this.story.request.request_uuid;
@@ -508,11 +511,12 @@ export class StoryViewPage implements OnInit, OnDestroy {
     this.noteService.list(searchParams, 1).subscribe(async response => {
 
       this.notes = response.body;
+      this.sortNotes();
     });
   }
 
   urlParams() {
-    let url = 'story_uuid=' + this.story.story_uuid;
+    const url = 'story_uuid=' + this.story.story_uuid;
     return url;
   }
 
@@ -540,7 +544,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
    */
   async confirmReload(request_updated_datetime) {
 
-    //this.loadDetail(false);//refresh without showing loader
+    // this.loadDetail(false);//refresh without showing loader
 
     this.alertConfirmReload = await this.alertCtrl.create({
       header: 'Story updated',
@@ -551,7 +555,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
           role: 'cancel',
           cssClass: 'secondary',
           handler: () => {
-            //to ignore current update
+            // to ignore current update
             this.story.story_last_updated_at = request_updated_datetime;
             this.alertConfirmReload = null;
           }
@@ -565,5 +569,30 @@ export class StoryViewPage implements OnInit, OnDestroy {
       ]
     });
     this.alertConfirmReload.present();
+  }
+
+  sortNotes(){
+    this.sortedNotes = [];
+    let activities = [];
+    let notes = [];
+    if (this.story.storyActivities && this.story.storyActivities.length > 0) {
+      activities = this.story.storyActivities.map(activity => Object.assign({
+        time: activity.activity_created_at,
+        type: 'activity',
+        data: activity
+      }));
+    }
+    if (this.notes && this.notes.length > 0) {
+      notes = this.notes.map(activity => Object.assign({
+        time: activity.note_created_datetime,
+        type: 'note',
+        data: activity
+      }));
+      this.sortedNotes.push(...notes);
+    }
+    this.sortedNotes.push(...activities);
+    this.sortedNotes = this.sortedNotes.sort((a: any, b: any) =>
+      new Date(a.time).getTime() - new Date(b.time).getTime()
+    );
   }
 }

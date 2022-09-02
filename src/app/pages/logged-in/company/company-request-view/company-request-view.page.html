@@ -27,7 +27,7 @@
         <ion-label>Stories</ion-label>
       </ion-segment-button>
 
-      <ion-segment-button *ngIf="invitedCandidates.length > 0 || rejectedCandidates.length > 0 || acceptedInvitations.length > 0" mode="md" value="invited">
+      <ion-segment-button *ngIf="request && request.request_position_type != 1 && (invitedCandidates.length > 0 || rejectedCandidates.length > 0 || acceptedInvitations.length > 0)" mode="md" value="invited">
         <ion-label>Invite</ion-label>
       </ion-segment-button>
 
@@ -35,9 +35,9 @@
 <!--        <ion-label>Accepted Invitation</ion-label>-->
 <!--      </ion-segment-button>-->
 
-<!--      <ion-segment-button *ngIf="suggestedSuggestions.length > 0 || rejectedSuggestions.length > 0 || acceptedSuggestions.length > 0" mode="md" value="suggested">-->
-<!--        <ion-label>Suggested</ion-label>-->
-<!--      </ion-segment-button>-->
+      <ion-segment-button *ngIf="request && request.request_position_type == 1" mode="md" value="suggested">
+        <ion-label>Suggested</ion-label>
+      </ion-segment-button>
 
 <!--      <ion-segment-button mode="md" value="accepted" *ngIf="acceptedSuggestions.length > 0">-->
 <!--        <ion-label>Accepted</ion-label>-->
@@ -53,6 +53,7 @@
 </ion-header>
 
 <ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)">
+
   <div *ngIf="segment == 'invited'">
     <ion-button size="small" [class.selected]="section == 'invited'" (click)="changeSection('invited')">Invited</ion-button>
     <ion-button size="small" [class.selected]="section == 'acpt_inv'" (click)="changeSection('acpt_inv')">Accepted Invite</ion-button>
@@ -62,6 +63,7 @@
   </div>
 
   <div class="container">
+
     <!--
     <ion-button *ngIf="request && (request.request_status == 'started' || request.request_status == 'pending')"
                 class="btn-cv-search" routerLink="/view/candidate-search">
