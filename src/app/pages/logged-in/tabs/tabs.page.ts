@@ -48,11 +48,11 @@ export class TabsPage implements OnInit, OnDestroy {
     if (state && state.selectedTab) {
       this.tabRef.select(state.selectedTab).then();
     }
-
-    // in case story not found.
-    if (!this.authService.story) {
-      this.getAccountInfo();
-    }
+    //
+    // // in case story not found.
+    // if (!this.authService.story) {
+    //this.getAccountInfo();
+    // }
 
     // add event to scroll content to top on tab selection
 
@@ -78,6 +78,9 @@ export class TabsPage implements OnInit, OnDestroy {
     this.internvalSubscribe = null;
   }
 
+  ionViewWillEnter() {
+    this.getAccountInfo();
+  }
   /**
    * load current data
    */
