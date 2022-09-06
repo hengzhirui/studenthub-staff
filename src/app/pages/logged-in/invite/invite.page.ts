@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AlertController, ModalController } from '@ionic/angular';
+import {AlertController, ModalController, ToastController} from '@ionic/angular';
 // models
 import { Candidate } from 'src/app/models/candidate';
-import { Request } from 'src/app/models/request';
+import { Request, Story } from 'src/app/models/request';
 import { AuthService } from 'src/app/providers/auth.service';
 import { EventService } from 'src/app/providers/event.service';
 import { InvitationService } from 'src/app/providers/logged-in/invitation.service';
@@ -34,8 +34,10 @@ export class InvitePage implements OnInit {
   public activeRequestsData: Request[] = [];
 
   public form: FormGroup;
+
   public query;
 
+  public story: Story;
   public filters: {
     companyName: string,
     requestStatus: string,
@@ -47,6 +49,7 @@ export class InvitePage implements OnInit {
   constructor(
     private fb: FormBuilder,
     public modalCtrl: ModalController,
+    public toastCtrl: ToastController,
     public alertCtrl: AlertController,
     public authService: AuthService,
     public eventService: EventService,
@@ -67,6 +70,7 @@ export class InvitePage implements OnInit {
       request_uuid: ['', Validators.required],
       candidate_id: [this.candidate ? this.candidate.candidate_id : null],
       reason: ['', Validators.required],
+      story_uuid: this.story?.story_uuid
     });
   }
 
@@ -105,6 +109,7 @@ export class InvitePage implements OnInit {
    * load all requests for parttimers
    */
   loadRequests() {
+
     this.loadingRequests = true;
 
     this.requestService.listWithPagination(1).subscribe(response => {
@@ -160,6 +165,14 @@ export class InvitePage implements OnInit {
       // On Success
       if (response.operation == 'success') {
         // Close the page
+
+        this.toastCtrl.create({
+          message: this.authService.errorMessage(response.message),
+          duration: 3000
+        }).then(toast => {
+          toast.present();
+        });
+
         this.close(true, response.invitedCount);
       }
 
@@ -182,9 +195,13 @@ export class InvitePage implements OnInit {
    * @param invitedCount
    */
   close(refresh = false, invitedCount = null) {
-    this.modalCtrl.dismiss({
-      refresh,
-      invitedCount
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss({
+          refresh,
+          invitedCount
+        });
+      }
     });
   }
 

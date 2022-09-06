@@ -41,7 +41,7 @@ export class CompanySubcompaniesPage implements OnInit {
   loadData() {
     this.loading = true;
 
-    this.companyService.view(this.company.company_id,'subCompanies,subCompanies.stores').subscribe(data => {
+    this.companyService.view(this.company.company_id,'subCompanies,subCompanies.stores,subCompanies.brands').subscribe(data => {
       this.company = data;
 
       this.loading = false;
@@ -119,7 +119,11 @@ export class CompanySubcompaniesPage implements OnInit {
   }
 
   dismiss() {
-    this.modalCtrl.dismiss();
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss();
+      }
+    })
   }
 
   logScrolling(e) {

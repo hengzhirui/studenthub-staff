@@ -1,49 +1,107 @@
-<ion-header [class.add-border]="borderLimit" class="ion-no-border">
+<ion-header mode="md" [class.add-border]="borderLimit" class="ion-no-border">
+
   <ion-toolbar class="container">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/view/company-list"></ion-back-button>
+      <ion-back-button icon="assets/images/icon-back.svg" defaultHref="/view/company-list"></ion-back-button>
     </ion-buttons>
-    <ion-title *ngIf="staff">{{ staff.staff_name }}</ion-title>
   </ion-toolbar>
+
+  <ion-toolbar class="container"  [class.hidden]="borderLimit">
+    <ion-title *ngIf="staff">
+      <ion-row>
+        <ion-col>
+          {{ staff.staff_name }}
+        </ion-col>
+        <ion-col class="ion-text-right">
+          <a tappable class="logout_btn" *ngIf="authService.staff_id == staff_id" (click)="authService.logout()">
+            Logout
+          </a>
+        </ion-col>
+      </ion-row>
+
+    </ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar  class="container"  [class.hidden]="borderLimit">
+    <ion-segment mode="md" (ionChange)="segmentChanged($event)" value="details">
+
+      <ion-segment-button  mode="md" value="details">
+        <ion-label>Details</ion-label>
+      </ion-segment-button>
+
+      <ion-segment-button  mode="md" value="work-history">
+        <ion-label>Work History</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+
 </ion-header>
 
 <ion-content scrollEvents="true" (ionScroll)="logScrolling($event)">
   <div class="container">
-    <ion-list *ngIf="!loading && staff">
-      <section>
-        <ion-item>
-          <div tabindex="0"></div>
-          <ion-label>
-            <h3>Name</h3>
-            <p>{{ staff.staff_name }}</p>
-          </ion-label>
-        </ion-item>
-
+    <ion-list *ngIf="staff && segment == 'details'">
         <ion-item lines="none">
           <div tabindex="0"></div>
           <ion-label>
-            <h3>Email</h3>
+            <h5>Name</h5>
+            <p>{{ staff.staff_name }}</p>
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none">
+          <div tabindex="0"></div>
+          <ion-label>
+            <h5>Email</h5>
             <p>{{ staff.staff_email }}</p>
           </ion-label>
         </ion-item>
-      </section>
+        <ion-item lines="none">
+          <div tabindex="0"></div>
+          <ion-label>
+            <h5>Password</h5>
+            <p>*********</p>
+          </ion-label>
+        </ion-item>
     </ion-list>
 
-    <ion-list-header *ngIf="notes.length > 0">
-      <ion-label>List Notes</ion-label>
-    </ion-list-header>
+    <div *ngIf="segment == 'work-history'">
 
-    <ion-list *ngIf="!loading">
-      <section>
+      <ion-card [class.warning]="suggestion.suggestion_status != 3"
+        [class.success]="suggestion.suggestion_status == 3" class="card-story"
+        *ngFor="let suggestion of suggestions">
+
+        <h3 *ngIf="suggestion.candidate">{{ suggestion.candidate.candidate_name }}</h3>
+        <h3 *ngIf="suggestion.fulltimer">{{ suggestion.fulltimer.fulltimer_name }}</h3>
+
+        <!--<h3>{{ suggestion.candidate_name }}</h3>-->
+
+        <h4>{{ suggestion.request.request_position_title }}</h4>
+
+        <h5 *ngIf="suggestion.request.company">{{ suggestion.request.company.company_name }}</h5>
+
+        <p *ngIf="suggestion.note">
+          {{ suggestion.note.note_text }}
+        </p>
+      </ion-card>
+
+      <!--
+      <ion-list>
         <note tappable *ngFor="let note of notes" [routerLink]="'/note-view/' + note.note_uuid" [note]="note" (onChange)="loadNotes()" (onDelete)="loadNotes()"></note>
-      </section>
-    </ion-list>
+      </ion-list>-->
 
-    <no-items message = "No notes yet!" *ngIf="!loading && !loadMore && notes.length == 0"></no-items>
+      <no-items message = "No history yet!" *ngIf="!loading && !loadMore && suggestions.length == 0"></no-items>
 
-    <loading-modal [loading]="loading || loadMore" type="text-list"></loading-modal>
+      <loading-modal [loading]="loading || loadMore" type="text-list"></loading-modal>
+    </div>
+
   </div>
   <ion-infinite-scroll *ngIf="currentPage < pageCount" (ionInfinite)="doInfinite($event)">
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>
+<ion-footer *ngIf="staff && segment == 'details'" class="ion-text-center ion-no-border ion-transparent">
+  <div class="container"> <!--  [routerLink]="['/change-password/']"-->
+    <ion-button *ngIf="authService.staff_id == staff_id" (click)="changePassword()" class="btn-change-pwd">
+      Change Password
+    </ion-button>
+  </div>
+</ion-footer>

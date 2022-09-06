@@ -2,8 +2,7 @@ import { Location } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
-import {AlertController, LoadingController, ModalController, Platform} from '@ionic/angular';
-import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import {AlertController, LoadingController, ModalController, NavController, Platform, PopoverController} from '@ionic/angular';
 //models
 import { CompanyContact } from 'src/app/models/company-contact';
 import { Note } from 'src/app/models/note';
@@ -15,6 +14,10 @@ import { NoteService } from 'src/app/providers/logged-in/note.service';
 import { EventService } from 'src/app/providers/event.service';
 //pages
 import { CompanyContactFormPage } from '../../company-contact-form/company-contact-form.page';
+import { CompanyNotesPage } from '../../company-notes/company-notes.page';
+import { Request } from 'src/app/models/request';
+import { CompanyRequestService } from 'src/app/providers/logged-in/company-request.service';
+import { ActionComponent } from 'src/app/components/action/action.component';
 
 
 @Component({
@@ -30,6 +33,8 @@ export class CompanyContactViewPage implements OnInit {
 
   public company_id;
 
+  public loadingNotes: boolean = false;
+
   public loading: boolean = false;
 
   public deleting: boolean = false;
@@ -38,22 +43,18 @@ export class CompanyContactViewPage implements OnInit {
 
   public contact: Contact;
 
+  public requests: Request[] = [];
+
   public notes: Note[] = [];
+  public notesTotal;
 
-  public editorFocused = false;
+  loadingRequests = false;
+
+  pageCountRequest;
+  currentPageRequest;
+  totalRequests;
+
   public deletingNote = false;
-  public editNoteData: Note = new Note();
-
-  public editorConfig = {
-    placeholder: 'Click here to take notes...',
-    toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'indent', 'outdent'],
-  };
-
-  public Editor = ClassicEditor;
-
-  public addingNote = false;
-
-  public noteForm: FormGroup;
 
   public pageCount: number;
 
@@ -61,14 +62,19 @@ export class CompanyContactViewPage implements OnInit {
 
   public borderLimit;
 
+  public segment = 'details';
+
   constructor(
     private fb: FormBuilder,
+    public navCtrl: NavController,
     public location: Location,
     public platform: Platform,
     public route: ActivatedRoute,
     public alertCtrl: AlertController,
     public modalCtrl: ModalController,
+    public popoverCtrl: PopoverController,
     public authService: AuthService,
+    public requestService: CompanyRequestService,
     public noteService: NoteService,
     public eventService: EventService,
     public _loadingCtrl: LoadingController,
@@ -85,15 +91,16 @@ export class CompanyContactViewPage implements OnInit {
 
     const model = window.history.state.model;
 
-    if(model) {
+    /*if(model) {
       // this.companyContact = model;
-      this.initNoteForm();
       this.loadNotes();
-    }
+      this.loadRequests();
 
-    if(!this.companyContact) {
+    }*/
+
+    //if(!this.companyContact) {
       this.loadDetail();
-    }
+    //}
 
     if(!this.companyContact && this.company_id) {
       this.loadCompanyContact();
@@ -104,6 +111,72 @@ export class CompanyContactViewPage implements OnInit {
         this.loadNotes();
       }
     });
+
+    this.eventService.requestCountUpdated$.subscribe((data: any) => {
+      this.loadRequests();
+    });
+  }
+
+  /**
+   * load more requests on scroll to bottom
+   * @param event
+   */
+  doInfiniteRequests(event) {
+
+    const searchParams = this.requestUrlParams();
+
+    this.currentPage++;
+
+    this.loadingRequests = true;
+
+    this.requestService.listWithPagination(this.currentPage, searchParams).subscribe(response => {
+      this.loadingRequests = false;
+
+      this.pageCountRequest = parseInt(response.headers.get('X-Pagination-Page-Count'));
+      this.currentPageRequest = parseInt(response.headers.get('X-Pagination-Current-Page'));
+      this.totalRequests = parseInt(response.headers.get('X-Pagination-Total-Count'));
+
+      this.requests = this.requests.concat(response.body);
+    },
+    error => { },
+    () => {
+      this.loadingRequests = false;
+
+      event.target.complete();
+    });
+  }
+
+  /**
+   * load requests
+   */
+  loadRequests()
+  {
+    this.loadingRequests = true;
+
+    const urlParams = this.requestUrlParams();
+
+    this.requestService.listWithPagination(1, urlParams).subscribe(response => {
+
+      this.pageCountRequest = parseInt(response.headers.get('X-Pagination-Page-Count'));
+      this.currentPageRequest = parseInt(response.headers.get('X-Pagination-Current-Page'));
+      this.totalRequests = parseInt(response.headers.get('X-Pagination-Total-Count'));
+
+      this.requests = response.body;
+
+    },
+      error => { },
+      () => { this.loadingRequests = false; }
+    );
+  }
+
+  requestUrlParams() {
+    let url = '&contact_uuid=' + this.contact_uuid;
+
+    if(this.company_id) {
+      url += '&company_id=' + this.company_id;
+    }
+
+    return url;
   }
 
   /**
@@ -115,6 +188,32 @@ export class CompanyContactViewPage implements OnInit {
     });
   }
 
+  addNote() {
+    this.openNotes(true);
+  }
+
+  async openNotes(addNewNote = false) {
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: CompanyNotesPage,
+      componentProps: {
+        company: this.contact.company,
+        addNewNote: addNewNote,
+        editorFocused: addNewNote
+      }
+    });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+
+    });
+    modal.present();
+  }
+
   /**
    * load request detail
    */
@@ -123,11 +222,9 @@ export class CompanyContactViewPage implements OnInit {
 
     this.companyContactService.view(this.contact_uuid).subscribe(data => {
       this.contact = data;
-      
-      this.loadNotes();
 
-      if(!this.noteForm)
-        this.initNoteForm();
+      this.loadNotes();
+      this.loadRequests();
     }, () => {
     }, () => {
       this.loading = false;
@@ -218,6 +315,14 @@ export class CompanyContactViewPage implements OnInit {
     }, () => loader.dismiss() );
   }
 
+  requestDetail(request) {
+    this.navCtrl.navigateForward('/request-view/' + request.request_uuid, {
+      state : {
+        from: 'company-request-list'
+      }
+    });
+  }
+
   /**
    * Make date readable by Safari
    * @param date
@@ -228,20 +333,6 @@ export class CompanyContactViewPage implements OnInit {
 
     if (date)
       return new Date(date.replace(/-/g, '/'));
-  }
-
-  /**
-   * edit note
-   * @param note
-   */
-  async editNote(note: Note) {
-    this.editNoteData = note;
-
-    this.noteForm.controls.note.setValue(note.note_text);
-    this.noteForm.controls.type.setValue(note.note_type);
-
-    this.ckeditor.editorInstance.setData(note.note_text);
-    this.editorFocused = true;
   }
 
   /**
@@ -296,32 +387,20 @@ export class CompanyContactViewPage implements OnInit {
   }
 
   /**
-   * display editor on input focused for note
-   */
-  onEditorFocus() {
-    this.editorFocused = true;
-  }
-
-  resetNoteForm() {
-    this.editNoteData = new Note();
-
-    this.noteForm.controls.note.setValue('');
-    this.ckeditor.editorInstance.setData('');
-    this.editorFocused = false;
-
-    this.noteForm.controls.type.setValue('Internal Note');
-  }
-
-  /**
    * load notes
    */
   loadNotes() {
     const searchParams = this.urlParams();
 
+    this.loadingNotes = true;
+
     this.noteService.list(searchParams, 1).subscribe(async response => {
+
+      this.loadingNotes = false;
 
       this.pageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
       this.currentPage = parseInt(response.headers.get('X-Pagination-Current-Page'));
+      this.notesTotal = parseInt(response.headers.get('X-Pagination-Total-Count'));
 
       this.notes = response.body;
     });
@@ -342,94 +421,74 @@ export class CompanyContactViewPage implements OnInit {
     const searchParams = this.urlParams();
 
     this.currentPage++;
+    this.loadingNotes = true;
 
     this.noteService.list(searchParams, this.currentPage).subscribe(response => {
+      this.loadingNotes = false;
 
       this.pageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
       this.currentPage = parseInt(response.headers.get('X-Pagination-Current-Page'));
 
       this.notes = this.notes.concat(response.body);
     },
-      error => { },
-      () => { event.target.complete(); }
-    );
-  }
+    error => { },
+    () => {
+      this.loadingNotes = false;
 
-  /**
-   * save note data
-   */
-  save() {
-    this.addingNote = true;
-
-    const model = new Note();
-    model.company_id = this.company_id;
-    model.note_type = this.noteForm.controls.type.value;
-    model.contact_uuid = this.contact_uuid;
-    model.note_text = this.noteForm.controls.note.value;
-
-    let response = null;
-
-    if (this.editNoteData && this.editNoteData.note_uuid) {
-      model.note_uuid = this.editNoteData.note_uuid;
-      response = this.noteService.update(model);
-    } else {
-      response = this.noteService.create(model);
-    }
-
-    response.subscribe(async jsonResponse => {
-
-      this.addingNote = false;
-
-      // On Success
-      if (jsonResponse.operation == 'success') {
-
-        this.resetNoteForm();
-        this.loadNotes();
-      }
-
-      // On Failure
-      if (jsonResponse.operation == 'error') {
-        const prompt = await this.alertCtrl.create({
-          message: this.authService._processResponseMessage(jsonResponse),
-          buttons: ['Ok']
-        });
-        prompt.present();
-      }
-    }, () => {
-      this.editorFocused = false;
-      this.addingNote = false;
-    });
-  }
-
-  /**
-   * on note editor change
-   * @param event
-   */
-  onChange(event) {
-
-    if (!event.editor) {
-      return event;
-    }
-
-    const data = event.editor.getData();
-
-    this.noteForm.controls.note.setValue(data);
-    this.noteForm.markAsDirty();
-    this.noteForm.updateValueAndValidity();
-  }
-
-  /**
-   * init form to add note
-   */
-  initNoteForm() {
-
-    this.noteForm = this.fb.group({
-      note: ['', Validators.required],
-      type: ['Internal Note', Validators.required],
+      event.target.complete();
     });
   }
 
   logScrolling(e) {
     this.borderLimit = (e.detail.scrollTop > 0) ?  true : false;
+  }
+
+  async showActions(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const actions = [
+      {
+        name: "Edit Contact",
+        icon: 'assets/icon/icon-edit-2.svg',
+        trigger: 'edit'
+      },
+      {
+        name: "Delete Contact",
+        icon: 'assets/icon/icon-trash-2.svg',
+        trigger: 'delete'
+      },
+    ];
+
+    const modal = await this.popoverCtrl.create({
+      component: ActionComponent,
+      componentProps: {
+        actions: actions
+      },
+      cssClass: 'store-option',
+      event,
+      translucent: true,
+      showBackdrop: false
+    });
+    modal.present();
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data && data.action) {
+      if(data.action.trigger == 'edit') {
+        this.edit()
+      } else if(data.action.trigger == 'delete') {
+        this.delete()
+      }  
+    }
   }
 }

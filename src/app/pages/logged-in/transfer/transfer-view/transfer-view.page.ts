@@ -31,6 +31,10 @@ export class TransferViewPage implements OnInit {
 
   public transfer_id;
 
+  public segment = 'details';
+
+  public borderLimit: boolean = false;
+
   constructor(
     public navCtrl: NavController,
     public aws: AwsService,
@@ -79,6 +83,7 @@ export class TransferViewPage implements OnInit {
           this.invoices.push(value);
         }
       });
+
       this.loading = false;
     });
   }
@@ -189,11 +194,15 @@ export class TransferViewPage implements OnInit {
     });
   }
 
+  downloadLatestInvoice() {
+    this.downloadInvoice(this.transfer.invoices[this.transfer.invoices.length - 1]);
+  }
+
   /**
    * Download the invoice as specified by invoice_id
    * @param invoice
    */
-  async downloadInvoice(invoice: Invoice) {
+  async downloadInvoice(invoice) {
     const loader = await this._loadingCtrl.create();
     loader.present();
     this.transferService.downloadInvoice(invoice).subscribe(response => {
@@ -304,11 +313,14 @@ export class TransferViewPage implements OnInit {
 
       if (response.operation == 'success') {
 
+        this.eventService.transferDeleted$.next();
+
         this.eventService.reloadStats$.next({
           company_id: this.transfer.company_id
         });
 
         this.back();
+
       } else {
         const alert = await this.alertCtrl.create({
           message: response.message,
@@ -362,6 +374,10 @@ export class TransferViewPage implements OnInit {
     if (date) {
       return new Date(date.replace(/-/g, '/'));
     }
+  }
+
+  logScrolling(e) {
+    this.borderLimit = (e.detail.scrollTop > 20);
   }
 
   loadLogo($event, candidate) {

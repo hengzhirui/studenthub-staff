@@ -18,7 +18,7 @@ import { CompanyContactListPage } from "../company-contact/company-contact-list/
   styleUrls: ['./company-request-form.page.scss'],
 })
 export class CompanyRequestFormPage implements OnInit {
-  
+
   @ViewChild('ckeditor', { static: false }) ckeditor: ClassicEditor;
 
   @Input() company;
@@ -38,9 +38,10 @@ export class CompanyRequestFormPage implements OnInit {
     placeholder: 'Click here add description...',
     startupFocus: true,
     width: '100%',
+    height: 500,
     toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'indent', 'outdent'],
   };
-  
+
   public Editor = ClassicEditor;
 
   constructor(
@@ -68,6 +69,7 @@ export class CompanyRequestFormPage implements OnInit {
       position_type: [this.model.request_position_type + '', Validators.required],
       position_title: [this.model.request_position_title, Validators.required],
       number_of_employees: [this.model.request_number_of_employees, Validators.required],
+      no_of_employees_per_story: [this.model.no_of_employees_per_story, Validators.required],
       location: [this.model.request_location],
       job_description: [this.model.request_job_description, Validators.required],
       compensation: [this.model.request_compensation, Validators.required],
@@ -86,7 +88,7 @@ export class CompanyRequestFormPage implements OnInit {
       }
     }, 200);
   }
-  
+
   /**
    * on note editor change
    * @param event
@@ -117,14 +119,18 @@ export class CompanyRequestFormPage implements OnInit {
     this.model.request_job_description = this.form.value.job_description;
     this.model.request_compensation = this.form.value.compensation;
     this.model.request_location = this.form.value.location;
+    this.model.no_of_employees_per_story = this.form.value.no_of_employees_per_story;
   }
 
   /**
    * Close the page
    */
   close() {
-    const data = { refresh: false };
-    this.modalCtrl.dismiss(data);
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss({ refresh: false });
+      }
+    });
   }
 
   /**
@@ -194,7 +200,7 @@ export class CompanyRequestFormPage implements OnInit {
     }
 
     popover.onDidDismiss().then((_) => {
-      
+
       if (_ && _.data && _.data.contact) {
         this.form.controls.contact_name.setValue(_.data.contact.contact_name);
         this.form.controls.contact_uuid.setValue(_.data.contact.contact_uuid);
@@ -234,5 +240,6 @@ export class CompanyRequestFormPage implements OnInit {
     this.form.controls.job_description.setValue(null);
     this.form.controls.compensation.setValue(null);
     this.form.controls.location.setValue(null);
+    this.form.controls.no_of_employees_per_story.setValue(null);
   }
 }

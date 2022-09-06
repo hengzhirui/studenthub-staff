@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController, NavParams } from '@ionic/angular';
 //models
 import { CompanyContact } from 'src/app/models/company-contact';
 //services
@@ -21,13 +21,22 @@ export class StoreManagerFormPage implements OnInit {
   public parentCompanyContacts: Contact[] = [];
 
   public loading: boolean = false;
+  
+  public directView = false;
+
+  public borderLimit = false;
 
   constructor(
     public modalCtrl: ModalController,
+    private navParams: NavParams,
     public comapnyContactService: CompanyContactService
   ) { }
 
   ngOnInit() {
+    
+    if (this.navParams && this.navParams.data && this.navParams.data.view) {
+      this.directView = true;
+    }
     window.analytics.page('Store Manager Form Page');
 
     this.loadData();
@@ -49,14 +58,29 @@ export class StoreManagerFormPage implements OnInit {
     }
   }
 
+  logScrolling(e) {
+    this.borderLimit = (e.detail.scrollTop > 20);
+  }
+
   rowSelected(companyContact) {
-    this.modalCtrl.dismiss({
-      refresh: true,
-      storeManager: companyContact
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss({ refresh: true, storeManager: companyContact });
+      }
     });
   }
 
-  dismiss() {
-    this.modalCtrl.dismiss();
+  dismiss(event = null) {
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+
+        if(event) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        this.modalCtrl.dismiss();      
+      }
+    });
   }
 }

@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
-//models
+// models
 import { Suggestion } from 'src/app/models/suggestion';
-//services
+// services
 import { AwsService } from 'src/app/providers/aws.service';
 import { SuggestionService } from 'src/app/providers/logged-in/suggestion.service';
+import {AuthService} from 'src/app/providers/auth.service';
 
 
 @Component({
@@ -18,9 +19,11 @@ export class SuggestionComponent implements OnInit {
   @Output() onUpdate: EventEmitter<any> = new EventEmitter();
 
   @Input() model: Suggestion;
+  @Input() showBadge = true;
 
   constructor(
     public toastCtrl: ToastController,
+    public authService: AuthService,
     public alertCtrl: AlertController,
     public router: Router,
     public aws: AwsService,
@@ -31,14 +34,14 @@ export class SuggestionComponent implements OnInit {
   }
 
   doNothing(event) {
-    //event.preventDefault();
+    // event.preventDefault();
     event.stopPropagation();
   }
 
   openCandidatePage($event) {
     $event.preventDefault();
     $event.stopPropagation();
-    if(this.model.candidate) {
+    if (this.model.candidate) {
       this.router.navigate(['/candidate-view', this.model.candidate_id]);
     } else {
       this.router.navigate(['/fulltimer', this.model.fulltimer.fulltimer_uuid]);
@@ -84,12 +87,23 @@ export class SuggestionComponent implements OnInit {
             this.suggestionService.accept(this.model.suggestion_uuid, data.reason).subscribe(async response => {
 
               if (response.operation == 'success') {
+
+                this.toastCtrl.create({
+                  message: this.authService.errorMessage(response.message),
+                  duration: 2000,
+                  position:'top',
+                  buttons: ['Okay']
+                }).then(prompt => {
+                  prompt.present();
+                });
+
                 this.model.suggestion_status = 3;
 
                 this.onUpdate.emit();
               } else {
                 this.toastCtrl.create({
-                  message: response.message,
+                  message: this.authService.errorMessage(response.message),
+                  duration: 2000,
                   buttons: ['Okay']
                 }).then(prompt => {
                   prompt.present();
@@ -142,13 +156,23 @@ export class SuggestionComponent implements OnInit {
             this.suggestionService.reject(this.model.suggestion_uuid, data.reason).subscribe(async response => {
 
               if (response.operation == 'success') {
+                this.toastCtrl.create({
+                  message: this.authService.errorMessage(response.message),
+                  duration: 2000,
+                  position:'top',
+                  buttons: ['Okay']
+                }).then(prompt => {
+                  prompt.present();
+                });
+
                 this.model.suggestion_status = 2;
 
                 this.onUpdate.emit();
 
               } else {
                 this.toastCtrl.create({
-                  message: response.message,
+                  message: this.authService.errorMessage(response.message),
+                  duration: 2000,
                   buttons: ['Okay']
                 }).then(prompt => {
                   prompt.present();
@@ -167,9 +191,10 @@ export class SuggestionComponent implements OnInit {
    * @param date
    */
   toDate(date) {
-    if (!date) 
+    if (!date) {
       return null;
-      
+    }
+
     if (date) {
       return new Date(date.replace(/-/g, '/'));
     }

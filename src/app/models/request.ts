@@ -15,6 +15,7 @@ export class Request {
     request_position_type: number;
     request_position_title: string;
     request_number_of_employees: number;
+    no_of_employees_per_story: number;
     request_location: string;
     request_additional_info: string;
     request_job_description: string;
@@ -23,6 +24,7 @@ export class Request {
     // request_status: Status;
     request_feedback: string;
     num_hours_followup_interval: number;
+    is_old: number;
     request_cancelled_at: string;
     request_delivered_at: string;
     request_assigned_at: string;
@@ -36,6 +38,8 @@ export class Request {
     lastActivity: Note;
     staff: Staff;
     staffs: Staff[];
+    storyOwners: Staff[];
+    stories: Story[];
 }
 /*
 enum Status {
@@ -44,3 +48,31 @@ enum Status {
     delivered,
     cancelled
 }*/
+
+export class Story {
+  story_uuid: string;
+  request_uuid: string;
+  suggestion_uuid: string;
+  staff_id: number;
+  story_status: number;
+  story_time_spent: number;
+  story_created_at: string;
+  story_last_updated_at: string;
+  request: Request;
+  staff: Staff;
+  company: Company;
+  storyActivities: StoryActivity[];
+  latestStoryActivity: StoryActivity;
+}
+
+export class StoryActivity {
+  story_activity_uuid: string;
+  story_uuid: string;
+  staff_id: number;
+  activity_time_spent: number;
+  activity_status	: string;
+  activity_created_at: string;
+  activity_last_updated_at: string;
+  story: Story;
+  staff: Staff;
+}

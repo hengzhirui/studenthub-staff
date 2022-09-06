@@ -21,6 +21,7 @@ export class CompanyDocumentsPage implements OnInit {
   public company: Company;
 
   public borderLimit: boolean = false;
+  
   public loading = false;
 
   constructor(
@@ -119,7 +120,11 @@ export class CompanyDocumentsPage implements OnInit {
   }
 
   dismiss() {
-    this.modalCtrl.dismiss();
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss();
+      }
+    });
   }
 
   logScrolling(e) {

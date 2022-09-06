@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { ModalController, AlertController, ToastController, IonContent } from '@ionic/angular';
+import {ActivatedRoute, Router} from '@angular/router';
+import { ModalController, AlertController, ToastController, IonContent, PopoverController } from '@ionic/angular';
 // services
 import { CompanyService } from 'src/app/providers/logged-in/company.service';
 import { NoteService } from 'src/app/providers/logged-in/note.service';
@@ -23,6 +23,7 @@ import { CompanyMallsPage } from '../company-malls/company-malls.page';
 import { CompanySubcompaniesPage } from '../company-subcompanies/company-subcompanies.page';
 import { CompanyStoresPage } from '../company-stores/company-stores.page';
 import {ModalPopPage} from "../../modal-pop/modal-pop.page";
+import { ActionComponent } from 'src/app/components/action/action.component';
 
 
 @Component({
@@ -48,6 +49,8 @@ export class CompanyViewPage implements OnInit {
 
   public notes: Note[] = [];
   public notesTotal = 0;
+  public pageCount = 0;
+  public currentPage = 1;
 
   public loadingNotes = false;
 
@@ -62,13 +65,17 @@ export class CompanyViewPage implements OnInit {
     transfers : 0
   };
 
+  segment = 'details';
+
   constructor(
     public modalCtrl: ModalController,
     public toastCtrl: ToastController,
     public alertCtrl: AlertController,
+    public popoverCtrl: PopoverController,
     public activatedRoute: ActivatedRoute,
     public companyService: CompanyService,
     public aws: AwsService,
+    private router: Router,
     public eventService: EventService,
     public noteService: NoteService
   ) {
@@ -392,13 +399,13 @@ export class CompanyViewPage implements OnInit {
   }
 
   /**
-   * send payroll email 
+   * send payroll email
    */
   sendPayrollEmail() {
 
 
     this.companyService.sendPayrollEmail(this.company_id).subscribe(async response => {
-      
+
       this.updating = false;
 
       if (response && response.operation == 'success') {
@@ -533,10 +540,89 @@ export class CompanyViewPage implements OnInit {
       this.notes = response.body;
 
       this.notesTotal = parseInt(response.headers.get('X-Pagination-Total-Count'));
+      this.pageCount = parseInt(response.headers.get('X-Pagination-Page-Count'), 10);
+      this.currentPage = parseInt(response.headers.get('X-Pagination-Current-Page'), 10);
 
     }, () => {
       this.loadingNotes = false;
     });
+  }
+
+  /**
+   * load more notes on scroll to bottom
+   * @param event
+   */
+  doInfinite(event) {
+    this.currentPage++;
+
+    this.loadingNotes = true;
+
+    const params = '&company_id=' + this.company_id;
+
+    this.noteService.list(params, this.currentPage).subscribe(response => {
+
+      this.pageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
+      this.currentPage = parseInt(response.headers.get('X-Pagination-Current-Page'));
+
+      this.notes = this.notes.concat(response.body);
+
+      this.loadingNotes = false;
+
+      event.target.complete();
+    }, () => {
+    });
+  }
+
+  /**
+   * show action popover
+   * @param event
+   */
+   async showActions(event) {
+    return this.router.navigate(['company-form', this.company_id], {
+      state: {
+        model: this.company
+      }
+    });
+
+    // event.preventDefault();
+    // event.stopPropagation();
+    //
+    // window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+    //
+    // const actions = [
+    //   {
+    //     name: "Edit Client",
+    //     icon: 'assets/icon/icon-edit-2.svg',
+    //     trigger: 'edit'
+    //   },
+    // ];
+    //
+    // const modal = await this.popoverCtrl.create({
+    //   component: ActionComponent,
+    //   componentProps: {
+    //     actions
+    //   },
+    //   cssClass: 'store-option',
+    //   event,
+    //   translucent: true,
+    //   showBackdrop: false
+    // });
+    // modal.present();
+    // modal.onDidDismiss().then(e => {
+    //
+    //   if (!e.data || e.data.from != 'native-back-btn') {
+    //     window['history-back-from'] = 'onDidDismiss';
+    //     window.history.back();
+    //   }
+    // });
+    //
+    // const { data } = await modal.onWillDismiss();
+    //
+    // if (data && data.action) {
+    //   if(data.action.trigger == 'edit') {
+    //     this.update();
+    //   }
+    // }
   }
 
   /**
@@ -557,29 +643,30 @@ export class CompanyViewPage implements OnInit {
    * Loads Form in modal to update
    */
   async update() {
-    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
-
-    const modal = await this.modalCtrl.create({
-      component: CompanyFormPage,
-      componentProps: {
-        model: Object.assign({}, this.company),
-        company_id: this.company_id,
-        subcompany: 0
-      }
-    });
-    // Refresh List if required
-    modal.onDidDismiss().then(e => {
-
-      if (!e.data || e.data.from != 'native-back-btn') {
-        window['history-back-from'] = 'onDidDismiss';
-        window.history.back();
-      }
-
-      if (e && e.data && e.data.refresh) {
-        this.loadData(true);
-      }
-    });
-    modal.present();
+    return this.router.navigate(['/company-form/' + this.company_id]);
+    // window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+    //
+    // const modal = await this.modalCtrl.create({
+    //   component: CompanyFormPage,
+    //   componentProps: {
+    //     model: Object.assign({}, this.company),
+    //     company_id: this.company_id,
+    //     subcompany: 0
+    //   }
+    // });
+    // // Refresh List if required
+    // modal.onDidDismiss().then(e => {
+    //
+    //   if (!e.data || e.data.from != 'native-back-btn') {
+    //     window['history-back-from'] = 'onDidDismiss';
+    //     window.history.back();
+    //   }
+    //
+    //   if (e && e.data && e.data.refresh) {
+    //     this.loadData(true);
+    //   }
+    // });
+    // modal.present();
   }
 
   logScrolling(e) {

@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AlertController, NavController, PopoverController, ToastController } from '@ionic/angular';
 // models
 import { Candidate } from 'src/app/models/candidate';
+import { Story } from 'src/app/models/request';
 // service
 import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
 import { AwsService } from 'src/app/providers/aws.service';
@@ -60,6 +61,8 @@ export class CandidateListPage implements OnInit {
 
   public borderLimit = false;
 
+  public story: Story;
+
   constructor(
     public popoverCtrl: PopoverController,
     public toastCtrl: ToastController,
@@ -74,6 +77,13 @@ export class CandidateListPage implements OnInit {
   }
 
   ngOnInit() {
+
+    const state = window.history.state;
+
+    if (state.story) {
+      this.story = state.story;
+    }
+    
     window.analytics.page('Candidate List Page');
 
     this.loadData(1);
@@ -237,13 +247,9 @@ export class CandidateListPage implements OnInit {
   }
 
   /**
-   * Loads the create page
+   * load more on scroll to bottom
+   * @param event 
    */
-  // create() {
-  //   this.navCtrl.navigateForward('candidate-form');
-  // }
-
-
   doInfinite(event) {
 
     const search = this.urlParams();
@@ -273,7 +279,8 @@ export class CandidateListPage implements OnInit {
   rowSelected(model) {
     this.navCtrl.navigateForward('candidate-view/' + model.candidate_id, {
       state: {
-        model
+        model: model,
+        story: this.story
       }
     });
   }

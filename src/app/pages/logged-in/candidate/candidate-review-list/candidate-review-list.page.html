@@ -1,5 +1,5 @@
-<ion-header [class.add-border]="borderLimit" class="ion-no-border">
-  <ion-toolbar>
+<ion-header mode="md" [class.add-border]="borderLimit" class="ion-no-border">
+  <ion-toolbar class="container">
     <ion-buttons slot="start">
       <ion-menu-toggle>
         <ion-button>
@@ -7,7 +7,7 @@
         </ion-button>
       </ion-menu-toggle>
       
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <ion-back-button icon="assets/images/icon-back.svg" defaultHref="/"></ion-back-button>
      
     </ion-buttons>
 
@@ -16,7 +16,7 @@
 </ion-header>
 
 <ion-content scrollEvents="true" (ionScroll)="logScrolling($event)">
-
+  <div class="container">
   <!-- When No Candidates left for Review -->
   <section class="ion-padding ion-text-center" *ngIf="!loading && candidates.length == 0">
     <h1>All done!</h1>
@@ -35,5 +35,5 @@
     </ion-infinite-scroll>
 
   </section>
-
+  </div>
 </ion-content>

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { AlertController, ToastController, ModalController } from '@ionic/angular';
+import {AlertController, ToastController, ModalController, NavController} from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 //validators
@@ -58,11 +58,19 @@ export class CompanyFormPage implements OnInit {
     private _alertCtrl: AlertController,
     public modalCtrl: ModalController,
     private _toastCtrl: ToastController,
-    private eventService: EventService
-  ) { }
+    private eventService: EventService,
+    private navCtrl: NavController
+  ) {
+    this.company_id = this.activateRoute.snapshot.paramMap.get('company_id');
+    console.log(this.company_id);
+  }
 
   ngOnInit() {
     window.analytics.page('Company Form Page');
+
+    if (window && window.history.state) {
+      this.model = window.history.state.model;
+    }
 
     if (this.company_id && !this.model) {
       this.loadData(this.company_id);
@@ -78,9 +86,9 @@ export class CompanyFormPage implements OnInit {
   loadData(company_id) {
     this.loading = true;
 
-    this.companyService.view(company_id).subscribe(bank => {
-      this.model = bank;
-
+    this.companyService.view(company_id,'brands').subscribe(res => {
+      this.model = res;
+      this._initForm();
       this.loading = false;
 
     }, () => {
@@ -94,14 +102,14 @@ export class CompanyFormPage implements OnInit {
    */
   _initForm() {
 
-    if (this.model.parent_company_id) {
+    if (this.model && this.model.parent_company_id) {
       this.isSubCompany = 1;
     }
     // Init Form
 
-    if (!this.model.company_id) { // Show Create Form
+    if (!this.model) { // Show Create Form
 
-      this.operation = (this.isSubCompany) ? 'Create Sub-company' : 'Create Company';
+      this.operation = (this.isSubCompany) ? 'Add New Subcompany' : 'Add New Client';
 
       if (this.isSubCompany) {
         this.form = this._fb.group({
@@ -135,7 +143,7 @@ export class CompanyFormPage implements OnInit {
         });
       }
     } else { // Show Update Form
-      this.operation = (this.isSubCompany) ? 'Update  Sub-company' : 'Update Company';
+      this.operation = (this.isSubCompany) ? 'Update  Sub-company' : 'Update Client';
       if (this.isSubCompany) {
         this.form = this._fb.group({
           name: [this.model.company_name, Validators.required],
@@ -196,7 +204,13 @@ export class CompanyFormPage implements OnInit {
    * Close the page
    */
   close() {
-    this.modalCtrl.dismiss({ refresh: true });
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss({ refresh: true });
+      } else {
+        this.navCtrl.back();
+      }
+    });
   }
 
   /**

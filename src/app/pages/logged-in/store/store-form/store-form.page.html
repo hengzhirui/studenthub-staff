@@ -1,53 +1,62 @@
-<ion-header [class.add-border]="borderLimit" class="ion-no-border">
-  <ion-toolbar>
+<ion-header mode="md" [class.add-border]="borderLimit" class="ion-no-border">
+  <ion-toolbar class="container">
     <ion-buttons slot="start">
-      <ion-button (click)="close()">
-        <ion-icon name="close"></ion-icon>
-      </ion-button>
+      <ion-back-button icon="assets/images/icon-back.svg" (click)="close()" defaultHref="/view/company-list"></ion-back-button>
     </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar class="container">
     <ion-title>{{ operation }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button color="primary"
-              [disabled]="!form.valid || loading"
-              (click)="save()">
-        <span *ngIf="!loading">Save</span>
-        <ion-spinner *ngIf="loading"></ion-spinner>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content scrollEvents="true" (ionScroll)="logScrolling($event)">
-  <form [formGroup]="form">
-    <ion-list>
-      <ion-item>
+  <div class="container">
+    <form [formGroup]="form">
+
+      <ion-item class="input-wrapper">
+        <div tabindex="0"></div>
         <ion-label position="floating">Name</ion-label>
         <ion-input type="text" formControlName="name"></ion-input>
       </ion-item>
-      
-      <ion-item>
+
+      <ion-item class="input-wrapper">
+        <div tabindex="0"></div>
         <ion-label position="floating">Location</ion-label>
         <ion-input type="text" formControlName="location"></ion-input>
       </ion-item>
 
-      <ion-item>
+      <ion-item class="input-wrapper">
+        <div tabindex="0"></div>
         <ion-label position="floating">Select Brand</ion-label>
-        <ion-select [value]="model.brand_uuid"  okText="Okay" cancelText="Dismiss" formControlName="brand" interface="popover">
-          <ion-select-option value="" >Select Brand</ion-select-option>
-          <ion-select-option value="{{brand.brand_uuid}}" *ngFor="let brand of brands">{{brand.brand_name_en}}</ion-select-option>
+        <ion-select [value]="model.brand_uuid" okText="Okay" cancelText="Dismiss" formControlName="brand"
+          interface="popover">
+          <ion-select-option value="">Select Brand</ion-select-option>
+          <ion-select-option value="{{brand.brand_uuid}}" *ngFor="let brand of brands">{{brand.brand_name_en}}
+          </ion-select-option>
         </ion-select>
       </ion-item>
 
-      <ion-item>
+      <ion-item class="input-wrapper">
+        <div tabindex="0"></div>
         <ion-label position="floating">Select Mall</ion-label>
-        <ion-select [value]="model.mall_uuid" okText="Okay" cancelText="Dismiss" formControlName="mall" interface="popover">
-          <ion-select-option value="" >Select Mall</ion-select-option>
+        <ion-select [value]="model.mall_uuid" okText="Okay" cancelText="Dismiss" formControlName="mall"
+          interface="popover">
+          <ion-select-option value="">Select Mall</ion-select-option>
           <ng-container>
-            <ion-select-option value="{{mall.mall_uuid}}" *ngFor="let mall of malls">{{mall.mall_name_en}}</ion-select-option>
+            <ion-select-option value="{{mall.mall_uuid}}" *ngFor="let mall of malls">{{mall.mall_name_en}}
+            </ion-select-option>
           </ng-container>
         </ion-select>
       </ion-item>
 
-    </ion-list>
-  </form>
+    </form>
+  </div>
 </ion-content>
+<ion-footer class="ion-no-border ">
+  <div class="container">
+    <ion-button class="btn-save" [disabled]="!form.valid || loading" (click)="save()">
+      <span *ngIf="!loading">Save</span>
+      <ion-spinner *ngIf="loading"></ion-spinner>
+    </ion-button>    
+  </div>
+</ion-footer>

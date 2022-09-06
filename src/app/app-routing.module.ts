@@ -3,6 +3,8 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { AuthService } from './providers/auth.service';
 import { LoginGuard } from './providers/guards/login-guard.service';
 import { SelectiveLoadingStrategy } from './util/SelectiveLoadingStrategy';
+import {StoryGuard} from './providers/guards/story-guard.service';
+import {CompanyFormPage} from "./pages/logged-in/company/company-form/company-form.page";
 
 const routes: Routes = [
   {
@@ -29,7 +31,7 @@ const routes: Routes = [
   {
     path: 'candidate-list',
     loadChildren: () => import('./pages/logged-in/candidate/candidate-list/candidate-list.module').then(m => m.CandidateListPageModule),
-    canActivate: [AuthService],
+    canActivate: [AuthService, StoryGuard],
     data: {
       name: 'CandidateListPage'
     }
@@ -164,6 +166,15 @@ const routes: Routes = [
     }
   },
   {
+    path: 'company-form',
+    loadChildren: () => import('./pages/logged-in/company/company-form/company-form.module').then(m => m.CompanyFormPageModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'CompanyFormPage',
+      navDisable: true,
+    }
+  },
+  {
     path: 'candidate-review-list',
     loadChildren: () => import('./pages/logged-in/candidate/candidate-review-list/candidate-review-list.module').then(m => m.CandidateReviewListPageModule),
     canActivate: [AuthService],
@@ -283,7 +294,6 @@ const routes: Routes = [
       name: 'TeamViewPage'
     }
   },
-
   {
     path: 'fulltimer',
     loadChildren: () => import('./pages/logged-in/fulltimer/fulltimer-view/fulltimer-view.module').then( m => m.FulltimerViewPageModule),
@@ -297,6 +307,7 @@ const routes: Routes = [
   {
     path: 'candidate-search',
     loadChildren: () => import('./pages/logged-in/candidate/candidate-search/candidate-search.module').then(m => m.CandidateSearchPageModule),
+    canActivate: [StoryGuard, AuthService],
     data: {
       name: 'CandidateSearchPage',
       navDisable: true,
@@ -306,6 +317,7 @@ const routes: Routes = [
   {
     path: 'fulltimer-search',
     loadChildren: () => import('./pages/logged-in/fulltimer/fulltimer-search/fulltimer-search.module').then( m => m.FulltimerSearchPageModule),
+    canActivate: [AuthService, StoryGuard],
     data: {
       name: 'FulltimerSearchPage',
       navDisable: true
@@ -352,6 +364,14 @@ const routes: Routes = [
     canActivate: [AuthService],
     data: {
       name: 'SuggestionViewPage'
+    }
+  },
+  {
+    path: 'story-view',
+    loadChildren: () => import('./pages/logged-in/story/story-view/story-view.module').then( m => m.StoryViewPageModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'StoryViewPage'
     }
   },
   {
@@ -423,11 +443,67 @@ const routes: Routes = [
     }
   },
   {
+    path: 'analytics',
+    loadChildren: () => import('./pages/logged-in/analytics/analytics.module').then( m => m.AnalyticsPageModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'AnalyticsPage'
+    }
+  },
+  {
+    path: 'client-feedback-backlog',
+    canActivate: [AuthService],
+    loadChildren: () => import('./pages/logged-in/client-feedback-backlog/client-feedback-backlog.module').then( m => m.ClientFeedbackBacklogPageModule),
+    data: {
+      name: 'ClientFeedbackBacklogPage'
+    }
+  },
+  {
+    path: 'invitation-list',
+    loadChildren: () => import('./pages/logged-in/invitation-list/invitation-list.module').then( m => m.InvitationListPageModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'invitationListPage'
+    }
+  },
+  {
+    path: 'change-password',
+    loadChildren: () => import('./pages/logged-in/change-password/change-password-routing.module').then( m => m.ChangePasswordPageRoutingModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'ChangePasswordPage'
+    }
+  },
+  {
+    path: 'candidate-salary-list',
+    loadChildren: () => import('./pages/logged-in/candidate/candidate-salary-list/candidate-salary-list-routing.module').then( m => m.CandidateSalaryListPageRoutingModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'CandidateSalaryListPage'
+    }
+  },
+  {
+    path: 'store-option',
+    loadChildren: () => import('./pages/logged-in/store/store-option/store-option.module').then( m => m.StoreOptionPageModule)
+  },
+  {
+    path: 'mall-option',
+    loadChildren: () => import('./pages/logged-in/mall/mall-option/mall-option.module').then( m => m.MallOptionPageModule)
+  },
+  {
     path: 'transfer-list',
     canActivate: [AuthService],
     loadChildren: () => import('./pages/logged-in/transfer/transfer-list-all/transfer-list-all.module').then( m => m.TransferListAllPageModule),
     data: {
       name: 'TransferListAllPage'
+    }
+  },
+  {
+    path: 'my-work',
+    canActivate: [AuthService],
+    loadChildren: () => import('./pages/logged-in/my-work/my-work.module').then( m => m.MyWorkPageModule),
+    data: {
+      name: 'MyWorkPage'
     }
   },
   {

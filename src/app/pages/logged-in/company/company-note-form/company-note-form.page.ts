@@ -3,18 +3,20 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ModalController, AlertController, PopoverController } from '@ionic/angular';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 // models
-import {Candidate} from 'src/app/models/candidate';
-import {Fulltimer} from 'src/app/models/fulltimer';
+import { Candidate } from 'src/app/models/candidate';
+import { Fulltimer } from 'src/app/models/fulltimer';
 import { Note } from 'src/app/models/note';
 import { Company } from 'src/app/models/company';
 // services
 import { NoteService } from 'src/app/providers/logged-in/note.service';
 import { AuthService } from 'src/app/providers/auth.service';
 import { AwsService } from 'src/app/providers/aws.service';
+import { CompanyRequestService } from 'src/app/providers/logged-in/company-request.service';
 // pages
 import { AllCompanyListPage } from '../company-request-list/all-company-list/all-company-list.page';
 import { CompanyRequestListPopupPage } from '../company-request-list/company-request-list-popup/company-request-list-popup.page';
 import { CompanyContactListPage } from '../company-contact/company-contact-list/company-contact-list.page';
+import { RequestChecklist } from 'src/app/models/request-checklist';
 
 
 @Component({
@@ -37,6 +39,8 @@ export class CompanyNoteFormPage implements OnInit {
   public candidate: Candidate;
   public fulltimer: Fulltimer;
 
+  public checklist: RequestChecklist[] = [];
+
   public editorConfig = {
     placeholder: 'Click here to take notes...',
     startupFocus: true,
@@ -46,6 +50,8 @@ export class CompanyNoteFormPage implements OnInit {
 
   public form: FormGroup;
 
+  public borderLimit: boolean = false;
+
   constructor(
     public noteService: NoteService,
     private fb: FormBuilder,
@@ -53,7 +59,8 @@ export class CompanyNoteFormPage implements OnInit {
     private alertCtrl: AlertController,
     public popoverCtrl: PopoverController,
     private authService: AuthService,
-    public awsService: AwsService
+    public awsService: AwsService,
+    public requestService: CompanyRequestService
   ) {
   }
 
@@ -65,6 +72,8 @@ export class CompanyNoteFormPage implements OnInit {
     } else {
       this.initForm();
     }
+
+    this.loadChecklist();
   }
 
   initForm() {
@@ -78,6 +87,7 @@ export class CompanyNoteFormPage implements OnInit {
 
       request_uuid: [this.note.request_uuid],
       request_name: [this.note.request ? this.note.request.request_position_title : ''],
+      request_checklist_uuid: [this.note.request_checklist_uuid],
 
       fulltimer_uuid: [this.note.fulltimer_uuid],
       candidate_id: [this.note.candidate_id],
@@ -85,13 +95,19 @@ export class CompanyNoteFormPage implements OnInit {
       company_id: [this.note.company_id],
       company_name: [this.note.company ? this.note.company.company_name : ''],
     });
-    
+
     // https://www.pivotaltracker.com/story/show/175926516
     if (this.from == 'post-update') {
       this.form.controls.type.setValue('Internal Note');
     }
 
     this.operation = (this.note && this.note.note_uuid) ? 'Update' : 'Post an update';
+  }
+
+  loadChecklist() {
+    this.requestService.listChecklist().subscribe(data => {
+      this.checklist = data;
+    });
   }
 
   onEditorReady() {
@@ -128,6 +144,7 @@ export class CompanyNoteFormPage implements OnInit {
     this.note.company_id = this.form.value.company_id;
     this.note.contact_uuid = this.form.value.contact_uuid;
     this.note.request_uuid = this.form.value.request_uuid;
+    this.note.request_checklist_uuid = this.form.value.request_checklist_uuid;
     this.note.fulltimer_uuid = this.form.value.fulltimer_uuid;
     this.note.candidate_id = this.form.value.candidate_id;
   }
@@ -136,8 +153,11 @@ export class CompanyNoteFormPage implements OnInit {
    * Close the page
    */
   close() {
-    const data = { refresh: false };
-    this.modalCtrl.dismiss(data);
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss({ refresh: false });
+      }
+    }); 
   }
 
   /**
@@ -310,6 +330,10 @@ export class CompanyNoteFormPage implements OnInit {
     this.form.controls.note.setValue(data);
     this.form.markAsDirty();
     this.form.updateValueAndValidity();
+  }
+
+  logScrolling(e) {
+    this.borderLimit = (e.detail.scrollTop > 20);
   }
 
   /**

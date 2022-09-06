@@ -15,6 +15,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from 'src/app/models/store';
 import { Candidate } from 'src/app/models/candidate';
 import { Note } from 'src/app/models/note';
+import { Story } from 'src/app/models/request';
 // service
 import { StoreService } from 'src/app/providers/logged-in/store.service';
 import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
@@ -23,6 +24,7 @@ import { EventService } from '../../../../providers/event.service';
 import { NoteService } from '../../../../providers/logged-in/note.service';
 import { AuthService } from '../../../../providers/auth.service';
 import { TranslateLabelService } from 'src/app/providers/translate-label.service';
+import { InvitationService } from 'src/app/providers/logged-in/invitation.service';
 // pages
 import { OptionPage } from '../option/option.page';
 import { CandidateCommittedFormPage } from '../candidate-committed-form/candidate-committed-form.page';
@@ -66,6 +68,7 @@ export class CandidateViewPage implements OnInit {
   public approving = false;
   public unapproving = false;
   public downloading = false;
+  public inviting = false;
 
   public processing = null;
 
@@ -92,6 +95,10 @@ export class CandidateViewPage implements OnInit {
   public company;
   public pendingData = null;
 
+  public story: Story;
+
+  public segment: string = 'activity';
+
   constructor(
     public navCtrl: NavController,
     public router: Router,
@@ -101,6 +108,7 @@ export class CandidateViewPage implements OnInit {
     public storeService: StoreService,
     public candidateService: CandidateService,
     public translateService: TranslateLabelService,
+    public invitationService: InvitationService,
     public awsService: AwsService,
     public toastCtrl: ToastController,
     public eventService: EventService,
@@ -117,6 +125,14 @@ export class CandidateViewPage implements OnInit {
 
   ngOnInit() {
     window.analytics.page('Candidate View Page');
+
+    const state = window.history.state;
+
+    if (state.story) {
+      this.story = state.story;
+    } else if (this.authService.story) {
+      this.story = this.authService.story;
+    }
 
     if (!this.candidate_id) {
       this.candidate_id = this.activatedRoute.snapshot.paramMap.get('id');
@@ -402,15 +418,24 @@ export class CandidateViewPage implements OnInit {
     });
   }
 
+  /**
+   * load candidate details
+   * @param loading
+   */
   loadCandidateDetail(loading = true) {
     this.loading = loading;
 
     this.candidateService.detail(this.candidate_id).subscribe(response => {
 
       this.loading = false;
+
       this.candidate = response;
       if (this.candidate && this.candidate.pendingField && this.candidate.pendingField.length > 0) {
         this.pendingData = 'Total ' + this.candidate.pendingField.length + ' pending fields\n ' + this.candidate.pendingField.join(',');
+      }
+
+      if(this.story) {
+        this.checkAlreadyInvited();
       }
 
       setTimeout(_ => {
@@ -469,7 +494,10 @@ export class CandidateViewPage implements OnInit {
       componentProps: {
         candidate: this.candidate
       },
-      event: e
+      event: e,
+      cssClass: 'candidate-option',
+      translucent: true,
+      showBackdrop: false
     });
     popover.present();
 
@@ -482,6 +510,16 @@ export class CandidateViewPage implements OnInit {
       if (e.data && e.data.toggleCommitted) {
         this.toggleCommitted();
       }
+
+      if (e.data && e.data.updateEmail) {
+        this.updateEmailForm();
+      }
+
+      if (e.data && e.data.exportCV) {
+        this.exportOption();
+      }
+
+
     });
   }
 
@@ -490,12 +528,17 @@ export class CandidateViewPage implements OnInit {
    */
   async invite() {
 
+    if(this.story) {
+      return this.addInvitation();
+    }
+
     window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
 
     const modal = await this.modalCtrl.create({
       component: InvitePage,
       componentProps: {
-        candidate: this.candidate
+        candidate: this.candidate,
+        story: this.story
       }
     });
     modal.onDidDismiss().then(e => {
@@ -511,6 +554,89 @@ export class CandidateViewPage implements OnInit {
       }
     });
     await modal.present();
+  }
+
+  /**
+   * invite for request
+   */
+  async addInvitation() {
+
+    const confirm = await this.alertCtrl.create({
+      header: 'Please provide feedback',
+      inputs: [
+        {
+          name: 'feedback',
+          type: 'textarea',
+          placeholder: 'Reason'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: () => {
+            // Handle the functionality when user click on 'cancel' button
+          }
+        },
+        {
+          text: 'Ok',
+          handler: async (data) => {
+
+            this.inviting = true;
+
+            const params = {
+              request_uuid: this.story.request_uuid,
+              story_uuid: this.story.story_uuid,
+              candidate_id: this.candidate_id,
+              reason: data.feedback
+            };
+
+            this.invitationService.create(params).subscribe(async response => {
+
+              this.inviting = false;
+
+              // On Success
+              if (response.operation == 'success') {
+
+                this.candidate.isAlreadyInvited = true;
+
+                this.candidate.invited = response.invitedCount;
+
+                  this.alertCtrl.create({
+                    header: 'Invitation Sent!',
+                    message: this.authService.errorMessage(response.message),
+                    buttons: [
+                      {
+                        text: 'No',
+                        role: 'cancel',
+                        handler: () => {}
+                      },
+                      {
+                        text: 'Back to story page',
+                        handler: () => {
+                          this.navCtrl.navigateBack('/story-view/' + this.story.story_uuid);
+                        }
+                      }
+                    ]
+                  }).then (alert => alert.present());
+
+              }
+
+              // On Failure
+              if (response.operation == 'error') {
+                const prompt = await this.alertCtrl.create({
+                  message: this.authService.errorMessage(response.message),
+                  buttons: ['Okay']
+                });
+                prompt.present();
+              }
+            }, () => {
+              this.loading = false;
+            });
+          }
+        }
+      ]
+    });
+    confirm.present();
   }
 
   /**
@@ -566,7 +692,7 @@ export class CandidateViewPage implements OnInit {
       translucent: true
     });
     selectPage.onDidDismiss().then(e => {
-      console.log(e);
+
       if (e.data) {
         this.assignCandidateToStore(e.data.store_id);
       }
@@ -886,8 +1012,24 @@ export class CandidateViewPage implements OnInit {
     });
   }
 
-  logScrolling(e) {
-    this.borderLimit = (e.detail.scrollTop > 20);
+  logScrolling(event) {
+    //console.log(event);
+
+    this.borderLimit = (event.detail.scrollTop > 20);
+
+    //console.log(event.detail.scrollTop, event);
+
+    //if (event.detail.offsetHeight + event.detail.scrollTop >= event.detail.scrollHeight) {
+    //  console.log("End:" + event.detail.offsetHeight +':'+ event.detail.scrollTop +':'+ event.detail.scrollHeight);
+    //  console.log(event.target.offsetTop, event.target.clientHeight, event.target.offsetHeight)
+    //}
+
+    //scrollHeight 544
+
+    //offsetTop 266
+
+    //event.detail.scrollTop >= toal height - event.target.clientHeight
+    //scrollHeight
   }
 
   /**
@@ -974,6 +1116,7 @@ export class CandidateViewPage implements OnInit {
   onCivilBackError() {
     this.candidate.candidate_civil_photo_back = null;
   }
+
   onCivilFrontError() {
     this.candidate.candidate_civil_photo_front = null;
   }
@@ -1020,6 +1163,16 @@ export class CandidateViewPage implements OnInit {
         candidate: this.candidate
       }
     });
+  }
+
+  imageError(history) {
+    history.company.company_logo = null;
+  }
+
+  toggleOpen(history, event) {
+    event.preventDefault();
+    event.stopPropagation();
+    history.isOpen = !history.isOpen;
   }
 
   /**
@@ -1106,5 +1259,28 @@ export class CandidateViewPage implements OnInit {
     selBox.select();
     document.execCommand('copy');
     document.body.removeChild(selBox);
+  }
+
+  /**
+   * check if already invited for given story
+   */
+  checkAlreadyInvited() {
+    this.invitationService.isAlreadyInvited(this.candidate_id, this.story).subscribe(res => {
+      if (this.candidate) {
+        this.candidate.isAlreadyInvited = res.isAlreadyInvited;
+      }
+      console.log(this.candidate);
+    });
+  }
+
+  /**
+   * open salary listing page
+   */
+  openSalary() {
+    this.router.navigate(['candidate-salary-list', this.candidate_id], {
+      state: {
+        candidate: this.candidate
+      }
+    });
   }
 }

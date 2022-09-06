@@ -4,8 +4,10 @@ import { AlertController, ModalController, NavController, Platform, ToastControl
 import { FulltimerService } from 'src/app/providers/logged-in/fulltimer.service';
 //models
 import { Fulltimer } from 'src/app/models/fulltimer';
+import { Story } from 'src/app/models/request';
 //pages
 import { FulltimerFormPage } from '../fulltimer-form/fulltimer-form.page';
+import { AuthService } from 'src/app/providers/auth.service';
 
 
 @Component({
@@ -24,8 +26,11 @@ export class FulltimerListPage implements OnInit {
   public deleting = false;
   public fulltimers: Fulltimer[] = [];
 
+  public story: Story;
+
   constructor(
     private fulltimerService: FulltimerService,
+    public authService: AuthService,
     private navCtrl: NavController,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
@@ -34,6 +39,15 @@ export class FulltimerListPage implements OnInit {
   ) { }
 
   ngOnInit() {
+
+    const state = window.history.state;
+
+    if (state.story) {
+      this.story = state.story;
+    } else if (this.authService.story) {
+      this.story = this.authService.story;
+    }
+
     window.analytics.page('Fulltimer List Page');
 
     this.loadData(this.currentPage);
@@ -69,7 +83,8 @@ export class FulltimerListPage implements OnInit {
     // Load Detail Page
     this.navCtrl.navigateForward('fulltimer-view/' + model.fulltimer_uuid, {
       state: {
-        model
+        model: model,
+        story: this.story
       }
     });
   }

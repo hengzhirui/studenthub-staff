@@ -4,30 +4,36 @@ import { CandidateAgePipe } from './candidate.age.pipe';
 import { FileSizePipe } from './filesize.pipe';
 import { GroupByPipe } from './group-by.pipe';
 import { StoreIdPipe } from './store-id.pipe';
-import { TimeAgoPipe } from './timeago.pipe'; 
-import { DurationPipe } from './duration.pipe'; 
+import { TimeAgoPipe } from './timeago.pipe';
+import { DurationPipe } from './duration.pipe';
+import {TimeSpentPipe} from './timespent.pipe';
+import { TimerPipe } from './timer.pipe';
 
 
-//import custom pipes here
+// import custom pipes here
 @NgModule({
-    declarations: [ 
+    declarations: [
+        TimerPipe,
         TimeAgoPipe,
         FileSizePipe,
         GroupByPipe,
         StoreIdPipe,
         AgePipe,
         CandidateAgePipe,
-        DurationPipe
+        DurationPipe,
+        TimeSpentPipe
     ],
     imports: [],
     exports: [
+        TimerPipe,
         TimeAgoPipe,
         FileSizePipe,
         GroupByPipe,
         StoreIdPipe,
         AgePipe,
         CandidateAgePipe,
-        DurationPipe
+        DurationPipe,
+        TimeSpentPipe
     ]
 })
 export class PipesModule {}

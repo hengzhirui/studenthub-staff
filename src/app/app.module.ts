@@ -68,6 +68,12 @@ import { FulltimerSearchPageModule } from './pages/logged-in/fulltimer/fulltimer
 import { StaffPageModule } from './pages/logged-in/pickers/staff/staff.module';
 import { DateDropdownModule } from './components/date-dropdown/date-dropdown.module';
 import { CalendarModule } from 'ion2-calendar';
+import {CompanyFilterPageModule} from './pages/logged-in/company/company-list/company-filter/company-filter.module';
+import { StoreOptionPageModule } from './pages/logged-in/store/store-option/store-option.module';
+import { StoreModule } from './components/store/store.module';
+import { ActionComponent } from './components/action/action.component';
+import { ActionComponentModule } from './components/action/action.module';
+import {UniversityPageModule} from './pages/logged-in/pickers/university/university.module';
 
 export function startupServiceFactory(authService) {
   return () => authService.load();
@@ -83,7 +89,9 @@ declare global {
 
 @NgModule({
   declarations: [AppComponent],
-  entryComponents: [],
+  entryComponents: [
+    ActionComponent
+  ],
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -150,7 +158,15 @@ declare global {
     InvitePageModule,
     FulltimerSearchPageModule,
     FulltimeLocationPageModule,
-    StaffPageModule
+    StaffPageModule,
+    StoreOptionPageModule,
+    StoreModule,
+    UniversityPageModule,
+    CompanyFilterPageModule,
+    ActionComponentModule
+  ],
+  exports: [
+    ActionComponentModule
   ],
   providers: [
     {

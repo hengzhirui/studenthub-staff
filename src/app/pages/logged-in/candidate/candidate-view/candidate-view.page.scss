@@ -1,38 +1,58 @@
+
+ion-header {
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.05);
+
+  ion-toolbar {
+      padding: 0 24px;
+
+      ion-title {
+          padding: 0;
+      }
+  }
+
+  .btn-copy {
+    position: relative;
+    top: -7px;
+  }
+}
+
 ion-content {
-  --padding-start: 30px;
-  --padding-end: 30px;
+  --background: #f7f8fa;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  --padding-top: 24px;
 }
 
 ion-thumbnail {
-  width: 136px;
-  height: 136px;
+  width: 80px;
+  height: 80px;
   --border-radius: 100%;
-  margin: 38px 0 32px 0;
+  margin-inline-end: 16px;
 }
 
 h2.candidate-name {
-  margin: 32px 0 3px 0;
-  font-size: 48px;
+  margin: 10px 0 0 0;
+  font-size: 24px;
   font-weight: bold;
   font-stretch: normal;
   font-style: normal;
   line-height: normal;
   letter-spacing: normal;
-  color: black;
+  color: #23233d;
   text-transform: capitalize;
 }
 
 h4.candidate-name {
-  margin: 5px 0 5px 0;
+  margin: 4px 0 4px 0;
   font-family: 'Droid Arabic Kufi', 'effra', sans-serif !important;
   --ion-font-family: 'Droid Arabic Kufi', 'effra', sans-serif !important;
-  font-size: 24px;
+  font-size: 16px;
   font-weight: normal;
   font-stretch: normal;
   font-style: normal;
   line-height: normal;
   letter-spacing: normal;
-  color: black;
+  color: #23233d;
 }
 
 .hourly-rate {
@@ -91,16 +111,6 @@ h4.candidate-name {
   background-color: #eb5757;
 }
 
-.objective {
-  margin: 0 0 12px 0;
-  font-size: 18px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: black;
-}
 
 .details ion-item {
   --inner-border-width: 0;
@@ -149,10 +159,7 @@ h4.candidate-name {
   }
 }
 
-.work-history-wrapper ion-item,
-.phone,
-.email,
-.whatsapp {
+.work-history-wrapper ion-item {
   --padding-start: 46px;
   --inner-border-width: 0;
   --padding-start: 58px;
@@ -206,18 +213,70 @@ h4.candidate-name {
   }
 }
 
+.personal-details {
+
+  h5 {
+    margin-bottom: 16px;
+  }
+
+  p,
+  a {
+    font-size: 14px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: #23233d;
+    text-decoration: none;
+    padding-inline-start: 32px;
+    clear: both;
+    display: block;
+    min-height: 24px;
+    margin-bottom: 16px;
+    position: relative;
+
+    ion-button {
+      float: right;
+    }
+
+    .txt-expiring-on {
+      font-weight: normal;
+    }
+  }
+
+  .id-number ion-button {
+    position: absolute;
+    right: 0;
+    top: -5px;
+  }
+
+  .image-id {
+    width: 342px;
+    border-radius: 16px;
+    background-color: #fff;
+  }
+}
+
+.assignment-wrapper,
 .note-wrapper,
 .suggestion-wrapper {
   .heading {
-    margin: 22px 0 24px 0;
-    font-size: 21px;
+    margin: 16px 4px 16px 4px;
+    font-size: 18px;
     font-weight: bold;
     font-stretch: normal;
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
     text-align: left;
-    color: #000;
+    color: #23233d;
+
+    ion-icon {
+      margin-inline-end: 7px;
+      font-size: 24px;
+      float: left;
+    }
   }
 
   note {
@@ -249,47 +308,139 @@ h4.candidate-name {
     margin-top: 15px;
   }
 
+  ion-card {
+    gap: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 10%);
+    background-color: #fff;
+    margin-left: 0;
+    margin-right: 0px;
+
+    ion-card-header {
+      padding: 0;
+
+      ion-button {
+        --background: transparent;
+        --box-shadow: none;
+      }
+    }
+  }
+
   ion-item {
     --inner-border-width: 0;
-    --padding-top: 3px;
+    --padding-top: 0;
     --padding-end: 0px;
-    --padding-bottom: 3px;
-    --padding-start: 21px;
-    margin-bottom: 9px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.08), 2px 0 4px 0 rgba(0, 0, 0, 0.12);
+    --padding-bottom: 0;
+    --padding-start: 0;
+    --background: none;
+    margin: 0 4px 16px 4px;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px 0 rgb(0 0 0 / 10%);
+    background-color: #fff;
 
     ion-label {
+        margin: 0;
+
+        h5 {
+            font-size: 16px;
+            font-weight: 600;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.5;
+            letter-spacing: normal;
+            text-align: left;
+            color: #23233d;
+            margin: 0 0 4px 0;
+        }
+
+        p {
+            font-size: 14px;
+            font-weight: 500;
+            font-stretch: normal;
+            font-style: normal;
+            line-height: 1.43;
+            letter-spacing: normal;
+            text-align: left;
+            color: #68687a;
+        }
+    }
+
+    ion-icon {
+        margin: 12px 0 12px 4px;
+        padding: 4px;
+        background-color: #fafafa;
+        font-size: 16px;
+        border-radius: 100%;
+        fill: #7d7d8d;
+    }
+  }
+}
+
+.assignment-wrapper {
+  ion-item {
+    box-shadow: inset 0 -1px 0 0 #e2e2e6;
+    margin: 0;
+    border-radius: 0;
+
+    a {
+      font-family: Inter;
       font-size: 14px;
-      font-weight: bold;
+      font-weight: 500;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.65;
+      line-height: 1.43;
       letter-spacing: normal;
       text-align: left;
-      color: #000;
+      color: #3f5dca;
+      text-decoration: none;
     }
+  }
 
-    ion-note {
-      font-weight: bold;
-      font-size: 12px;
-      text-align: center;
-      width: 34px;
-      height: 25px;
-      margin: 13px 0 0;
-      padding: 5px 9px 2px;
-      background-color: #f2f2f2;
-    }
+  .btn-unassign,
+  .btn-certificate {
+    height: 40px;
+    flex-grow: 0;
+    margin: 14px 0 0 0;
+    --border-radius: 8px;
+    --background: #f5f7ff;
+    --box-shadow: none;
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-align: left;
+    color: #4c70f2;
+    text-transform: capitalize;
+    --padding-start: 20px;
+    --padding-end: 20px;
+    margin-inline-end: 16px;
+  }
 
-    ion-note.accepted {
-      color: #fff;
-      background: #219653;
-    }
+  .btn-unassign {
+    --background: #fff;
+    --border-color: #4c70f2;
+    --border-radius: 12px;
+    --border-width: 2px;
+    --border-style: solid;
+  }
 
-    ion-note.rejected {
-      color: #fff;
-      background: #eb5757;
-    }
+  p {
+    font-size: 14px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-align: left;
+    color: #4b4b61;
+  }
+
+  ion-card-content {
+    padding-top: 16px;
   }
 }
 
@@ -318,7 +469,7 @@ h4.candidate-name {
 }
 
 .video {
-  --background: url('src/assets/images/ic_video.svg') no-repeat 0px 11px;
+  background: url('src/assets/images/ic_video.svg') no-repeat 0 0px;
 
   img {
     width: 90px;
@@ -327,65 +478,64 @@ h4.candidate-name {
 }
 
 .resume {
-  --background: url('src/assets/images/ic_ad.svg') no-repeat 0px 11px;
+  background: url('src/assets/images/ic_ad.svg') no-repeat 0 0px;
 }
 
 .skills {
-  --background: url('src/assets/images/ic_food_tools.svg') no-repeat 0px 11px;
+  background: url('src/assets/images/ic_food_tools.svg') no-repeat 0 0px;
 }
 
 .experiences {
-  --background: url('src/assets/images/ic_suitcase.svg') no-repeat 0px 11px;
+  background: url('src/assets/images/ic_suitcase.svg') no-repeat 0 0px;
 }
 
 .area {
-  --background: url('src/assets/images/ic_home_2.svg') no-repeat 0px 11px;
+  background: url('src/assets/images/icon-location.svg') no-repeat 0 0px;
+}
+
+.birth-date {
+  background: url('src/assets/images/icon-calendar.svg') no-repeat 0px -1px;
 }
 
 .phone {
-  --background: url('src/assets/images/ic_phone.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/icon-phone.svg') no-repeat 0px -1px;
 }
 
 .whatsapp {
-  --padding-start: 0px;
-  --background: none;
-
-  ion-icon {
-    color: #000;
-  }
+  background: url('src/assets/images/icon-phone.svg') no-repeat 0 -1px;
 }
 
 .email {
-  --background: url('src/assets/images/ic_message.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/icon-email.svg') no-repeat 0 0px;
 }
 
 .nationality {
-  --background: url('src/assets/images/ic_globe.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/icon-earth.svg') no-repeat 0 0px;
 }
 
 .gender {
-  --background: url('src/assets/images/ic_swipe.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/icon-profile.svg') no-repeat 0 0px;
 }
 
 .university {
-  --background: url('src/assets/images/md-school.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/icon-education.svg') no-repeat 0 0px;
 }
 
 .driving-license {
-  --background: url('src/assets/images/ic_car.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/icon-car.svg') no-repeat 0 0px;
 }
 
 .mother-nationality {
-  --background: url('src/assets/images/ic_username.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/icon-profile.svg') no-repeat 0 0px;
 }
 
 .id-number {
-  --background: url('src/assets/images/ic_feed.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/icon-card.svg') no-repeat 0 0px;
 }
 
 .civil-front,
 .civil-back {
-  --background: url('src/assets/images/ic_profile_info.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/ic_profile_info.svg') no-repeat 0 0px;
 
   p {
     margin-bottom: 7px;
@@ -393,7 +543,7 @@ h4.candidate-name {
 }
 
 .bank {
-  --background: url('src/assets/images/ic_bank.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/ic_bank.svg') no-repeat 0 0px;
 
   h5,
   p {
@@ -402,7 +552,7 @@ h4.candidate-name {
 }
 
 .created-at {
-  --background: url('src/assets/images/ic_timer.svg') no-repeat 0px 15px;
+  background: url('src/assets/images/ic_timer.svg') no-repeat 0 0px;
 
   p {
     margin-bottom: 0 !important;
@@ -432,14 +582,17 @@ h4.candidate-name {
   margin-bottom: 5px;
 }
 
+.txt-updated-on,
 .txt-expiring-on {
-  color: #333333;
+  color: #68687a;
   font-size: 14px;
   font-stretch: normal;
   font-style: normal;
   line-height: normal;
   letter-spacing: normal;
-  opacity: 0.85;
+  font-weight: normal;
+  clear: both;
+  display: block;
 }
 
 ion-grid,
@@ -482,9 +635,9 @@ ion-footer {
   }
 
   ion-button {
-    width: 100%;
-    height: 53px;
-    border-radius: 5px;
+    width: calc(100% - 80px);
+    height: 56px;
+    border-radius: 12px;
     font-size: 16px;
     font-weight: bold;
     font-stretch: normal;
@@ -494,12 +647,12 @@ ion-footer {
     text-align: center;
     text-transform: none;
     display: block;
-    margin: 0 0 10px 0;
+    margin: 24px;
     --box-shadow: none;
   }
 
   .btn-invite {
-    --background: #219653;
+    --background: #4c70f2;
   }
 
   .btn-hourly-rate,
@@ -519,6 +672,222 @@ ion-footer {
   --color: #000;
   opacity: 0.5;
 }
+
+ion-segment {
+  margin-top: 16px;
+}
+
+ion-segment-button {
+  text-transform: inherit;
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-align: center;
+  color: #68687a;
+}
+
+ion-segment-button.segment-button-checked {
+  font-weight: 600;
+  color: #263879;
+  --indicator-color	:#263879;
+  --border-color	:#263879;
+}
+
+h5.title {
+  font-size: 18px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.56;
+  letter-spacing: normal;
+  color: #23233d;
+}
+
+.objective {
+  font-size: 16px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  color: #4b4b61;
+  margin-top: 8px;
+  margin-bottom: 32px;
+}
+
+ion-content {
+  h5 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.56;
+    letter-spacing: normal;
+    color: #23233d;
+
+    ion-icon {
+      margin-inline-end: 4px;
+    }
+  }
+
+  .work-experience-wrapper {
+    margin-top: 32px;
+
+    p {
+      border-radius: 8px;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+      background-color: #fff;
+      margin-top: 16px;
+      padding: 16px;
+    }
+  }
+
+  .skill-wrapper {
+    margin-top: 32px;
+
+    h5 {
+      margin-bottom: 16px;
+    }
+
+    ion-badge {
+    height: 32px;
+    flex-grow: 0;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    background-color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    text-align: left;
+    color: #4b4b61;
+    margin-inline-end: 8px;
+    margin-bottom: 8px;
+  }
+  }
+
+  .item-salary {
+    height: 80px;
+    flex-grow: 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    --inner-border-width: 0;
+    margin-top: 16px;
+
+    ion-label {
+      margin-top: 16px;
+    }
+
+    h5 {
+      font-size: 18px;
+      font-weight: bold;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.33;
+      letter-spacing: normal;
+      color: #23233d;
+      margin-bottom: 4px;
+    }
+
+    p {
+      font-size: 14px;
+      font-weight: 500;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.43;
+      letter-spacing: normal;
+      color: #4b4b61;
+    }
+
+    ion-badge {
+      padding: 4px 8px;
+      border-radius: 8px;
+      background-color: #edfcf3;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.43;
+      letter-spacing: normal;
+      color: #29b564;
+    }
+
+    .badge-unpaid {
+      background-color: #fff7f0;
+      color: #ca7f3e;
+    }
+  }
+
+  .bank-detail {
+    font-size: 14px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: #4b4b61;
+    margin-top: 32px;
+
+    p {
+      margin: 0;
+      margin-inline-start: 32px;
+    }
+  }
+}
+
+.icon-bank,
+.icon-salary {
+  font-size: 24px;
+  position: relative;
+  top: 5px;
+}
+
+.txt-id,
+.txt-general-info {
+  margin-top: 32px !important;
+}
+
+.segment-work-details h5 ion-icon {
+  font-size: 24px;
+    top: 5px;
+    position: relative;
+}
+
+.btn-resume,
+.btn-video {
+  width: 163px;
+    height: 56px;
+    --padding: 16px;
+    border-radius: 8px;
+    --box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1);
+    --background: #fff;
+    --color: black;
+    font-size: 14px;
+    font-weight: 500;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.43;
+    letter-spacing: normal;
+    color: #4b4b61;
+    text-transform: none;
+    margin-inline-end: 16px;
+
+    ion-icon {
+      margin-right: 7px;
+      font-size: 24px;
+    }
+}
+
 .verified {
   font-size: 20px;
 }

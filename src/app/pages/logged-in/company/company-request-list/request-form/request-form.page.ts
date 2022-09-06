@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Location } from '@angular/common';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ModalController, AlertController, PopoverController } from '@ionic/angular';
+import { ModalController, AlertController, PopoverController, NavController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
 import * as ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 // services
@@ -41,14 +41,16 @@ export class RequestFormPage implements OnInit {
     placeholder: 'Click here add description...',
     startupFocus: true,
     width: '100%',
+    height: '335em',
     toolbar: ['Heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', '|', 'indent', 'outdent'],
   };
-  
+
   public Editor = ClassicEditor;
 
   constructor(
     public requestService: CompanyRequestService,
     private fb: FormBuilder,
+    public navCtrl: NavController,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private authService: AuthService,
@@ -84,7 +86,7 @@ export class RequestFormPage implements OnInit {
       company_name: [(this.model.company) ? this.model.company.company_name : '', Validators.required],
       company_id: [this.model.company_id, Validators.required],
       contact_name: [{
-        value: (this.model.contact) ? this.model.contact : '',
+        value: (this.model.contact) ? this.model.contact.contact_name : '',
         disabled: this.model.contact? false: true
       }, Validators.required],
 
@@ -94,6 +96,7 @@ export class RequestFormPage implements OnInit {
       job_description: [this.model.request_job_description, Validators.required],
       compensation: [this.model.request_compensation, Validators.required],
       number_of_employees: [this.model.request_number_of_employees, Validators.required],
+      no_of_employees_per_story: [this.model.no_of_employees_per_story?this.model.no_of_employees_per_story:1, Validators.required],
       location: [this.model.request_location],
       additional_info: [this.model.request_additional_info]
     });
@@ -114,14 +117,22 @@ export class RequestFormPage implements OnInit {
     this.model.request_job_description = this.form.value.job_description;
     this.model.request_compensation = this.form.value.compensation;
     this.model.request_location = this.form.value.location;
+    this.model.no_of_employees_per_story = this.form.value.no_of_employees_per_story;
   }
 
   /**
    * Close the page
    */
   close() {
-    const data = { refresh: false };
-    this.modalCtrl.dismiss(data);
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss({ refresh: false });
+      }
+      else 
+      {
+        this.navCtrl.back();
+      }
+    })
   }
 
   /**
@@ -267,8 +278,9 @@ export class RequestFormPage implements OnInit {
     this.form.controls.additional_info.setValue(null);
     this.form.controls.company_name.setValue(null);
     this.form.controls.location.setValue(null);
+    this.form.controls.no_of_employees_per_story.setValue(null);
   }
-  
+
   onEditorReady() {
     const interval = setTimeout(() => {
       if (this.ckeditor.editorInstance && this.form.value.job_description) {
@@ -278,7 +290,7 @@ export class RequestFormPage implements OnInit {
       }
     }, 200);
   }
-  
+
   /**
    * on note editor change
    * @param event

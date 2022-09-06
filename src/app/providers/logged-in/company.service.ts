@@ -23,7 +23,7 @@ export class CompanyService {
    * @param searchParams
    */
   list(page, searchParams): Observable<any> {
-    return this._authhttp.getRaw(this._companyEndpoint + '?page=' + page + searchParams + '&expand=subCompanies,stores,transferInLast40Days,subCompanies.stores,subCompanies.stores.candidateWorkHistoryByLast40Days,stores.candidateWorkHistoryByLast40Days');
+    return this._authhttp.getRaw(this._companyEndpoint + '?page=' + page + searchParams + '&expand=subCompanies,stores,transferInLast40Days,subCompanies.stores,subCompanies.stores.candidateWorkHistoryByLast40Days,stores.candidateWorkHistoryByLast40Days,brands');
   }
 
   /**
@@ -76,7 +76,7 @@ export class CompanyService {
    * @returns {Observable<any>}
    */
   listFollowups(page): Observable<any> {
-    const url = this._companyEndpoint + '/followups?page=' + page + '&expand=subCompanies,subCompanies.stores,stores';
+    const url = this._companyEndpoint + '/followups?page=' + page + '&expand=subCompanies,subCompanies.stores,stores,brands';
     return this._authhttp.getRaw(url);
   }
 

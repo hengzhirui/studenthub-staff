@@ -2,6 +2,37 @@ ion-back-button {
   display: block;
 }
 
+ion-header {
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.05);
+  background: #fff;
+  --background: #fff;
+  ion-toolbar {
+    padding: 0 24px;
+
+    ion-title {
+      padding: 0;
+    }
+  }
+}
+
+ion-content {
+  --background: #f7f8fa;
+  --padding-start: 24px;
+  --padding-end: 24px;
+  --padding-bottom: 100px;
+}
+
+ion-title {
+  flex-grow: 0;
+  font-size: 24px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: #23233d;
+}
+
 ckeditor {
   margin: 20px 0 5px 0;
   padding: 0;
@@ -12,7 +43,7 @@ ion-item.field-password {
       --padding-end: 30px;
   }
 
-  .btn-password { 
+  .btn-password {
       position: absolute;
       bottom: 0;
       z-index: 111;
@@ -24,7 +55,38 @@ ion-item.field-password {
       ion-icon {
           font-size: 22px;
           color: #000;
-      } 
+      }
   }
 }
 
+h5 {
+  flex-grow: 0;
+  font-family: Inter;
+  font-size: 18px;
+  font-weight: 600;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.56;
+  letter-spacing: normal;
+  text-align: left;
+  color: #23233d;
+}
+
+.btn-save {
+    height: 56px;
+    border-radius: 12px;
+    --background: #4c70f2;
+    font-size: 16px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-align: center;
+    --color: #fff;
+    text-transform: none;
+    width: calc(100% - 48px);
+    --box-shadow: none;
+    --border-radius: 12px;
+    margin: 24px;
+}

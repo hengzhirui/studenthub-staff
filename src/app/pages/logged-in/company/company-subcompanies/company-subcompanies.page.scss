@@ -2,6 +2,14 @@ ion-back-button {
     display: block;
 }
 
+ion-content {
+  background: #f7f8fa;
+  --background: #f7f8fa;
+  --padding-start: 20px;
+  --padding-end: 20px;
+  --padding-top: 12px;
+}
+
 .request-title {
   margin: 0 0 3px 3px;
 
@@ -29,4 +37,51 @@ ion-back-button {
 
 ion-list {
   background: transparent;
+}
+
+ion-title {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.main {
+  font-family: Inter;
+  font-size: 24px;
+  font-weight: bold;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  text-align: left;
+  color: #23233d;
+}
+
+.secondary{
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.5;
+  letter-spacing: normal;
+  text-align: left;
+  color: #7d7d8d;
+  padding-bottom: 17px;
+}
+.add-request {
+  position: fixed;
+  bottom: 11px;
+  z-index: 999;
+  right: 17px;
+  font-size: 33px;
+  padding: 10px;
+  height: 53px;
+  border-radius: 50%;
+  background: #4c70f2;
+  ion-icon {
+    color:#fff;
+  }
+}
+.setting-icon{
+  color:#7d7d8d;
 }

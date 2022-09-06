@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AlertController, ToastController } from '@ionic/angular';
 //models
 import { Invitation } from 'src/app/models/invitation';
+import { Story } from 'src/app/models/request';
 import { AuthService } from 'src/app/providers/auth.service';
 //services
 import { AwsService } from 'src/app/providers/aws.service';
@@ -33,7 +34,8 @@ export class InvitationComponent implements OnInit {
     public translateService: TranslateLabelService,
     public suggestionService: SuggestionService,
     public invitationService: InvitationService
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
   }
@@ -54,9 +56,9 @@ export class InvitationComponent implements OnInit {
    * @param date
    */
   toDate(date) {
-    if (!date) 
+    if (!date)
       return null;
-      
+
     if (date) {
       return new Date(date.replace(/-/g, '/'));
     }
@@ -67,9 +69,10 @@ export class InvitationComponent implements OnInit {
    */
   async suggest(ev) {
 
-    if (this.model.is_suggested) {
+    if (this.model.is_suggested || !this.authService.story) {
       return false;
     }
+
     const confirm = await this.alertCtrl.create({
       header: 'Please provide feedback',
       inputs: [
@@ -89,11 +92,13 @@ export class InvitationComponent implements OnInit {
         {
           text: 'Ok',
           handler: async (data) => {
+            
             this.loading = true;
 
             const param = {
               suggestion: data.feedback,
               request_uuid: this.model.request_uuid,
+              story_uuid: this.authService.story.story_uuid,
               fulltimer_uuid: null,
               candidate_id: this.model.candidate_id
             };

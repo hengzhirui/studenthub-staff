@@ -6,7 +6,7 @@
 
       <ion-tab-button #browserTaskRef tab="tasks" layout="icon-start">
         <ion-icon name="stats-chart-outline"></ion-icon>
-        <ion-label>{{ 'Tasks' | translate }}</ion-label>
+        <ion-label>{{ 'Dashboard' | translate }}</ion-label>
       </ion-tab-button>
 
       <ion-tab-button tab="company-request-dashboard" layout="icon-start">
@@ -15,12 +15,27 @@
         <ion-badge>{{ totalRequest }}</ion-badge>
       </ion-tab-button>
 
-      <ion-tab-button tab="candidate-search" layout="icon-start">
+<!--      <ion-tab-button tab="story-list" layout="icon-start">-->
+<!--        <ion-icon name="chatbubble-outline"></ion-icon>-->
+<!--        <ion-label>{{ 'Stories' | translate }}</ion-label>-->
+<!--      </ion-tab-button>-->
+<!--
+      <ion-tab-button tab="my-work" layout="icon-start">
+        <ion-icon name="chatbubble-outline"></ion-icon>
+        <ion-label>{{ 'My Work' | translate }}</ion-label>
+      </ion-tab-button>
+
+      <ion-tab-button tab="feedback-backlog" layout="icon-start">
+        <ion-icon name="chatbubble-outline"></ion-icon>
+        <ion-label>{{ 'Feedback Backlog' | translate }}</ion-label>
+      </ion-tab-button>-->
+
+      <ion-tab-button tab="candidate-search" layout="icon-start" *ngIf="this.authService.story">
         <ion-icon name="person-outline"></ion-icon>
         <ion-label>{{ 'Part-timers' | translate }}</ion-label>
       </ion-tab-button>
 
-      <ion-tab-button tab="fulltimer-search" layout="icon-start">
+      <ion-tab-button tab="fulltimer-search" layout="icon-start" *ngIf="this.authService.story">
         <ion-icon name="person-outline"></ion-icon>
         <ion-label>{{ 'Full-timers' | translate }}</ion-label>
       </ion-tab-button>
@@ -41,7 +56,7 @@
 
       <ion-tab-button tab="tasks">
         <ion-icon name="stats-chart-outline"></ion-icon>
-        <ion-label>{{ 'Tasks' | translate }}</ion-label>
+        <ion-label>{{ 'Dashboard' | translate }}</ion-label>
       </ion-tab-button>
 
       <ion-tab-button tab="company-request-dashboard">
@@ -50,16 +65,15 @@
         <ion-badge>{{ totalRequest }}</ion-badge>
       </ion-tab-button>
 
-      <ion-tab-button (click)="showCandidateActions()">
+      <ion-tab-button (click)="showCandidateActions()" *ngIf="this.authService.story">
         <ion-icon name="person-outline"></ion-icon>
         <ion-label>{{ 'Candidates' | translate }}</ion-label>
       </ion-tab-button>
-
+      
       <ion-tab-button tab="company-list">
         <ion-icon name="earth-outline"></ion-icon>
         <ion-label>{{ 'Clients' | translate }}</ion-label>
       </ion-tab-button>
-
 
       <ion-tab-button tab="report-list">
         <ion-icon name="newspaper-outline"></ion-icon>

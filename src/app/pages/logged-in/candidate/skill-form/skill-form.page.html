@@ -1,18 +1,19 @@
-<ion-header [class.add-border]="borderLimit" class="ion-no-border">
-  <ion-toolbar>
+<ion-header mode="md" [class.add-border]="borderLimit" class="ion-no-border">
+  <ion-toolbar class="container">
     <ion-buttons slot="start" (click)="dismiss()">
-      <ion-back-button></ion-back-button>
+      <ion-back-button icon="assets/images/icon-back.svg"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ "Skills" }}</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content scrollEvents="true" (ionScroll)="logScrolling($event)">
 
-  <div class="max-width">
+  <div class="container max-width">
       <ion-list class="candidateSkills" *ngIf="skillList">
 
         <ion-item *ngFor="let s of tmpSkill;let i=index;">
-
+          <div tabindex="0"></div>
+          
           <ion-input id="input[{{ i }}]" placeholder="{{ 'Type a skill' }}"
             [(ngModel)]="skillList[i]" (ionFocus)="validateSkills()"
             (ionChange)="change($event, i, s)" type="text" enterkeyhint="{{ 'Next'}}" (keyup)="nextOnEnter($event, i)"></ion-input>

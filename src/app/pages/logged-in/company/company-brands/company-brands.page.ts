@@ -114,7 +114,11 @@ export class CompanyBrandsPage implements OnInit {
   }
 
   dismiss(data = null) {
-    this.modalCtrl.dismiss(data);
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss(data);
+      }
+    });
   }
 
   logScrolling(e) {
@@ -129,5 +133,21 @@ export class CompanyBrandsPage implements OnInit {
       this.company = response;
     }, () => {
     });
+  }
+
+  error(brand) {
+    brand.brand_logo = null;
+  }
+
+  show($event, brand) {
+    $event.preventDefault();
+    $event.stopPropagation();
+    brand.show = 1;
+  }
+
+  hide($event, brand) {
+    $event.preventDefault();
+    $event.stopPropagation();
+    brand.show = 0;
   }
 }

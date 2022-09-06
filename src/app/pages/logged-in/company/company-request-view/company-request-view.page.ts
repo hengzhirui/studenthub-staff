@@ -9,7 +9,8 @@ import {
   ModalController,
   NavController,
   Platform,
-  IonContent
+  IonContent,
+  PopoverController
 } from '@ionic/angular';
 // services
 import { AuthService } from 'src/app/providers/auth.service';
@@ -20,7 +21,7 @@ import { SuggestionService } from 'src/app/providers/logged-in/suggestion.servic
 import { EventService } from 'src/app/providers/event.service';
 import { InvitationService } from 'src/app/providers/logged-in/invitation.service';
 // models
-import { Request } from 'src/app/models/request';
+import { Request, Story } from 'src/app/models/request';
 import { Note } from 'src/app/models/note';
 import { Fulltimer } from "../../../../models/fulltimer";
 import { Invitation } from 'src/app/models/invitation';
@@ -29,6 +30,7 @@ import { CompanyNoteFormPage } from '../company-note-form/company-note-form.page
 import { CompanyRequestFormPage } from '../company-request-form/company-request-form.page';
 import { FulltimerSearchPage } from '../../fulltimer/fulltimer-search/fulltimer-search.page';
 import { StaffPage } from '../../pickers/staff/staff.page';
+import { RequestOptionPage } from './company-request-option.page';
 
 
 @Component({
@@ -54,7 +56,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
   public rejectedCandidates: Invitation[] = [];
 
   public acceptedInvitations: Invitation[] = [];
-
+  public section = 'invited';
   public request_uuid;
   public loading = false;
   public loadingInvoice = false;
@@ -69,9 +71,12 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
 
   public internvalSubscribe;
 
-  public segment: string = 'activities';
+  public segment: string = 'details';
+
+  public activeStory: Story;
 
   constructor(
+    public popoverCtrl: PopoverController,
     public modalCtrl: ModalController,
     public alertCtrl: AlertController,
     public toastCtrl: ToastController,
@@ -147,6 +152,17 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
 
     this.requestService.view(this.request_uuid).subscribe(data => {
       this.request = data;
+
+      //my active story
+
+      if(this.request.stories) {
+        this.request.stories.forEach((story) => {
+          if(story.staff_id == this.authService.staff_id) {
+            this.activeStory = story;
+          }
+        });
+      }
+
       this.loadRequestActivities();
       this.loadSuggestions();
       this.loadInvitations();
@@ -168,8 +184,6 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
       if (data.request_updated_datetime != this.request.request_updated_datetime) {
         this.loadDetail(false);//refresh without showing loader
       }
-    }, () => {
-    }, () => {
       this.loading = false;
     });
   }
@@ -185,6 +199,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
    * load invitations for this request
    */
   loadInvitations(loading = true) {
+
     this.invitationService.list('&request_uuid=' + this.request_uuid).subscribe(invitations => {
 
       this.invitedCandidates = invitations.filter(invitation => invitation.invitation_status == 1);
@@ -216,6 +231,18 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     });
   }
 
+  staffSelected(staff) {
+    this.navCtrl.navigateForward('team-view/' + staff.staff_id, {
+      state: {
+        model: staff
+      }
+    });
+  }
+
+  storySelected(story) {
+    this.navCtrl.navigateForward('story-view/' + story.story_uuid);
+  }
+
   /**
    * load candidate suggestions for this request
    */
@@ -223,7 +250,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
 
     const params = '&request_uuid=' + this.request_uuid;
 
-    this.suggestionService.list(params).subscribe(data => {
+    this.suggestionService.listAll(params).subscribe(data => {
 
       this.suggestedSuggestions = [];
 
@@ -356,6 +383,8 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
    * update request
    */
   async update() {
+    this.navCtrl.navigateForward(['request-form', this.request_uuid]);
+    /*
     window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
 
     const modal = await this.modalCtrl.create({
@@ -377,7 +406,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
         this.loadDetail(false);
       }
     });
-    modal.present();
+    modal.present();*/
   }
 
   /**
@@ -436,6 +465,12 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
 
                 this.eventService.reloadStats$.next({
                   company_id: this.request.company_id
+                });
+
+                this.eventService.companyRequestCancelled$.next({
+                  company_id: this.request.company_id,
+                  request_updated_datetime: response.request_updated_datetime,
+                  request_uuid: this.request_uuid
                 });
 
                 this.eventService.companyRequestUpdate$.next({
@@ -535,6 +570,31 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
   }
 
   /**
+   * view request detail page
+   * @param e
+   */
+  async openPopover(e) {
+    const popover = await this.popoverCtrl.create({
+      component: RequestOptionPage,
+      componentProps: {
+        request: this.request
+      },
+      event: e
+    });
+    popover.present();
+    popover.onDidDismiss().then(e => {
+      if (!e.data)
+        return null;
+
+      if(e.data.action == 'update') {
+        this.update();
+      } else if(e.data.action == 'cancel') {
+        this.cancelledRequest(e, this.request);
+      }
+    });
+  }
+
+  /**
    * mark request as delivered
    * @param event
    * @param request
@@ -594,6 +654,12 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
                 });
 
                 this.eventService.companyRequestUpdate$.next({
+                  company_id: this.request.company_id,
+                  request_updated_datetime: response.request_updated_datetime,
+                  request_uuid: this.request_uuid
+                });
+
+                this.eventService.companyRequestDelivered$.next({
                   company_id: this.request.company_id,
                   request_updated_datetime: response.request_updated_datetime,
                   request_uuid: this.request_uuid
@@ -737,6 +803,45 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     this.segment = event.target.value;
   }
 
+
+  getTimeSpent(time) {
+    let seconds = 0;
+    let minutes = 0;
+    let hours = 0;
+    let days = 0;
+    let months = 0;
+    seconds = time;
+    if (seconds > 60) {
+      minutes = (time / 60);
+    }
+    if (minutes > 60) {
+      hours = (minutes / 60 );
+    }
+    if (hours > 24) {
+      days = (hours / 24 );
+    }
+    if (days > 31) {
+      months = (days / 31 );
+    }
+
+    if (months) {
+      return months.toFixed(2) + ' months';
+    }
+    if (days) {
+      return days.toFixed(2) + ' days';
+    }
+    if (hours) {
+      return hours.toFixed(2) + ' hours';
+    }
+    if (minutes) {
+      return minutes.toFixed(2) + ' minutes';
+    }
+    if (seconds) {
+      return seconds.toFixed(2) + ' seconds';
+    }
+
+  }
+
   /**
    * update request status
    * @param event
@@ -786,4 +891,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     }
   }
 
+  changeSection(sec) {
+    this.section = sec;
+  }
 }

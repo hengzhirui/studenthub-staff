@@ -10,6 +10,10 @@ import { CompanyRequestDashboardPage } from './company-request-dashboard.page';
 import { LoadingModalModule } from 'src/app/components/loading-modal/loading-modal.module';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { RequestListingModule } from 'src/app/components/request-listing/request-listing.module';
+import {StoryItemModule} from 'src/app/components/story-item/story-item.module';
+import { RequestFilterComponent } from 'src/app/components/request-filter/request-filter.component';
+import { StoryFilterComponent } from 'src/app/components/story-filter/story-filter.component';
+import {NoItemsModule} from 'src/app/components/no-items/no-items.module';
 
 @NgModule({
   imports: [
@@ -19,8 +23,14 @@ import { RequestListingModule } from 'src/app/components/request-listing/request
     LoadingModalModule,
     PipesModule,
     RequestListingModule,
+    StoryItemModule,
+    NoItemsModule,
     CompanyRequestDashboardPageRoutingModule
   ],
-  declarations: [CompanyRequestDashboardPage]
+  declarations: [
+    CompanyRequestDashboardPage,
+    RequestFilterComponent,
+    StoryFilterComponent
+  ]
 })
 export class CompanyRequestDashboardPageModule {}

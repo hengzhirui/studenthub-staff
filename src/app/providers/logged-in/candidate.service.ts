@@ -386,5 +386,4 @@ export class CandidateService {
       email
     });
   }
-
 }

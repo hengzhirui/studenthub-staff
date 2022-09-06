@@ -86,7 +86,7 @@ export class StoreFormPage implements OnInit {
     // Init Form
 
     if (!this.model || !this.model.store_id) { // Show Create Form
-      this.operation = 'Create';
+      this.operation = 'Add Store';
       this.form = this._fb.group({
         name: ['', Validators.required],
         location: ['', Validators.required],
@@ -94,7 +94,7 @@ export class StoreFormPage implements OnInit {
         mall: ['']
       });
     }else{ // Show Update Form
-      this.operation = 'Update';
+      this.operation = 'Edit Store';
       this.form = this._fb.group({
         name: [this.model.store_name, Validators.required],
         location: [this.model.store_location, Validators.required],
@@ -120,9 +120,12 @@ export class StoreFormPage implements OnInit {
   /**
    * Close the page
    */
-  close(){
-    const data = { refresh: false };
-    this._modelCtrl.dismiss(data);
+  close() {    
+    this._modelCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss({ refresh: false });
+      }
+    })
   }
 
   /**

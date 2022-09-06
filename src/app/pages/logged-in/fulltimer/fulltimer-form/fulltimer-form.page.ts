@@ -19,6 +19,7 @@ import { CustomValidator } from '../../../../validators/custom.validator';
 import {FulltimeLocationPage} from '../fulltime-location/fulltime-location.page';
 import {SuggestionService} from '../../../../providers/logged-in/suggestion.service';
 import { UniversityService } from 'src/app/providers/logged-in/university.service';
+import {UniversityPage} from "../../pickers/university/university.page";
 
 
 @Component({
@@ -93,7 +94,7 @@ export class FulltimerFormPage implements OnInit, OnDestroy {
     }
 
     this.initForm();
-    this.loadUniversityList();
+    // this.loadUniversityList();
 
     // Set the min and max dates
     this.setDates();
@@ -122,7 +123,7 @@ export class FulltimerFormPage implements OnInit, OnDestroy {
     // var dd = today.getDate();
     const mm = today.getMonth() + 1; // 0 is January, so we must add 1
     const yyyy = today.getFullYear();
- 
+
     this.minBirthDate = new Date((yyyy - 90), mm).toISOString();
     this.maxBirthDate = new Date((yyyy - 16), mm).toISOString();
   }
@@ -175,6 +176,7 @@ export class FulltimerFormPage implements OnInit, OnDestroy {
         phone: ['', [Validators.required, Validators.pattern('^[0-9-+\s()]*$')]],
         email: ['', [Validators.required, CustomValidator.emailValidator]],
         pdf_cv: [''],
+        university: [null],
         university_id: [null],
         employed: [null],
         gender: [null],
@@ -214,19 +216,19 @@ export class FulltimerFormPage implements OnInit, OnDestroy {
         longitude: [this.model.fulltimer_longitude, Validators.required],
         name: [this.model.fulltimer_name, Validators.required],
         phone: [this.model.fulltimer_phone, Validators.required],
-        email: [this.model.fulltimer_email, Validators.required],
+        email: [this.model.fulltimer_email, [Validators.required, CustomValidator.emailValidator]],
         pdf_cv: [this.model.fulltimer_pdf_cv, Validators.required],
         fulltimerTags: new FormArray(tagCtrls),
         location: [location, Validators.required],
         current_salary: [this.model.fulltimer_current_salary, Validators.required],
         expected_salary: [this.model.fulltimer_expected_salary, Validators.required],
-        
+
         university_id: [this.model.university_id],
         employed: [this.model.fulltimer_employed],
         gender: [this.model.fulltimer_gender],
         driving_license: [this.model.fulltimer_driving_license],
         birth_date: [this.model.fulltimer_birth_date],
-        
+
         tempPdfCVLocation: [''],
       });
     }
@@ -536,6 +538,37 @@ export class FulltimerFormPage implements OnInit, OnDestroy {
     }
   }
 
+  async selectUniversity() {
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: UniversityPage,
+      componentProps: {
+        fulltimer: this.model,
+      }
+    });
+    modal.present();
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data && data.university) {
+      this.form.controls.university_id.setValue(data.university.university_id);
+      this.form.controls.university_id.markAsDirty();
+
+      this.form.controls.university.setValue(data.university.university_name_en);
+      this.form.controls.university.markAsDirty();
+
+      this.form.updateValueAndValidity();
+    }
+  }
+
   /**
    * select fulltimer location
    */
@@ -608,7 +641,11 @@ export class FulltimerFormPage implements OnInit, OnDestroy {
    */
   close(refresh = false) {
     const data = { refresh };
-    this.modalCtrl.dismiss(data);
+    this.modalCtrl.getTop().then(o => {
+      if(o) {
+        o.dismiss(data);
+      }
+    });
   }
 
   /**
@@ -703,7 +740,7 @@ export class FulltimerFormPage implements OnInit, OnDestroy {
       duration: 2000
     });
     loading.present();
-    
+
     this.suggestionService.create(params).subscribe(async response => {
 
         this.loading = false;

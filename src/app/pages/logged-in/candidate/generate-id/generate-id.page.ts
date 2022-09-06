@@ -246,5 +246,4 @@ export class GenerateIdPage implements OnInit {
     });
     await alert.present();
   }
-
 }

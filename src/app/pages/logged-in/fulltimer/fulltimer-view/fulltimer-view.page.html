@@ -1,11 +1,11 @@
-<ion-header [class.add-border]="borderLimit" class="ion-no-border">
+<ion-header mode="md" [class.add-border]="borderLimit" class="ion-no-border">
   <ion-toolbar class="container">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/view/fulltimer-search"></ion-back-button>
+      <ion-back-button icon="assets/images/icon-back.svg" defaultHref="/view/fulltimer-search"></ion-back-button>
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button (click)="update()">
+      <ion-button (click)="update()" *ngIf="!loading && !suggesting">
         Update
       </ion-button>
 
@@ -140,21 +140,23 @@
   </div>
 </ion-content>
 
-<ion-footer *ngIf="fulltimer" class="container">
-
-  <ion-grid>
-    <ion-row>
-      <ion-col *ngIf="fulltimer.fulltimer_pdf_cv">
-        <ion-button class="btn-export-cv" target="_blank" href="{{ getResumeUrl() }}">
-          Download CV
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button class="btn-suggest" (click)="suggest()">
-          Suggest for client request
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+<ion-footer *ngIf="fulltimer" class="ion-no-border">
+  <div class="container">
+    <ion-grid>
+      <ion-row>
+        <ion-col *ngIf="fulltimer.fulltimer_pdf_cv">
+          <ion-button class="btn-export-cv" target="_blank" href="{{ getResumeUrl() }}">
+            Download CV
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button class="btn-suggest" (click)="suggest()" [disabled]="suggesting">
+            <span *ngIf="!suggesting">Suggest for client request</span>
+            <ion-spinner *ngIf="suggesting"></ion-spinner>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
 
 </ion-footer>

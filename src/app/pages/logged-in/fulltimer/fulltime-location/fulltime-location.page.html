@@ -1,14 +1,15 @@
 <ion-header mode="md" [class.add-border]="borderLimit" class="clear-header" [attr.dir]="translateService.direction()">
-    <ion-toolbar>
+    <ion-toolbar class="container">
         <ion-buttons slot="start">
-            <ion-back-button text="{{ 'Back' | translate }}" defaultHref="view/profile" *ngIf="from != 'sidebar'">
+            <ion-back-button icon="assets/images/ic_cancel.svg" defaultHref="view/profile" *ngIf="from != 'sidebar'">
             </ion-back-button>
-            <ion-back-button text="{{ 'Back' | translate }}" (click)="dismiss()"
+            <ion-back-button icon="assets/images/ic_cancel.svg" (click)="dismiss()"
                 *ngIf="from == 'sidebar'"></ion-back-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
 <ion-content [scrollEvents]="true" (ionScroll)="logScrolling($event)" [attr.dir]="translateService.direction()" class='contentArea ion-padding'>
+    <div class="container">
     <div class="desktop-view">
 
         <div class='page-title'>
@@ -46,5 +47,5 @@
     </div>
 
     <ion-spinner class="loader" *ngIf="loading"></ion-spinner>
-
+    </div>
 </ion-content>

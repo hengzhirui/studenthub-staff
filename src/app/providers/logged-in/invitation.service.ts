@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 //models
 import { Invitation } from 'src/app/models/invitation';
+import { Story } from 'src/app/models/request';
 //services
 import { AuthHttpService } from './authhttp.service';
 
@@ -20,7 +21,7 @@ export class InvitationService {
    * @returns {Observable<any>}
    */
   list(params: string = ''): Observable<any> {
-    let url = this._endpoint + '?expand=candidate,request,note,updatedBy' + params;
+    let url = this._endpoint + '?expand=story,candidate,request,note,request.storyOwners,updatedBy' + params;
     return this._authhttp.get(url);
   }
 
@@ -29,7 +30,7 @@ export class InvitationService {
    * @returns {Observable<any>}
    */
   view(invitation_uuid): Observable<any> {
-    let url = this._endpoint + '/' + invitation_uuid + '?expand=candidate,updatedBy';
+    let url = this._endpoint + '/' + invitation_uuid + '?expand=story,candidate,updatedBy';
     return this._authhttp.get(url);
   }
 
@@ -43,6 +44,17 @@ export class InvitationService {
       candidate_id: params.candidate_id,
       reason: params.reason
     });
+  }
+
+  /**
+   * check if invitation already sent
+   * @param candidate_id
+   * @param story
+   */
+  isAlreadyInvited(candidate_id, story: Story) {
+    const url = this._endpoint + '/is-already-invited?candidate_id=' + candidate_id + '&story_uuid=' + story.story_uuid
+       + '&request_uuid=' + story.request_uuid;
+    return this._authhttp.get(url);
   }
 
   /**

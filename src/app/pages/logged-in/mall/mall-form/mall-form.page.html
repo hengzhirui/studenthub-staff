@@ -1,5 +1,5 @@
-<ion-header [class.add-border]="borderLimit" class="ion-no-border">
-  <ion-toolbar>
+<ion-header mode="md" [class.add-border]="borderLimit" class="ion-no-border">
+  <ion-toolbar class="container">
     <ion-buttons slot="start">
       <ion-button (click)="close()">
         <ion-icon name="close"></ion-icon>
@@ -16,33 +16,39 @@
 </ion-header>
 
 <ion-content scrollEvents="true" (ionScroll)="logScrolling($event)">
-  <form [formGroup]="form">
-    <ion-list>
-      <ion-item>
-        <ion-label position="floating">Name English</ion-label>
-        <ion-input type="text" formControlName="name_en"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label position="floating">Name Arabic</ion-label>
-        <ion-input type="text" formControlName="name_ar"></ion-input>
-      </ion-item>
-    </ion-list>
-  </form>
+  <div class="container">
+    <form [formGroup]="form">
+      <ion-list>
+        <ion-item>
+          <div tabindex="0"></div>
+          <ion-label position="floating">Name English</ion-label>
+          <ion-input type="text" formControlName="name_en"></ion-input>
+        </ion-item>
+        <ion-item>
+          <div tabindex="0"></div>
+          <ion-label position="floating">Name Arabic</ion-label>
+          <ion-input type="text" formControlName="name_ar"></ion-input>
+        </ion-item>
+      </ion-list>
+    </form>
+  </div>
 </ion-content>
-<ion-footer>
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-button expand="full" color="primary" [disabled]="!form || !form.dirty || !form.valid || loading" (click)="save()">
-          <span *ngIf="!loading">Save</span>
-          <ion-spinner *ngIf="loading"></ion-spinner>
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button expand="full" (click)="close()">
-          Cancel
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+<ion-footer class="ion-no-border">
+  <div class="container">
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <ion-button expand="full" color="primary" [disabled]="!form || !form.dirty || !form.valid || loading" (click)="save()">
+            <span *ngIf="!loading">Save</span>
+            <ion-spinner *ngIf="loading"></ion-spinner>
+          </ion-button>
+        </ion-col>
+        <ion-col>
+          <ion-button expand="full" (click)="close()">
+            Cancel
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
 </ion-footer>
