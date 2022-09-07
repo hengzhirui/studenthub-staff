@@ -232,7 +232,7 @@
           </ion-label>
         </ion-button>
 
-        <ion-button *ngIf="story.story_status < 3 && allSuggestions.length > 0"
+        <ion-button *ngIf="story.story_status < 3 && allSuggestions.length > 0 && story.staff_id == authService.staff_id"
                     class="stop-btn delivery" fill="outline" (click)="changeStoryStatus(3)">
           <ion-label>
             Mark Story as Delivered
