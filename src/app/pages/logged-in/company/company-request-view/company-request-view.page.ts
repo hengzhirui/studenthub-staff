@@ -912,10 +912,11 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
       header: 'Provide number of employee for this story',
       inputs: [
         {
-          text: 'number of employers',
+          placeholder: 'number of employers',
           name: 'employee',
           type: 'number',
-          placeholder: ''
+          min: 1,
+          max: 15,
         }
       ],
       buttons: [
