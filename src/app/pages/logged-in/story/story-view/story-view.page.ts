@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription, Subject, interval } from 'rxjs';
 import {
   AlertController,
-  IonNav,
+  IonNav, LoadingController,
   ModalController,
   NavController,
   PopoverController,
@@ -25,6 +25,7 @@ import {NoteService} from '../../../../providers/logged-in/note.service';
 import {Note} from '../../../../models/note';
 import { StoryDeliveredComponent } from './story-delivered.component';
 import { StaffPage } from '../../pickers/staff/staff.page';
+import { CompanyRequestService } from 'src/app/providers/logged-in/company-request.service';
 
 
 export interface TimeSpan {
@@ -77,9 +78,19 @@ export class StoryViewPage implements OnInit, OnDestroy {
   public hoursToDday;
   public daysToDday;
 
+  public alertRequestUpdated: boolean = false;
+
+  public IPageCount = 0;
+  public IcurrentPage = 0;
+  public Itotal = 0;
+  public SPageCount = 0;
+  public ScurrentPage = 0;
+  public Stotal = 0;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     public suggestionService: SuggestionService,
+    public requestService: CompanyRequestService,
     private storyService: StoryService,
     public navCtrl: NavController,
     private modalCtrl: ModalController,
@@ -92,17 +103,35 @@ export class StoryViewPage implements OnInit, OnDestroy {
     public alertCtrl: AlertController,
     public popoverCtrl: PopoverController,
     public toastCtrl: ToastController,
-    public noteService: NoteService
+    public noteService: NoteService,
+    public loadingCtrl: LoadingController,
   ) { }
 
   ngOnInit() {
     this.internvalSubscribe = setInterval(_ => {
-      this.isStoryUpdated();
+      //this.isStoryUpdated();
+      this.isRequestUpdated();
     }, 6 * 1000); // every 6 seconds
-
   }
 
-  ionViewWillEnter(){
+  /**
+   * check if request updated, if so reload details
+   */
+  isRequestUpdated() {
+
+    if (!this.story || this.alertRequestUpdated) {
+      return null;
+    }
+
+    this.requestService.isRequestUpdated(this.story.request_uuid).subscribe(data => {
+      if (data.request_updated_datetime != this.request.request_updated_datetime) {
+        //this.loadDetail(false);//refresh without showing loader
+        this.alertRequestUpdated = true;
+      }
+    });
+  }
+
+  ionViewWillEnter() {
 
     if (!this.story_uuid) {
       this.story_uuid = this.activatedRoute.snapshot.paramMap.get('id');
@@ -139,20 +168,26 @@ export class StoryViewPage implements OnInit, OnDestroy {
     //   .subscribe(x => { this.getTimeDifference(); });
   }
 
-
   ngOnDestroy() {
     this.destroyed$.next();
     this.destroyed$.complete();
     this.stopTimer();
     if (this.internvalSubscribe) {
-      clearInterval(  this.internvalSubscribe);
+      clearInterval(this.internvalSubscribe);
     }
   }
 
+  /**
+   * load story details
+   */
   loadData() {
     this.loading = true;
 
     this.storyService.detail(this.story_uuid, '?expand=staff,storyActivities,storyActivities.staff,request,request.contact,request.staffs,request.company').subscribe(res => {
+
+      //hide update alert
+
+      this.alertRequestUpdated = false;
 
       this.loading = false;
       this.story = res;
@@ -195,11 +230,12 @@ export class StoryViewPage implements OnInit, OnDestroy {
    * @param loading
    */
   loadStoryInvitations(loading = true) {
-    this.invitationService.list('&request_uuid=' + this.request.request_uuid).subscribe(invitations => {
-      this.allInvitedCandidates = invitations;
-      this.invitedCandidates = invitations.filter(invitation => invitation.invitation_status == 1);
-      this.rejectedCandidates = invitations.filter(invitation => invitation.invitation_status == 2);
-      this.acceptedInvitations = invitations.filter(invitation => invitation.invitation_status == 3);
+    this.invitationService.listWithPagination('&request_uuid=' + this.request.request_uuid).subscribe(invitations => {
+      this.allInvitedCandidates = invitations.body;
+
+      this.IPageCount = parseInt(invitations.headers.get('X-Pagination-Page-Count'));
+      this.IcurrentPage = parseInt(invitations.headers.get('X-Pagination-Current-Page'));
+      this.Itotal = parseInt(invitations.headers.get('X-Pagination-Total-Count'));
     });
   }
 
@@ -210,21 +246,11 @@ export class StoryViewPage implements OnInit, OnDestroy {
 
     const params = '&story_uuid=' + this.story_uuid;
 
-    this.suggestionService.listAll(params).subscribe(data => {
-      this.allSuggestions = data;
-      this.suggestedSuggestions = [];
-      this.acceptedSuggestions = [];
-      this.rejectedSuggestions = [];
-
-      data.forEach(element => {
-        if (element.suggestion_status == 1) {
-          this.suggestedSuggestions.push(element);
-        } else if (element.suggestion_status == 2) {
-          this.rejectedSuggestions.push(element);
-        } else if (element.suggestion_status == 3) {
-          this.acceptedSuggestions.push(element);
-        }
-      });
+    this.suggestionService.list(1, params).subscribe(data => {
+      this.allSuggestions = data.body;
+      this.SPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.ScurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.Stotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
     });
   }
 
@@ -243,7 +269,8 @@ export class StoryViewPage implements OnInit, OnDestroy {
       // On Success
       if (response.operation == 'success') {
 
-        this.story.story_status = status;
+        // incase of rework set it to 1
+        this.story.story_status = (status == 7) ? 1 : status;
 
         this.eventService.storyStatusUpdated$.next({
           story: this.story
@@ -528,18 +555,23 @@ export class StoryViewPage implements OnInit, OnDestroy {
    */
   isStoryUpdated() {
 
-    if (!this.story || this.alertConfirmReload) {
+    if (!this.story || this.alertConfirmReload || this.alertRequestUpdated) {
       return null;
     }
 
     this.storyService.isUpdated(this.story_uuid).subscribe(data => {
       if (data.story_last_updated_at != this.story.story_last_updated_at) {
-        this.confirmReload(data.story_last_updated_at);
+        //this.confirmReload(data.story_last_updated_at);
+        this.alertRequestUpdated = true;
       }
     }, () => {
     }, () => {
       this.loading = false;
     });
+  }
+
+  closeAlert() {
+    this.alertRequestUpdated = false;
   }
 
   /**
@@ -574,7 +606,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
     this.alertConfirmReload.present();
   }
 
-  
+
   /**
    * open popup to select consultants
    */
@@ -606,7 +638,7 @@ export class StoryViewPage implements OnInit, OnDestroy {
         if (res.operation == 'success') {
           this.story.staff = res.staff;
         }
-        else 
+        else
         {
           this.alertCtrl.create({
             message: this.translateService.errorMessage(res.message),
@@ -643,4 +675,63 @@ export class StoryViewPage implements OnInit, OnDestroy {
       new Date(a.time).getTime() - new Date(b.time).getTime()
     );
   }
+
+  async doInfinite(event) {
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+      duration: 2000
+    });
+    loading.present();
+
+    this.IcurrentPage++;
+
+    const urlParams = '&request_uuid=' + this.story.request_uuid + '&page=' + this.IcurrentPage;
+    this.invitationService.listWithPagination(urlParams).subscribe(invitations => {
+
+        this.IPageCount = parseInt(invitations.headers.get('X-Pagination-Page-Count'));
+        this.IcurrentPage = parseInt(invitations.headers.get('X-Pagination-Current-Page'));
+        this.Itotal = parseInt(invitations.headers.get('X-Pagination-Total-Count'));
+
+        this.allInvitedCandidates = this.allInvitedCandidates.concat(invitations.body);
+
+      },
+      error => { },
+      () => {
+        this.loading = false;
+        loading.dismiss();
+        event.target.complete();
+      }
+    );
+  }
+
+
+  async doInfiniteSuggestion(event) {
+
+    this.ScurrentPage++;
+
+    const loading = await this.loadingCtrl.create({
+      message: 'Please wait...',
+      duration: 2000
+    });
+    loading.present();
+
+    const params = '&request_uuid=' + this.story.request_uuid;
+
+    this.suggestionService.list(this.ScurrentPage, params).subscribe(data => {
+
+        this.allSuggestions = this.allSuggestions.concat(data.body);
+        this.SPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+        this.ScurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+        this.Stotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+      },
+      error => { },
+      () => {
+        this.loading = false;
+        loading.dismiss();
+        event.target.complete();
+      }
+    );
+  }
+
 }

@@ -25,6 +25,15 @@ export class InvitationService {
     return this._authhttp.get(url);
   }
 
+ /**
+   * List of all invitations
+   * @returns {Observable<any>}
+   */
+  listWithPagination(params: string = ''): Observable<any> {
+    let url = this._endpoint + '?expand=story,candidate,request,note,request.storyOwners,updatedBy' + params;
+    return this._authhttp.getRaw(url);
+  }
+
   /**
    * get invitation details
    * @returns {Observable<any>}
@@ -42,6 +51,19 @@ export class InvitationService {
     return this._authhttp.post(this._endpoint, {
       request_uuid: params.request_uuid,
       candidate_id: params.candidate_id,
+      reason: params.reason
+    });
+  }
+
+  /**
+   * create new invitation_uuid for request
+   * @param params
+   */
+  recreate(params) {
+    return this._authhttp.patch(this._endpoint + '/resend/' + params.invitation_uuid, {
+      request_uuid: params.request_uuid,
+      candidate_id: params.candidate_id,
+      story_uuid: params.story_uuid,
       reason: params.reason
     });
   }
