@@ -59,7 +59,7 @@ export class CompanyFormPage implements OnInit {
     public modalCtrl: ModalController,
     private _toastCtrl: ToastController,
     private eventService: EventService,
-    // private navCtrl: NavController
+    private navCtrl: NavController
   ) {
     // this.company_id = this.activateRoute.snapshot.paramMap.get('company_id');
     // console.log(this.company_id);
