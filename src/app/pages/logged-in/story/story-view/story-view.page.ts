@@ -117,7 +117,8 @@ export class StoryViewPage implements OnInit, OnDestroy {
     public toastCtrl: ToastController,
     public noteService: NoteService,
     public loadingCtrl: LoadingController,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.internvalSubscribe = setInterval(_ => {
