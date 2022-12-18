@@ -541,6 +541,10 @@ const routes: Routes = [
     path: 'candidate-assign-form',
     loadChildren: () => import('./pages/logged-in/candidate-assign-form/candidate-assign-form.module').then( m => m.CandidateAssignFormPageModule)
   },
+  {
+    path: 'leave-request',
+    loadChildren: () => import('./pages/logged-in/leave-request/leave-request.module').then( m => m.LeaveRequestPageModule)
+  },
 
 ];
 

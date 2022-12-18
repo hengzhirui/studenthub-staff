@@ -1,11 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AlertController, NavController } from '@ionic/angular';
+import { AlertController, ModalController, NavController } from '@ionic/angular';
+//models
+import { StaffLeave } from 'src/app/models/staff-leave';
 // services
 import { AuthService } from 'src/app/providers/auth.service';
 import { EventService } from 'src/app/providers/event.service';
 import { DailyStandupService } from 'src/app/providers/logged-in/daily-standup.service';
 import { StatisticService } from 'src/app/providers/logged-in/statistic.service';
 import {AccountService} from "../../../providers/logged-in/account.service";
+//pages
+import { LeaveRequestPage } from '../leave-request/leave-request.page';
 
 
 @Component({
@@ -25,6 +29,8 @@ export class DefaultPage implements OnInit {
 
   public staff_work_session;
 
+  public leave: StaffLeave;
+
   public statistics: {
     id_need_generated: any;
     totalExpiredCards: any;
@@ -42,6 +48,7 @@ export class DefaultPage implements OnInit {
   public loading = false;
 
   constructor(
+    public modalCtrl: ModalController,
     public navCtrl: NavController,
     public _alertCtrl: AlertController,
     public authService: AuthService,
@@ -104,15 +111,17 @@ export class DefaultPage implements OnInit {
   getSession() {
     this.loadingSession = true; 
 
-    this.dailyStandupService.getSession().subscribe(async session => {
+    this.dailyStandupService.getSession().subscribe(async response => {
 
       this.loadingSession = false; 
     
-      if(session) {
-        this.staff_work_session = session;
+      if(response.session) {
+        this.staff_work_session = response.session;
 
         this.getStandupQuestion();
       }
+
+      this.leave = response.leave;
     });
   }
 
@@ -272,5 +281,21 @@ export class DefaultPage implements OnInit {
 
   logout() {
     this.authService.logout();
+  }
+
+  async leaveRequest() {
+    window.history.pushState({ navigationId: window.history.state.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: LeaveRequestPage
+    });
+    modal.present();
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+    });
   }
 }
