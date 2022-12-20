@@ -1,5 +1,5 @@
-import { Component, Inject, forwardRef, Input } from '@angular/core';
-import { BaseWidget, NgAisInstantSearch } from 'angular-instantsearch';
+import { Component, Inject, forwardRef, Input, Optional } from '@angular/core';
+import { BaseWidget, NgAisIndex, NgAisInstantSearch } from 'angular-instantsearch';
 import { noop } from "angular-instantsearch/esm2015/utils";
 import { connectCurrentRefinedValues } from "instantsearch.js/es/connectors";
 import { Platform } from "@ionic/angular";
@@ -31,10 +31,12 @@ export class AppliedFiltersComponent extends BaseWidget {
     public total;
 
     public average = null;
-
+    
     constructor(
         @Inject(forwardRef(() => NgAisInstantSearch))
-        public instantSearchParent,
+        public instantSearchInstance,
+        @Optional()
+        public parentIndex: NgAisIndex,
         public authService: AuthService,
         public platform: Platform,
         public currencyPipe: CurrencyPipe
@@ -50,10 +52,10 @@ export class AppliedFiltersComponent extends BaseWidget {
             items: []
         };
 
-        if (this.instantSearchParent) {
-            this.instantSearchParent.change.subscribe(() => {
+        if (this.instantSearchInstance) {
+            this.instantSearchInstance.change.subscribe(() => {
 
-                let lastResults = this.instantSearchParent.instantSearchInstance.helper.lastResults;
+                let lastResults = this.instantSearchInstance.instantSearchInstance.helper.lastResults;
 
                 if (lastResults) {
                     this.total = lastResults.nbHits;
@@ -71,7 +73,7 @@ export class AppliedFiltersComponent extends BaseWidget {
             includedAttributes: this.attributes
         };
 
-        if (this.instantSearchParent) {
+        if (this.instantSearchInstance) {
             this.createWidget(connectCurrentRefinedValues, options);
 
             setTimeout(() => { // to protect dual request
@@ -86,8 +88,8 @@ export class AppliedFiltersComponent extends BaseWidget {
     isHidden() {
         return this.state && this.state.refinements && this.state.refinements.length === 0;
         /*&& (
-            !this.instantSearchParent.instantSearchInstance.searchParameters.query ||
-            this.instantSearchParent.instantSearchInstance.searchParameters.query.length == 0
+            !this.instantSearchInstance.instantSearchInstance.searchParameters.query ||
+            this.instantSearchInstance.instantSearchInstance.searchParameters.query.length == 0
         );*/
     }
 
@@ -235,8 +237,8 @@ export class AppliedFiltersComponent extends BaseWidget {
 
         let buttons = [];
 
-        /*if(this.instantSearchParent.instantSearchInstance.searchParameters.query && this.instantSearchParent.instantSearchInstance.searchParameters.query.length > 0) {
-            a.push(this.instantSearchParent.instantSearchInstance.searchParameters.query);
+        /*if(this.instantSearchInstance.instantSearchInstance.searchParameters.query && this.instantSearchInstance.instantSearchInstance.searchParameters.query.length > 0) {
+            a.push(this.instantSearchInstance.instantSearchInstance.searchParameters.query);
         }*/
 
         for (let b of this.state.refinements) {

@@ -1,5 +1,5 @@
-import { Component, Inject, forwardRef, Input, Output, EventEmitter } from '@angular/core';
-import { BaseWidget, NgAisInstantSearch } from 'angular-instantsearch';
+import { Component, Inject, forwardRef, Input, Output, EventEmitter, Optional } from '@angular/core';
+import { BaseWidget, NgAisIndex, NgAisInstantSearch } from 'angular-instantsearch';
 import { connectRefinementList } from "instantsearch.js/es/connectors";
 import { parseNumberInput, noop } from "angular-instantsearch/esm2015/utils"; 
 //services
@@ -37,7 +37,9 @@ export class RefinementListComponent extends BaseWidget {
 
     constructor(
         @Inject(forwardRef(() => NgAisInstantSearch))
-        public instantSearchParent,
+        public instantSearchInstance,
+        @Optional()
+        public parentIndex: NgAisIndex,
         public eventService: EventService,
         public translateService: TranslateLabelService
     ) {
@@ -69,7 +71,7 @@ export class RefinementListComponent extends BaseWidget {
     }
 
     public ngOnInit() {
-        if(this.instantSearchParent) {
+        if(this.instantSearchInstance) {
             this.createWidget(connectRefinementList, {
                 limit: parseNumberInput(this.limit),
                 showMoreLimit: parseNumberInput(this.showMoreLimit),
@@ -124,11 +126,11 @@ export class RefinementListComponent extends BaseWidget {
 
             if (
                 this.isRefined() && 
-                this.instantSearchParent.instantSearchInstance.helper.state &&
-                this.instantSearchParent.instantSearchInstance.helper.state.disjunctiveFacetsRefinements && 
-                !this.instantSearchParent.instantSearchInstance.helper.state.disjunctiveFacetsRefinements[this.attribute]
+                this.instantSearchInstance.instantSearchInstance.helper.state &&
+                this.instantSearchInstance.instantSearchInstance.helper.state.disjunctiveFacetsRefinements && 
+                !this.instantSearchInstance.instantSearchInstance.helper.state.disjunctiveFacetsRefinements[this.attribute]
             )
-                this.instantSearchParent.instantSearchInstance.helper.state.disjunctiveFacetsRefinements[this.attribute] = [];
+                this.instantSearchInstance.instantSearchInstance.helper.state.disjunctiveFacetsRefinements[this.attribute] = [];
 
             //this.change.emit();
         }
