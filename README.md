@@ -8,3 +8,4 @@ todo
 - ability to use algolia key with expiry 
 - remove all console.log 
 - scan for todo comment 
+- refresh functionality in instant search 
