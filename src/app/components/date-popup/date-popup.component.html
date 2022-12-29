@@ -1,4 +1,4 @@
-<ion-popover [trigger]="key" size="cover" class="date-popup-over" side="left" alignment="start">
+<ion-popover [trigger]="key" size="cover" class="date-popup-over" [side]="side" [alignment]="alignment">
   <ng-template>
     <ion-datetime
       (ionChange) = "close($event)"

@@ -12,6 +12,8 @@ import {format, parseISO} from "date-fns";
 export class DatePopupComponent implements OnInit {
 
   @Input() min;
+  @Input() side = 'left'; // "bottom" ｜ "end" ｜ "left" ｜ "right" ｜ "start" ｜ "top"
+  @Input() alignment = 'start'; //"center" ｜ "end" ｜ "start" ｜ undefined
   @Input() max;
   @Input() value = null;
   @Input() key = 'date'

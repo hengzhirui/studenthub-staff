@@ -543,6 +543,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/logged-in/leave-request/leave-request.module').then( m => m.LeaveRequestPageModule)
   },
   {
+    path: 'fulltimer-suggestions',
+    loadChildren: () => import('./pages/logged-in/fulltimer/fulltimer-suggestions/fulltimer-suggestions.module').then( m => m.FulltimerSuggestionsPageModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'FulltimerSuggestionsPage'
+    }
+  },
+  {
     path: '**',
     redirectTo: 'not-found'
   },

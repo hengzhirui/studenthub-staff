@@ -31,9 +31,9 @@ export class Fulltimer {
     fulltimer_updated_datetime: string;
     rejectionRatio: any;
     acceptanceRatio: any;
-    suggested: number;
-    suggestionAccepted: number;
-    suggestionRejected: number;
+    suggested: any;
+    suggestionAccepted: any;
+    suggestionRejected: any;
     fulltimerTags: FulltimerTag[];
     area: Area;
     country: Country;

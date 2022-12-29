@@ -19,7 +19,7 @@
         src="{{ awsService.cloudinaryUrl + 'candidate-photo/' + candidate.candidate_personal_photo }}" />
     </ion-thumbnail>
 
-    <h2 class="candidate-name" [title]=pendingData *ngIf="candidate.candidate_name">
+    <h2 class="candidate-name" *ngIf="candidate.candidate_name">
       {{ candidate.candidate_name }} <small>({{candidate.candidate_id}})</small><ion-badge color="danger" *ngIf="candidate.deleted">Deleted</ion-badge>
 
       <ion-button size="small" class="btn-copy" (click)="copy($event, candidate.candidate_name)">
@@ -36,10 +36,21 @@
       </ion-button>
     </h4>
 
-    <ion-badge color="warning" *ngIf="candidate && !candidate.isProfileCompleted">Incomplete profile</ion-badge>
+    <ion-badge color="warning" tappabel id="pending-fields" *ngIf="candidate && !candidate.isProfileCompleted">Incomplete profile</ion-badge>
     <ng-container  *ngIf="candidate && candidate.civilExpired">
       &nbsp;&nbsp;<ion-badge color="danger">Civil Id Expired</ion-badge>
     </ng-container>
+
+    <ion-popover [keepContentsMounted]="true" trigger="pending-fields">
+      <ng-template>
+        <ion-content>
+          <ion-list>
+            <ion-item *ngFor="let data of candidate.pendingField">{{data}}</ion-item>
+          </ion-list>
+        </ion-content>
+      </ng-template>
+    </ion-popover>
+
 
   </ion-toolbar>
 

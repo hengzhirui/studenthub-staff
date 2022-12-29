@@ -68,7 +68,7 @@
           Civil ID
         </ion-card-header>
         <ion-card-content>
-          
+
           <ion-item>
             <div tabindex="0"></div>
             <ion-label position="floating">Civil ID Number</ion-label>
@@ -86,8 +86,13 @@
 
           <ion-item>
             <div tabindex="0"></div>
-            <ion-label position="floating">Civil ID Expiry Date</ion-label>
-            <ion-datetime presentation="date" [min]="todayDate" [max]="maxDate" formControlName="expiry_date"></ion-datetime>
+            <ion-label position="fixed">Civil ID Expiry Date</ion-label>
+            <ion-input
+              formControlName="expiry_date"
+              id="civil"
+              class="ion-text-end"
+            ></ion-input>
+            <app-date-popup key="civil" side="top" alignment="center" [value]="model.candidate_civil_expiry_date" [min]="todayDate" [max]="maxDate" (onClose)="selectDate($event,'expiry_date')"></app-date-popup>
           </ion-item>
 
           <div class="error-wrapper" *ngIf="!form.controls['expiry_date'].pristine">
@@ -127,15 +132,21 @@
 
           <ion-item>
             <div tabindex="0"></div>
-            <ion-label  position="floating">Birth Date</ion-label>
-            <ion-datetime presentation="date" [min]="minBirthDate" [max]="maxBirthDate" formControlName="birth_date"></ion-datetime>
+            <ion-label position="fixed">Birth Date</ion-label>
+            <ion-input
+              formControlName="birth_date"
+              id="birth"
+              class="ion-text-end"
+            ></ion-input>
+            <app-date-popup key="birth" side="top" alignment="center" [value]="model.candidate_birth_date" [min]="minBirthDate" [max]="maxBirthDate" (onClose)="selectDate($event,'birth_date')"></app-date-popup>
           </ion-item>
+
           <div class="error-wrapper" *ngIf="!form.controls['birth_date'].pristine">
             <p class="error" *ngIf="form.controls['birth_date'].errors && form.controls['birth_date'].errors.required">
               * required
             </p>
           </div>
-          
+
           <app-select-search-input
             *ngIf="countrylistData"
             formControlName="country_id"
