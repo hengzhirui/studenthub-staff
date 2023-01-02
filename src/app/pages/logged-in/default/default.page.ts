@@ -19,15 +19,21 @@ import { LeaveRequestPage } from '../leave-request/leave-request.page';
 })
 export class DefaultPage implements OnInit {
 
-  public loadingSession: boolean = false; 
+  public loadingSession: boolean = false;
 
-  public savingAnswer = false; 
+  public savingAnswer = false;
 
   public borderLimit = false;
 
-  public dailyStandupQuestion; 
+  public dailyStandupQuestion;
 
-  public staff_work_session;
+  public staff_work_session: {
+    leave: any,
+    session: any
+  } = {
+    leave : null,
+    session: null
+  };
 
   public leave: StaffLeave;
 
@@ -79,7 +85,7 @@ export class DefaultPage implements OnInit {
 
     this.getAccountInfo();
 
-    //check session 
+    //check session
 
     this.getSession();
   }
@@ -107,17 +113,16 @@ export class DefaultPage implements OnInit {
       () => { this.loading = false; }
     );
   }
-  
+
   getSession() {
-    this.loadingSession = true; 
+    this.loadingSession = true;
 
     this.dailyStandupService.getSession().subscribe(async response => {
 
-      this.loadingSession = false; 
-    
+      this.loadingSession = false;
+
       if(response.session) {
         this.staff_work_session = response.session;
-
         this.getStandupQuestion();
       }
 
@@ -126,18 +131,18 @@ export class DefaultPage implements OnInit {
   }
 
   startSession() {
-    this.loadingSession = true; 
+    this.loadingSession = true;
 
     this.dailyStandupService.startSession().subscribe(async response => {
-      
+
       if(response.operation == 'success') {
 
-        this.staff_work_session = response.model;
+        this.staff_work_session.session = response.model;
 
         this.getStandupQuestion();
 
       } else {
-        this.loadingSession = false; 
+        this.loadingSession = false;
 
         let prompt = await this._alertCtrl.create({
           message: this.authService.errorMessage(response.message),
@@ -149,14 +154,14 @@ export class DefaultPage implements OnInit {
   }
 
   endSession() {
-    this.loadingSession = true; 
+    this.loadingSession = true;
 
     this.dailyStandupService.endSession().subscribe(async response => {
 
-      this.loadingSession = false; 
+      this.loadingSession = false;
 
       if(response.operation == 'success') {
-        this.staff_work_session = null;// response.model;
+        this.staff_work_session.session = null;// response.model;
       }
     });
   }
@@ -173,12 +178,12 @@ export class DefaultPage implements OnInit {
   getStandupQuestion() {
     this.dailyStandupService.question().subscribe(async question => {
       this.dailyStandupQuestion = question;
-      this.loadingSession = false; 
+      this.loadingSession = false;
     });
   }
 
   async saveAnswer() {
- 
+
     const question_uuid = this.dailyStandupQuestion.question_uuid;
     const answer = this.dailyStandupQuestion.answer;
 
