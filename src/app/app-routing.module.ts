@@ -631,6 +631,16 @@ const routes: Routes = [
       name: 'LeaveRequestViewPage'
     }
   },
+
+  {
+    path: 'assigned-company-list',
+    loadChildren: () => import('./pages/logged-in/company/assigned-company-list/assigned-company-list.module').then(m => m.AssignedCompanyListModule),
+    canActivate: [AuthService],
+    data: {
+      name: 'AssignedCompanyListPage',
+      navDisable: true,
+    }
+  },
   {
     path: '**',
     redirectTo: 'not-found'
