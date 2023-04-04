@@ -5,6 +5,10 @@
       <div tabindex="0"></div>
       <span>My Profile</span>
     </ion-item>
+    <ion-item (click)="page('assigned-company-list')" tappable>
+      <div tabindex="0"></div>
+      <span>Assigned Companies</span>
+    </ion-item>
     <ion-item (click)="page('my-work')" tappable>
       <div tabindex="0"></div>
       <span>My Work</span>
@@ -21,7 +25,7 @@
       <div tabindex="0"></div>
       <span>Change Password</span>
     </ion-item>
-    <ion-item (click)="page('logout')"tappable>
+    <ion-item (click)="page('logout')" tappable lines="none">
       <div tabindex="0"></div>
       <span>Logout</span>
     </ion-item>

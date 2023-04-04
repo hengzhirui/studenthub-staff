@@ -31,6 +31,15 @@ export class CompanyService {
    * @param page
    * @param searchParams
    */
+  assignedList(page, searchParams): Observable<any> {
+    return this._authhttp.getRaw(this._companyEndpoint+'/assigned-list' + '?page=' + page + searchParams + '&expand=subCompanies,stores,transferInLast40Days,subCompanies.stores,subCompanies.stores.candidateWorkHistoryByLast40Days,stores.candidateWorkHistoryByLast40Days,brands');
+  }
+
+  /**
+   * List of all companies
+   * @param page
+   * @param searchParams
+   */
   listWithContact(page, searchParams): Observable<any> {
     return this._authhttp.getRaw(this._companyEndpoint + '?page=' + page + searchParams + '&expand=subCompanies,companyContacts,contacts,contacts.contactEmails,contacts.contactPhones,companyContacts.contactEmails,companyContacts.contactPhones,subCompanies.companyContacts,subCompanies.contacts,subCompanies.companyContacts.contactEmails,subCompanies.companyContacts.contactPhones,requests');
   }
