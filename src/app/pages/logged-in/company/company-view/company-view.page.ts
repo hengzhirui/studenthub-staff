@@ -597,6 +597,12 @@ export class CompanyViewPage implements OnInit {
         icon: 'assets/icon/icon-edit-2.svg',
         trigger: 'edit'
       },
+      {
+        name: "Remove from review list",
+        icon: 'assets/icon/icon-edit-2.svg',
+        trigger: 'remove-review'
+      },
+      
     ];
 
     const modal = await this.popoverCtrl.create({
@@ -623,7 +629,24 @@ export class CompanyViewPage implements OnInit {
     if (data && data.action) {
       if(data.action.trigger == 'edit') {
         this.update();
-      }
+      } else if(data.action.trigger == 'remove-review') {
+        //this.updateReviewStatus();
+
+        this.companyService.changeStatus(this.company, null).subscribe(async resp => {
+          if (resp.operation != 'success') {
+            const prompt = await this.alertCtrl.create({
+              header: 'Error!',
+              message: resp.message,
+              buttons: ['Ok']
+            });
+            prompt.present();
+          }
+          else {
+            this.company.company_status = resp.company_status;
+            this.company.company_status_override = null;
+          }
+        });
+      } 
     }
   }
 
