@@ -12,8 +12,9 @@
     </ion-buttons>
   </ion-toolbar>
   <ion-toolbar class="container">
+    
     <!--(ionChange)="segmentChanged($event)"-->
-    <ion-segment mode="md" [(ngModel)]="segment">
+    <ion-segment mode="md" [(ngModel)]="segment" (ionChange)="segmentChanged($event)">
 
       <ion-segment-button mode="md" value="details">
         <ion-label>Details</ion-label>
@@ -25,6 +26,10 @@
 
       <ion-segment-button mode="md" value="stories">
         <ion-label>Stories</ion-label>
+      </ion-segment-button>
+
+      <ion-segment-button mode="md" value="matches"  *ngIf="request && request.request_position_type == 2">
+        <ion-label>Matches</ion-label>
       </ion-segment-button>
 
       <ion-segment-button mode="md" value="invited"  *ngIf="request && request.request_position_type == 2">
@@ -149,6 +154,22 @@
 
     </div>
 
+    <div *ngIf="segment == 'matches'" class="match-wrapper">
+
+      <div *ngIf="!loadingMatched && matchedCandidates.length == 0" class="ion-text-center no-invi">
+        <img src="assets/images/no-invitation.png"/>
+        <p class="ion-text-center">There are no matched found, please search manually!</p>
+      </div>
+      
+      <candidate tappable (click)="candidateSelected(candidate)" [candidate]="candidate" 
+        *ngFor="let candidate of matchedCandidates">
+      </candidate>
+
+      <ion-infinite-scroll *ngIf="McurrentPage < MPageCount" (ionInfinite)="doInfiniteMatched($event)">
+        <ion-infinite-scroll-content></ion-infinite-scroll-content>
+      </ion-infinite-scroll>
+    </div>
+    
     <div *ngIf="segment == 'invited'">
 
       <div *ngIf="allInvitedCandidates.length == 0" class="ion-text-center no-invi">

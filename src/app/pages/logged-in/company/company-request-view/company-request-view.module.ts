@@ -16,6 +16,7 @@ import { RequestOptionPage } from './company-request-option.page';
 import { NoteModule } from 'src/app/components/note/note.module';
 import { NoItemsModule } from 'src/app/components/no-items/no-items.module';
 import { StoryItemModule } from 'src/app/components/story-item/story-item.module';
+import { CandidateModule } from 'src/app/components/candidate/candidate.module';
 
 @NgModule({
   imports: [
@@ -31,6 +32,7 @@ import { StoryItemModule } from 'src/app/components/story-item/story-item.module
     LoadingModalModule,
     SuggestionModule,
     StoryItemModule,
+    CandidateModule,
     CompanyRequestViewRoutingModule
   ],
   declarations: [

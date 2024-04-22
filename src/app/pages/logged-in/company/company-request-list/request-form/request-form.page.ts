@@ -14,6 +14,7 @@ import { Request } from 'src/app/models/request';
 import { CompanyContactListPage } from '../../company-contact/company-contact-list/company-contact-list.page';
 import { AllCompanyListPage } from '../all-company-list/all-company-list.page';
 import { AnalyticsService } from 'src/app/providers/analytics.service';
+import { CountryService } from 'src/app/providers/logged-in/country.service';
 
 
 @Component({
@@ -48,12 +49,15 @@ export class RequestFormPage implements OnInit {
 
   public Editor = ClassicEditor;
 
+  public countrylistData = [];
+
   constructor(
     public requestService: CompanyRequestService,
     private fb: FormBuilder,
     public navCtrl: NavController,
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
+    public countryService: CountryService,
     public authService: AuthService,
     private popoverCtrl: PopoverController,
     private location: Location,
@@ -65,6 +69,19 @@ export class RequestFormPage implements OnInit {
 
   ngOnInit() { 
     this.analyticService.page('Request Form Page');
+  }
+
+  ionViewDidEnter() {
+    this.loadCountryList();
+  }
+
+  /**
+   * Load list of countries
+   */
+  loadCountryList() {
+    this.countryService.listAll().subscribe(response => {
+      this.countrylistData = response;
+    });
   }
 
   ionViewWillEnter() {
@@ -116,6 +133,8 @@ export class RequestFormPage implements OnInit {
       location: [this.model.request_location],
       additional_info: [this.model.request_additional_info],
       requestSkills:  new FormArray(skillCtrls),
+      nationality_id: [this.model.nationality_id],
+      gender: [this.model.gender + '']
     });
 
     this.operation = (this.requestID) ? 'Update' : 'Create';
@@ -136,6 +155,8 @@ export class RequestFormPage implements OnInit {
     this.model.request_location = this.form.value.location;
     this.model.no_of_employees_per_story = this.form.value.no_of_employees_per_story;
     this.model.requestSkills = this.form.value.requestSkills;
+    this.model.gender = this.form.value.gender; 
+    this.model.nationality_id = this.form.value.nationality_id;
   }
 
   /**
@@ -292,6 +313,8 @@ export class RequestFormPage implements OnInit {
 
   resetForm() {
     this.company = null;
+    this.form.controls['gender'].setValue(null);
+    this.form.controls['nationality_id'].setValue(null);
     this.form.controls['company_id'].setValue(null);
     this.form.controls['contact_name'].setValue(null);
     this.form.controls['contact_uuid'].setValue(null);

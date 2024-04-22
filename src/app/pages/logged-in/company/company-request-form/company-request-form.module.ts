@@ -8,6 +8,7 @@ import { CompanyRequestFormPageRoutingModule } from './company-request-form-rout
 
 import { CompanyRequestFormPage } from './company-request-form.page';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { SelectSearchModule } from 'src/app/components/select-search/select-search.module';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
     FormsModule,
     IonicModule,
     CKEditorModule,
+    SelectSearchModule,
     ReactiveFormsModule,
     CompanyRequestFormPageRoutingModule
   ],

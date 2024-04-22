@@ -327,6 +327,17 @@ export class CandidateService {
     const url = this._candidateEndpoint + '/search?expand=store,company,candidateTags&country_id=' + country.country_id + '&page=' + page;
     return this._authhttp.getRaw(url);
   }
+
+  /**
+   * search candidate for request
+   * @param match_request_id 
+   * @param page 
+   * @returns 
+   */
+  searchRequestMatch(match_request_id: any, page: number): Observable<any> {
+    const url = this._candidateEndpoint + '/search?expand=cadndiateSkills,candidateExperiences,candidateTags&match_request_id=' + match_request_id + '&page=' + page;
+    return this._authhttp.getRaw(url);
+  }
   
   /**
    * return warnings issued for not joining interview

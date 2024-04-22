@@ -33,6 +33,8 @@ import { StaffPage } from '../../pickers/staff/staff.page';
 import { RequestOptionPage } from './company-request-option.page';
 import {StoryService} from "../../../../providers/logged-in/story.service";
 import { AnalyticsService } from 'src/app/providers/analytics.service';
+import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
+import { Candidate } from 'src/app/models/candidate';
 
 
 @Component({
@@ -89,6 +91,13 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
   public ScurrentPage = 0;
   public Stotal = 0;
 
+  public matchedCandidates: Candidate[] = [];
+  public MPageCount = 0;
+  public McurrentPage = 0;
+  public Mtotal = 0;
+
+  public loadingMatched:boolean = false;
+
   constructor(
     public popoverCtrl: PopoverController,
     public modalCtrl: ModalController,
@@ -97,6 +106,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     public loadingCtrl: LoadingController,
     public route: ActivatedRoute,
     public authService: AuthService,
+    public candidateService: CandidateService,
     public requestService: CompanyRequestService,
     public requestActivityService: RequestActivityService,
     public navCtrl: NavController,
@@ -294,6 +304,14 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     }, () => {
     }, () => {
       this.loadingActivities = false;
+    });
+  }
+
+  candidateSelected(candidate) {
+    this.navCtrl.navigateForward('candidate-view/' + candidate.candidate_id, {
+      state: {
+        request: this.request
+      }
     });
   }
 
@@ -861,7 +879,13 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
 
 
   segmentChanged(event) {
-    this.segment = event.target.value;
+    //this.segment = event.target.value;
+
+    if(this.segment == "matches") {
+      if(this.matchedCandidates.length == 0) {
+        this.loadMatched();
+      }
+    }
   }
 
 
@@ -1037,6 +1061,49 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
         loading.dismiss();
       }
     );
+  }
+
+  loadMatched() {
+
+    this.loadingMatched = true;
+
+    this.McurrentPage = 1;
+
+    this.candidateService.searchRequestMatch(this.request_uuid, this.McurrentPage).subscribe(data => {
+
+      this.matchedCandidates = data.body;
+      this.MPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.McurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.Mtotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+    },
+    () => { },
+    () => {
+      this.loadingMatched = false;
+    });
+  }
+
+  /**
+   * load more matched candidates 
+   * @param event 
+   */
+  doInfiniteMatched(event) {
+
+    this.loadingMatched = true;
+    
+    this.McurrentPage++;
+
+    this.candidateService.searchRequestMatch(this.request_uuid, this.McurrentPage).subscribe(data => {
+
+      this.matchedCandidates = this.matchedCandidates.concat(data.body);
+      this.MPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.McurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.Mtotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+    },
+    () => { },
+    () => {
+      this.loadingMatched = false;
+      event.target.complete();
+    });
   }
 
   async doInfiniteSuggestion(event) {

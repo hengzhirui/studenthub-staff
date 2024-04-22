@@ -83,7 +83,9 @@ export class CompanyRequestService {
       additional_info: model.request_additional_info,
       compensation: model.request_compensation,
       job_description: model.request_job_description,
-      requestSkills: model.requestSkills
+      requestSkills: model.requestSkills,
+      nationality_id: model.nationality_id, 
+      gender: model.gender
     });
   }
 
@@ -148,7 +150,9 @@ export class CompanyRequestService {
       additional_info: model.request_additional_info,
       compensation: model.request_compensation,
       job_description: model.request_job_description,
-      requestSkills: model.requestSkills
+      requestSkills: model.requestSkills,
+      nationality_id: model.nationality_id, 
+      gender: model.gender
     });
   }
 

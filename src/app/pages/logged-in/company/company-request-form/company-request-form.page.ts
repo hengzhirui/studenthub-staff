@@ -11,6 +11,7 @@ import { AuthService } from "../../../../providers/auth.service";
 //pages
 import { CompanyContactListPage } from "../company-contact/company-contact-list/company-contact-list.page";
 import { AnalyticsService } from 'src/app/providers/analytics.service';
+import { CountryService } from 'src/app/providers/logged-in/country.service';
 
 
 @Component({
@@ -45,6 +46,8 @@ export class CompanyRequestFormPage implements OnInit {
 
   public Editor = ClassicEditor;
 
+  public countrylistData = [];
+
   constructor(
     public requestService: CompanyRequestService,
     private fb: FormBuilder,
@@ -53,6 +56,7 @@ export class CompanyRequestFormPage implements OnInit {
     public authService: AuthService,
     private popoverCtrl: PopoverController,
     private eventService: EventService,
+    public countryService: CountryService,
     public analyticService: AnalyticsService
   ) {
   }
@@ -75,10 +79,25 @@ export class CompanyRequestFormPage implements OnInit {
       location: [this.model.request_location],
       job_description: [this.model.request_job_description, Validators.required],
       compensation: [this.model.request_compensation, Validators.required],
-      additional_info: [this.model.request_additional_info]
+      additional_info: [this.model.request_additional_info],
+      gender: [this.model.gender],
+      nationality_id: [this.model.nationality_id]
     });
 
     this.operation = (this.model && this.model.request_uuid) ? 'Update' : 'Create';
+  }
+
+  ionViewDidEnter() {
+    this.loadCountryList();
+  }
+
+  /**
+   * Load list of countries
+   */
+  loadCountryList() {
+    this.countryService.listAll().subscribe(response => {
+      this.countrylistData = response;
+    });
   }
 
   onEditorReady() {
@@ -122,6 +141,8 @@ export class CompanyRequestFormPage implements OnInit {
     this.model.request_compensation = this.form.value.compensation;
     this.model.request_location = this.form.value.location;
     this.model.no_of_employees_per_story = this.form.value.no_of_employees_per_story;
+    this.model.nationality_id = this.form.value.nationality_id; 
+    this.model.gender = this.form.value.gender;
   }
 
   /**
@@ -183,6 +204,10 @@ export class CompanyRequestFormPage implements OnInit {
     });
   }
 
+  /**
+   * popover to select company
+   * @param e 
+   */
   async openClient(e) {
 
     let popover;
@@ -243,5 +268,7 @@ export class CompanyRequestFormPage implements OnInit {
     this.form.controls['compensation'].setValue(null);
     this.form.controls['location'].setValue(null);
     this.form.controls['no_of_employees_per_story'].setValue(null);
+    this.form.controls['nationality_id'].setValue(null);
+    this.form.controls['gender'].setValue(null);
   }
 }
