@@ -705,24 +705,25 @@ const routes: Routes = [
     canActivate: [AuthService],
     loadChildren: () => import('./pages/logged-in/email-campaign/email-campaign-form/email-campaign-form.module').then( m => m.EmailCampaignFormPageModule)
   },
-  
   {
     path: 'update-account',
+    canActivate: [AuthService],
     loadChildren: () => import('./pages/logged-in/update-account/update-account.module').then( m => m.UpdateAccountPageModule)
   },
   {
-    path: '**',
-    redirectTo: 'not-found'
-  },  {
     path: 'store-assignment-request-list',
+    canActivate: [AuthService],
     loadChildren: () => import('./pages/logged-in/store-assignment-request/store-assignment-request-list/store-assignment-request-list.module').then( m => m.StoreAssignmentRequestListPageModule)
   },
   {
     path: 'store-assignment-request-view',
+    canActivate: [AuthService],
     loadChildren: () => import('./pages/logged-in/store-assignment-request/store-assignment-request-view/store-assignment-request-view.module').then( m => m.StoreAssignmentRequestViewPageModule)
   },
-
-
+  {
+    path: '**',
+    redirectTo: 'not-found'
+  }
 ];
 
 @NgModule({
