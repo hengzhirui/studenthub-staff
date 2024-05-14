@@ -16,6 +16,7 @@ import { StoryViewOptionPage } from './story-view-option.page';
 import { StoryCloseConfirmationComponent } from './story-close-confirmation.component';
 import { SuggestionModule } from "../../../../components/suggestion/suggestion.module";
 import { StoryDeliveredComponent } from './story-delivered.component';
+import { CandidateModule } from 'src/app/components/candidate/candidate.module';
 
 @NgModule({
   imports: [
@@ -24,6 +25,7 @@ import { StoryDeliveredComponent } from './story-delivered.component';
     NoteModule,
     PipesModule,
     IonicModule,
+    CandidateModule,
     InvitationModule,
     StoryViewPageRoutingModule,
     NoItemsModule,

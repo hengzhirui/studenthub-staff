@@ -1,0 +1,51 @@
+<ion-header mode="md" [class.add-border]="borderLimit" class="ion-no-border">
+  <ion-toolbar class="container">
+    <ion-buttons slot="start">
+      <ion-back-button icon="assets/images/icon-back.svg" defaultHref="/view/tasks"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Store assignment requests </ion-title>
+    <ion-progress-bar type="indeterminate" *ngIf="processing"></ion-progress-bar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content scrollEvents="true" class="ion-no-padding" (ionScroll)="logScrolling($event)">
+  <div class="container">
+
+    <ion-item *ngFor="let request of requests" [routerLink]="'/candidate-view/' + request.candidate_id">
+      <ion-label>
+        <h5 *ngIf="request.store">Assign {{ request.candidate.candidate_name }} to {{ request.store.store_name }}</h5>
+        <h5 *ngIf="!request.store">Un-assign {{ request.candidate.candidate_name }}</h5>
+        <p>{{ toDate(request.created_at) | date: 'MMM d, y' }}</p>
+        <ion-badge color="warning" *ngIf="request.status == 0">{{ "Pending" | translate }} </ion-badge>
+        <ion-badge color="light" *ngIf="request.status == 1">{{ "Accepted" | translate }} </ion-badge>
+        <ion-badge color="light" *ngIf="request.status == 2">{{ "Rejected" | translate }} </ion-badge>
+      </ion-label>
+      
+      <ion-buttons slot="end" *ngIf="request.status == 0">
+        <ion-button fill="clear">
+          Accept
+        </ion-button>
+        <ion-button fill="clear" (click)="reject($event, request)">
+          Reject
+        </ion-button>
+      </ion-buttons>
+
+      <!--
+      <ion-button fill="clear" [routerLink]="'/candidate-view/' + request.candidate_id">
+        View candidate 
+      </ion-button>
+
+      <ion-button fill="clear" [routerLink]="'/company-view/' + 
+        (request.store.company.parent_company_id? request.store.company.parent_company_id: request.store.company.company_id)">
+        View company 
+      </ion-button>-->
+
+    </ion-item>
+
+    <ion-infinite-scroll *ngIf="currentPage < pageCount"
+      (ionInfinite)="doInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+
+</ion-content>

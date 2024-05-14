@@ -23,6 +23,9 @@ export class EventService {
     transfersWithSameRateInProgress: any;
     companyUnderReview: any;
     totalUnverifiedEmails: any;
+    totalStoreAssignmentRequests: number;
+    totalInterviewRequests: number;
+    totalInterviewScheduled: number;
   };
 
   public setOneSignal$ = new Subject();

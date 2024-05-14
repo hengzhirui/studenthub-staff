@@ -33,6 +33,9 @@ import { StaffPage } from '../../pickers/staff/staff.page';
 import { RequestOptionPage } from './company-request-option.page';
 import {StoryService} from "../../../../providers/logged-in/story.service";
 import { AnalyticsService } from 'src/app/providers/analytics.service';
+import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
+import { Candidate } from 'src/app/models/candidate';
+import { RequestApplication } from 'src/app/models/request-application';
 
 
 @Component({
@@ -89,6 +92,21 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
   public ScurrentPage = 0;
   public Stotal = 0;
 
+  public matchedCandidates: Candidate[] = [];
+  public MPageCount = 0;
+  public McurrentPage = 0;
+  public Mtotal = 0;
+
+  public loadingMatched:boolean = false;
+
+  public loadingApplications: boolean = false; 
+
+  public candidateApplications: RequestApplication[] = [];
+  
+  public applicationPageCount = 0;
+  public applicationCurrentPage  = 0;
+  public applicationTotal = 0;
+
   constructor(
     public popoverCtrl: PopoverController,
     public modalCtrl: ModalController,
@@ -97,6 +115,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     public loadingCtrl: LoadingController,
     public route: ActivatedRoute,
     public authService: AuthService,
+    public candidateService: CandidateService,
     public requestService: CompanyRequestService,
     public requestActivityService: RequestActivityService,
     public navCtrl: NavController,
@@ -124,6 +143,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     this.loadRequestActivities();
     this.loadSuggestions();
     this.loadInvitations();
+    this.loadApplications();
 
     this.eventService.companyRequestUpdate$.subscribe((data: any) => {
       if (data && data.request_uuid == this.request_uuid) {
@@ -170,16 +190,17 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
    */
   loadDetail(loading = true) {
 
+    //hide update alert
+
+    this.alertRequestUpdated = false;
+
     if (loading)
       this.loading = true;
 
-    const urlParams = '?expand=storyOwners,staffs,staff,contact,company,stories,stories.staff,requestSkills';
+    const urlParams = '?expand=nationality,storyOwners,staffs,staff,contact,company,stories,stories.staff,' +
+      'requestSkills';//newApplicationCount,activeSuggestionCount
 
     this.requestService.view(this.request_uuid, urlParams).subscribe(data => {
-
-      //hide update alert
-
-      this.alertRequestUpdated = false;
 
       this.request = data;
 
@@ -199,7 +220,7 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     }
 
     this.requestService.isRequestUpdated(this.request_uuid).subscribe(data => {
-      if (data.request_updated_datetime != this.request.request_updated_datetime) {
+      if (data.request_updated_datetime != this.request.request_updated_datetime && !this.loading) {
         //this.loadDetail(false);//refresh without showing loader
         this.alertRequestUpdated = true;
       }
@@ -294,6 +315,14 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     }, () => {
     }, () => {
       this.loadingActivities = false;
+    });
+  }
+
+  candidateSelected(candidate) {
+    this.navCtrl.navigateForward('candidate-view/' + candidate.candidate_id, {
+      state: {
+        request: this.request
+      }
     });
   }
 
@@ -859,11 +888,65 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     );
   }
 
-
   segmentChanged(event) {
-    this.segment = event.target.value;
+
+    if(this.segment != event.target.value)
+      this.segment = event.target.value;
+
+    if(this.segment == "matches") {
+      if(this.matchedCandidates.length == 0) {
+        this.loadMatched();
+      }
+    } else if(this.segment == "applied") {
+      //if(this.candidateApplications.length == 0) {
+        this.loadApplications();
+      //}
+    }
   }
 
+  
+  loadApplications() {
+ 
+    this.loadingApplications = true;
+
+    this.applicationCurrentPage = 1;
+
+    this.requestService.listApplications(this.request_uuid, this.applicationCurrentPage).subscribe(data => {
+
+      this.candidateApplications = data.body;
+      this.applicationPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.applicationCurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.applicationTotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+    },
+    () => { },
+    () => {
+      this.loadingApplications = false;
+    });
+  }
+
+  /**
+   * load more on scroll to bottom
+   * @param event 
+   */
+  doInfiniteApplications(event) {
+
+    this.loadingApplications = true;
+
+    this.applicationCurrentPage++;
+
+    this.requestService.listApplications(this.request_uuid, this.applicationCurrentPage).subscribe(data => {
+
+      this.candidateApplications = data.body;
+      this.applicationPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.applicationCurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.applicationTotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+    },
+    () => { },
+    () => {
+      this.loadingApplications = false;
+      event.target.complete();
+    });
+  }
 
   getTimeSpent(time) {
     let seconds = 0;
@@ -1039,6 +1122,49 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     );
   }
 
+  loadMatched() {
+
+    this.loadingMatched = true;
+
+    this.McurrentPage = 1;
+
+    this.candidateService.searchRequestMatch(this.request_uuid, this.McurrentPage).subscribe(data => {
+
+      this.matchedCandidates = data.body;
+      this.MPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.McurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.Mtotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+    },
+    () => { },
+    () => {
+      this.loadingMatched = false;
+    });
+  }
+
+  /**
+   * load more matched candidates 
+   * @param event 
+   */
+  doInfiniteMatched(event) {
+
+    this.loadingMatched = true;
+    
+    this.McurrentPage++;
+
+    this.candidateService.searchRequestMatch(this.request_uuid, this.McurrentPage).subscribe(data => {
+
+      this.matchedCandidates = this.matchedCandidates.concat(data.body);
+      this.MPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.McurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.Mtotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+    },
+    () => { },
+    () => {
+      this.loadingMatched = false;
+      event.target.complete();
+    });
+  }
+
   async doInfiniteSuggestion(event) {
 
     this.ScurrentPage++;
@@ -1067,4 +1193,37 @@ export class CompanyRequestViewPage implements OnInit, OnDestroy {
     );
   }
 
+  /**
+   * refresh on pull to bottom
+   * @param event 
+   */
+  doRefresh(event) {
+    switch (this.segment) {
+      case "details":
+        this.loadDetail();
+        break;
+      case "activities":
+        this.loadRequestActivities();
+        break;
+      case "stories":
+        this.loadDetail();
+        break;
+      case "matches":
+        this.loadMatched();
+        break;
+      case "invited":
+        this.loadInvitations();
+        break;
+      case "applied":
+        this.loadApplications();
+        break;
+      case "suggested":
+        this.loadSuggestions();
+        break;
+      default:
+        break;
+    }
+   
+    event.target.complete();
+  }
 }

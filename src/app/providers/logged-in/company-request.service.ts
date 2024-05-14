@@ -42,6 +42,27 @@ export class CompanyRequestService {
   }
 
   /**
+   * list candidate applications
+   * @param request_uuid 
+   * @param page 
+   * @returns 
+   */
+  listApplications(request_uuid: string, page: number) : Observable<any> {
+    let url = this.companyRequestEndpoint + '/applications/'+ request_uuid +'?expand=candidate,requestInterview&page=' + page;
+    return this._authhttp.getRaw(url);
+  }
+
+  /**
+   * list interview requests 
+   * @param page 
+   * @returns 
+   */
+  listInterviewRequests(page: number, urlParams: string = "") : Observable<any> {
+    let url = this.companyRequestEndpoint + '/interview-requests?expand=candidate&page=' + page + urlParams;
+    return this._authhttp.getRaw(url);
+  }
+  
+  /**
    * view request
    * @param id
    */
@@ -49,6 +70,25 @@ export class CompanyRequestService {
     const url = this.companyRequestEndpoint + '/' + id + urlParams;
     return this._authhttp.get(url);
   }
+
+  /**
+   * accept interview request 
+   * @param request_interview_uuid 
+   * @returns 
+   */
+  acceptInterviewRequest(request_interview_uuid: string, params = {}): Observable<any> {
+    const url = this.companyRequestEndpoint + '/accept-interview-request/' + request_interview_uuid;
+    return this._authhttp.patch(url, params);
+  }
+  
+  /**
+   * @param request_interview_uuid 
+   * @returns 
+   */
+  rejectInterviewRequest(request_interview_uuid: string): Observable<any> {
+    const url = this.companyRequestEndpoint + '/reject-interview-request/' + request_interview_uuid;
+    return this._authhttp.patch(url, {});
+  } 
 
   /**
    * requests started/active but not by login user
@@ -83,7 +123,9 @@ export class CompanyRequestService {
       additional_info: model.request_additional_info,
       compensation: model.request_compensation,
       job_description: model.request_job_description,
-      requestSkills: model.requestSkills
+      requestSkills: model.requestSkills,
+      nationality_id: model.nationality_id, 
+      gender: model.gender
     });
   }
 
@@ -148,7 +190,9 @@ export class CompanyRequestService {
       additional_info: model.request_additional_info,
       compensation: model.request_compensation,
       job_description: model.request_job_description,
-      requestSkills: model.requestSkills
+      requestSkills: model.requestSkills,
+      nationality_id: model.nationality_id, 
+      gender: model.gender
     });
   }
 

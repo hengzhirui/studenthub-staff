@@ -1,12 +1,17 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { AlertController, ToastController, NavController, Platform, IonCheckbox } from '@ionic/angular';
+import { AlertController, ToastController, NavController, Platform, IonCheckbox, ModalController } from '@ionic/angular';
 //models
 import { Candidate } from 'src/app/models/candidate';
+import { RequestApplication } from 'src/app/models/request-application';
+import { RequestInterview } from 'src/app/models/request-interview';
+import { RequestInterviewFormPage } from 'src/app/pages/logged-in/company/request-interview-form/request-interview-form.page';
+import { AuthService } from 'src/app/providers/auth.service';
 //services
 import { AwsService } from 'src/app/providers/aws.service';
 import { EventService } from 'src/app/providers/event.service';
 import { CandidateIdCardService } from 'src/app/providers/logged-in/candidate.id.card.service';
 import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
+import { CompanyRequestService } from 'src/app/providers/logged-in/company-request.service';
 import { TranslateLabelService } from 'src/app/providers/translate-label.service';
 
 
@@ -20,6 +25,9 @@ export class CandidateComponent implements OnInit {
   @ViewChild('checkbox') checkbox: IonCheckbox;
 
   @Input() candidate: Candidate;
+  @Input() application: RequestApplication;
+  @Input() requestInterview: RequestInterview;
+
   @Input() type: any = null;
 
   @Output() refresh: EventEmitter<any> = new EventEmitter();
@@ -29,12 +37,15 @@ export class CandidateComponent implements OnInit {
 
   constructor(
     public platform: Platform,
+    public modalCtrl: ModalController,
     public alertCtrl: AlertController,
     public toastCtrl: ToastController,
     public navCtrl: NavController,
     public candidateService: CandidateService,
     public eventService: EventService,
+    public authService: AuthService,
     public translateService: TranslateLabelService,
+    public requestService: CompanyRequestService,
     public candidateIdCardService: CandidateIdCardService,
     public aws: AwsService
   ) {
@@ -47,7 +58,13 @@ export class CandidateComponent implements OnInit {
         this.checkbox.checked = false;
       }
     });
+
     this.getLatestWorkTime();
+
+    if(this.requestInterview && !this.application) {
+      this.application = new RequestApplication; 
+      this.application.requestInterview = this.requestInterview;
+    }
   }
 
   /**
@@ -132,5 +149,49 @@ export class CandidateComponent implements OnInit {
           }
       });
     }
+  }
+
+  async acceptInterview(event, interviewRequest) {
+    event.preventDefault();
+    event.stopPropagation(); 
+    
+    window.history.pushState({ navigationId: window.history.state?.navigationId }, null, window.location.pathname);
+
+    const modal = await this.modalCtrl.create({
+      component: RequestInterviewFormPage,
+      componentProps: {
+        interviewRequest: interviewRequest
+      }
+    });
+    modal.onDidDismiss().then(e => {
+
+      if (!e.data || e.data.from != 'native-back-btn') {
+        window['history-back-from'] = 'onDidDismiss';
+        window.history.back();
+      }
+
+      if (e && e.data) {
+        interviewRequest = Object.assign(interviewRequest, e.data);
+      }
+    });
+    modal.present();
+  }
+
+  rejectInterview(event, interviewRequest) {
+    event.preventDefault();
+    event.stopPropagation(); 
+
+    this.requestService.rejectInterviewRequest(interviewRequest.request_interview_uuid).subscribe(async res => {
+
+      if(res.operation == "success") {
+        interviewRequest.status = 2;
+      }
+
+      const prompt = await this.alertCtrl.create({
+        message: this.authService.errorMessage(res.message),
+        buttons: ['Okay']
+      });
+      prompt.present();
+    });
   }
 }

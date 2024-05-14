@@ -17,6 +17,7 @@ import { PipesModule } from 'src/app/pipes/pipes.module';
         FormsModule,
         IonicModule,
         PipesModule,
+        
         DefaultPageRoutingModule,
         RequestListingModule,
         LoadingModalModule

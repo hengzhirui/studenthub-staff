@@ -26,6 +26,8 @@ import {Note} from '../../../../models/note';
 import { StoryDeliveredComponent } from './story-delivered.component';
 import { StaffPage } from '../../pickers/staff/staff.page';
 import { CompanyRequestService } from 'src/app/providers/logged-in/company-request.service';
+import { Candidate } from 'src/app/models/candidate';
+import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
 
 
 export interface TimeSpan {
@@ -99,11 +101,19 @@ export class StoryViewPage implements OnInit, OnDestroy {
     STOPPED: 8,
   };
 
+  public matchedCandidates: Candidate[] = [];
+  public MPageCount = 0;
+  public McurrentPage = 0;
+  public Mtotal = 0;
+
+  public loadingMatched:boolean = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     public suggestionService: SuggestionService,
     public requestService: CompanyRequestService,
     private storyService: StoryService,
+    public candidateService: CandidateService,
     public navCtrl: NavController,
     private modalCtrl: ModalController,
     private invitationService: InvitationService,
@@ -369,8 +379,69 @@ export class StoryViewPage implements OnInit, OnDestroy {
 
   segmentChanged(event) {
     this.segment = event.target.value;
+
+    if(this.segment == "matches") {
+      if(this.matchedCandidates.length == 0) {
+        this.loadMatched();
+      }
+    }
   }
 
+  loadMatched() {
+
+    if(!this.story) {
+      return;
+    }
+
+    this.loadingMatched = true;
+
+    this.McurrentPage = 1;
+
+    this.candidateService.searchRequestMatch(this.story.request_uuid, this.McurrentPage).subscribe(data => {
+
+      this.matchedCandidates = data.body;
+      this.MPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.McurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.Mtotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+    },
+    () => { },
+    () => {
+      this.loadingMatched = false;
+    });
+  }
+
+  /**
+   * load more matched candidates 
+   * @param event 
+   */
+  doInfiniteMatched(event) {
+
+    this.loadingMatched = true;
+    
+    this.McurrentPage++;
+
+    this.candidateService.searchRequestMatch(this.story.request_uuid, this.McurrentPage).subscribe(data => {
+
+      this.matchedCandidates = this.matchedCandidates.concat(data.body);
+      this.MPageCount = parseInt(data.headers.get('X-Pagination-Page-Count'));
+      this.McurrentPage = parseInt(data.headers.get('X-Pagination-Current-Page'));
+      this.Mtotal = parseInt(data.headers.get('X-Pagination-Total-Count'));
+    },
+    () => { },
+    () => {
+      this.loadingMatched = false;
+      event.target.complete();
+    });
+  }
+
+  candidateSelected(candidate) {
+    this.navCtrl.navigateForward('candidate-view/' + candidate.candidate_id, {
+      state: {
+        request: this.request
+      }
+    });
+  }
+  
   private getTimeDifference() {
     this.dDay = new Date(this.dDay);
     this.timeDifference = new Date().getTime() - this.dDay.getTime();

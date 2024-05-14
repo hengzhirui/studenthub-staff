@@ -3,6 +3,7 @@ import { CompanyContact } from './company-contact';
 import { Company } from './company';
 import { Note } from './note';
 import { Contact } from './contact';
+import { Country } from './country';
 
 
 export class Request {
@@ -29,17 +30,22 @@ export class Request {
     invited: number;
     suggestion: number;
     story_count: number;
+    nationality_id: number;
+    gender: number;
     request_cancelled_at: string;
     request_delivered_at: string;
     request_assigned_at: string;
     request_started_at: string;
     request_created_datetime: string;
     request_updated_datetime: string;
+    activeSuggestionCount: number; 
+    newApplicationCount: number;
     requestCreatedBy: Staff;
     requestUpdatedBy: Staff;
     contact: Contact;
     company: Company;
     lastActivity: Note;
+    nationality: Country;
     staff: Staff;
     staffs: Staff[];
     storyOwners: Staff[];

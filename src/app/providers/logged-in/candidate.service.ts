@@ -307,15 +307,28 @@ export class CandidateService {
       candidate: Candidate,
       store_id: number,
       rate: number,
-      start_date: string = null
+      start_date: string = null,
+      company_hourly_rate: number | null = null
   ): Observable<any> {
     const params = {
       store_id: store_id,
       hourly_rate: rate,
-      start_date: start_date
+      company_hourly_rate: company_hourly_rate,
+      start_date: start_date,
     };
     const url = `${this._candidateEndpoint}/assign/${candidate.candidate_id}`;
     return this._authhttp.patch(url, params);
+  } 
+
+  /**
+   * list candidate applications
+   * @param candidate_id 
+   * @param page 
+   * @returns 
+   */
+  listApplications(candidate_id: string, page: number) : Observable<any> {
+    let url = this._candidateEndpoint + '/applications/'+ candidate_id +'?expand=request&page=' + page;//requestInterview
+    return this._authhttp.getRaw(url);
   }
 
   /**
@@ -325,6 +338,17 @@ export class CandidateService {
    */
   listByCountry(country: Country, page: number): Observable<any> {
     const url = this._candidateEndpoint + '/search?expand=store,company,candidateTags&country_id=' + country.country_id + '&page=' + page;
+    return this._authhttp.getRaw(url);
+  }
+
+  /**
+   * search candidate for request
+   * @param match_request_id 
+   * @param page 
+   * @returns 
+   */
+  searchRequestMatch(match_request_id: any, page: number): Observable<any> {
+    const url = this._candidateEndpoint + '/search?expand=cadndiateSkills,candidateExperiences,candidateTags&match_request_id=' + match_request_id + '&page=' + page;
     return this._authhttp.getRaw(url);
   }
   

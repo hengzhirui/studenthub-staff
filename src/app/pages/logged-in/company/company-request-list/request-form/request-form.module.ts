@@ -8,6 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { RequestFormPageRoutingModule } from './request-form-routing.module';
 
 import { RequestFormPage } from './request-form.page';
+import { SelectSearchModule } from 'src/app/components/select-search/select-search.module';
 
 @NgModule({
   imports: [
@@ -15,6 +16,7 @@ import { RequestFormPage } from './request-form.page';
     FormsModule,
     IonicModule,
     CKEditorModule,
+    SelectSearchModule,
     ReactiveFormsModule,
     RequestFormPageRoutingModule
   ], 

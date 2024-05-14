@@ -5,6 +5,7 @@ import {AuthHttpService} from './authhttp.service';
 //models
 import {Store} from '../../models/store';
 import { CompanyContact } from 'src/app/models/company-contact';
+//import { StoreManager } from 'src/app/models/store-manager';
 
 
 @Injectable({
@@ -68,7 +69,8 @@ export class StoreService {
       name: model.store_name,
       location: model.store_location,
       brand_uuid: model.brand_uuid,
-      mall_uuid: model.mall_uuid
+      mall_uuid: model.mall_uuid,
+      storeManager: model.storeManager
     });
   }
 
@@ -83,10 +85,21 @@ export class StoreService {
       name: model.store_name,
       location: model.store_location,
       brand_uuid: model.brand_uuid,
-      mall_uuid: model.mall_uuid
+      mall_uuid: model.mall_uuid,
+      storeManager: model.storeManager
     });
   }
 
+  /**
+   * get login url and open in new window 
+   * @param store_id 
+   * @returns 
+   */
+  login(store_id): Observable<any>{
+    let url = `${this._storeEndpoint}/login/${store_id}`;
+    return this._authhttp.post(url, {});
+  }
+  
   /**
    * update store manager
    * @param model

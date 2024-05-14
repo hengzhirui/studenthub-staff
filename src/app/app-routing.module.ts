@@ -230,6 +230,7 @@ const routes: Routes = [
   },
   {
     path: 'store-manager-form',
+    canActivate: [AuthService],
     loadChildren: () => import('./pages/logged-in/store/store-manager-form/store-manager-form.module').then( m => m.StoreManagerFormPageModule)
   },
   {
@@ -705,16 +706,30 @@ const routes: Routes = [
     canActivate: [AuthService],
     loadChildren: () => import('./pages/logged-in/email-campaign/email-campaign-form/email-campaign-form.module').then( m => m.EmailCampaignFormPageModule)
   },
-  
   {
     path: 'update-account',
+    canActivate: [AuthService],
     loadChildren: () => import('./pages/logged-in/update-account/update-account.module').then( m => m.UpdateAccountPageModule)
+  },
+  {
+    path: 'store-assignment-request-list',
+    canActivate: [AuthService],
+    loadChildren: () => import('./pages/logged-in/store-assignment-request/store-assignment-request-list/store-assignment-request-list.module').then( m => m.StoreAssignmentRequestListPageModule)
+  },
+  {
+    path: 'store-assignment-request-view',
+    canActivate: [AuthService],
+    loadChildren: () => import('./pages/logged-in/store-assignment-request/store-assignment-request-view/store-assignment-request-view.module').then( m => m.StoreAssignmentRequestViewPageModule)
+  },
+  {
+    path: 'request-interview-list',
+    canActivate: [AuthService],
+    loadChildren: () => import('./pages/logged-in/company/request-interview-list/request-interview-list.module').then( m => m.RequestInterviewListPageModule)
   },
   {
     path: '**',
     redirectTo: 'not-found'
-  },
-
+  }
 ];
 
 @NgModule({

@@ -32,6 +32,10 @@
         <ion-label>Update</ion-label>
       </ion-segment-button>
 
+      <ion-segment-button mode="md" value="matches"  *ngIf="request && request.request_position_type == 2">
+        <ion-label>Matches</ion-label>
+      </ion-segment-button>
+
       <ion-segment-button mode="md" value="invited" *ngIf="request && request.request_position_type == 2">
         <ion-label>Invited</ion-label>
       </ion-segment-button>
@@ -108,6 +112,7 @@
       </p>
     </ng-container>
   </div>
+
   <div class="container" *ngIf="request && story && segment == 'update'">
     <h2>Recent Updates <span class="count">({{sortedNotes.length}})</span></h2>
 
@@ -182,6 +187,23 @@
 
     </ng-container>
   </div>
+
+  <div *ngIf="segment == 'matches'" class="match-wrapper">
+
+    <div *ngIf="!loadingMatched && matchedCandidates.length == 0" class="ion-text-center no-invi">
+      <img src="assets/images/no-invitation.png"/>
+      <p class="ion-text-center">There are no matched found, please search manually!</p>
+    </div>
+    
+    <candidate tappable (click)="candidateSelected(candidate)" [candidate]="candidate" 
+      *ngFor="let candidate of matchedCandidates">
+    </candidate>
+
+    <ion-infinite-scroll *ngIf="McurrentPage < MPageCount" (ionInfinite)="doInfiniteMatched($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  </div>
+
   <div class="container invite-tab" *ngIf="request && story && segment == 'invited'">
     <h2>Invited Candidates <span class="count">({{Itotal}})</span></h2>
 
