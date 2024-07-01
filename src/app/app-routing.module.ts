@@ -742,9 +742,14 @@ const routes: Routes = [
     loadChildren: () => import('./pages/logged-in/support/ticket-form/ticket-form.module').then( m => m.TicketFormPageModule)
   },
   {
+    path: 'firing-hitmap',
+    canActivate: [AuthService],
+    loadChildren: () => import('./pages/logged-in/company/firing-hitmap/firing-hitmap.module').then( m => m.FiringHitmapPageModule)
+  },
+  {
     path: '**',
     redirectTo: 'not-found'
-  }, 
+  },   
 ];
 
 @NgModule({

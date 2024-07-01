@@ -75,14 +75,35 @@
     
     <div class="tab-charts" *ngIf="segment == 'charts'">
 
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title>Firing Chart</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <canvas #firingChart></canvas>
-        </ion-card-content>
-      </ion-card>
+      <ion-grid>
+        <!--
+        <ion-col>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Firing Hitmap</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <table class="table">
+                <tr *ngFor="let data of firingHitmapData">
+                  <td>{{ data.firing_month }}/ {{ data.firing_year }}</td>
+                  <td>{{ data.total }}</td>
+                </tr>
+              </table>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>-->
+        <ion-col>
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Firing Chart</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <canvas #firingChart></canvas>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-grid>
+      
     </div>
 
     <div class="tab-stats" *ngIf="segment == 'stats'">

@@ -26,6 +26,7 @@ import { CompanyMallsPage } from '../company-malls/company-malls.page';
 import { CompanySubcompaniesPage } from '../company-subcompanies/company-subcompanies.page';
 import { CompanyStoresPage } from '../company-stores/company-stores.page';
 import {ModalPopPage} from "../../modal-pop/modal-pop.page";
+import { FiringHitmapService } from 'src/app/providers/logged-in/firing-hitmap.service';
 // components
 import { ActionComponent } from 'src/app/components/action/action.component';
 
@@ -53,6 +54,8 @@ export class CompanyViewPage implements OnInit {
 
   public borderLimit = false;
 
+  public firingHitmapData = [];
+  
   public notes: Note[] = [];
   public notesTotal = 0;
   public pageCount = 0;
@@ -87,6 +90,7 @@ export class CompanyViewPage implements OnInit {
     private router: Router,
     public eventService: EventService,
     public analyticService: AnalyticsService,
+    public firingHitmapService: FiringHitmapService,
     public noteService: NoteService
   ) {
   }
@@ -782,7 +786,7 @@ export class CompanyViewPage implements OnInit {
 
   loadChartDate() {
     this.companyService.firingChart(this.company_id).subscribe(response => {
-      console.log(response);
+      
       let xAxis = [];
       let totalFired = [];
       for (let element of response){
@@ -798,6 +802,13 @@ export class CompanyViewPage implements OnInit {
   segmentChanged(event) {
     if (this.segment == "charts") {
       this.loadChartDate();
+      //this.loadFiringHitmap();
     }
+  }
+
+  loadFiringHitmap() {
+    this.firingHitmapService.list("company_id=" + this.company_id).subscribe(data => {
+      this.firingHitmapData = data;
+    });
   }
 }
