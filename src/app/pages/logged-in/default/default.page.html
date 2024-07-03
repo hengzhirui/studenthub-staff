@@ -173,7 +173,7 @@
 
       </div>
 
-      <div *ngIf="eventsService.statistics.totalPendingTickets > 0 || eventsService.statistics.totalInProgressTickets > 0 ||
+      <div *ngIf="eventsService.statistics.totalMinor > 0 || eventsService.statistics.totalPendingTickets > 0 || eventsService.statistics.totalInProgressTickets > 0 ||
           eventsService.statistics.totalExpiredCards > 0 || eventsService.statistics.missingBankInfo > 0 || 
           eventsService.statistics.assignedExpiredCivilID > 0 || eventsService.statistics.assignedIdleCandidates > 0 || 
           eventsService.statistics.incompleteAssignedToWork > 0">
@@ -189,12 +189,13 @@
           </ion-item>
         </ion-card>
 
-        <ion-card routerLink="/support" *ngIf="eventsService.statistics.totalInProgressTickets > 0" tappable class="danger stats">
+        <ion-card (click)="showMinorCandidates()" *ngIf="eventsService.statistics.totalMinor > 0" tappable 
+          class="danger stats">
           <ion-item class="ion" detail lines="none">
             <div tabindex="0"></div>
             <ion-label class="ion-text-wrap">
-              <span>{{ eventsService.statistics.totalInProgressTickets }}</span>
-              <p><b>Candidate complains under processing</b> that need to resolve.</p>
+              <span>{{ eventsService.statistics.totalMinor }}</span>
+              <p><b>Candidates below age limit</b> that need to be verified.</p>
             </ion-label>
           </ion-item>
         </ion-card>

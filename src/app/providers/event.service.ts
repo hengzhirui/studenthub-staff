@@ -28,6 +28,7 @@ export class EventService {
     totalInterviewScheduled: number;
     totalInProgressTickets: number;
     totalPendingTickets: number;
+    totalMinor: number;
   };
 
   public setOneSignal$ = new Subject();
