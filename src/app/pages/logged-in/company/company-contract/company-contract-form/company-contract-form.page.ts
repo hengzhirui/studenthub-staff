@@ -71,7 +71,7 @@ export class CompanyContractFormPage implements OnInit {
       start_date: [this.model?.start_date],
       end_date: [this.model?.end_date],
       transfer_cost: [this.model?.transfer_cost],
-      currency_code: [this.model?.currency_code],
+      currency_code: [this.model?.currency_code || "KWD"],
        
       //FixedPriceContract
       candidate_total: [this.model?.amount?.candidate_total],
