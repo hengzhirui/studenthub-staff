@@ -83,7 +83,7 @@ ion-card {
   --box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.10);
   border-radius: 8px;
   box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.10);
-  --background: var(--Neutral-0, #FFF);
+ // --background: var(--Neutral-0, #FFF);
   display: flex;
   //width: 342px;
   //padding: 12px 16px;
@@ -111,7 +111,7 @@ ion-card {
     padding-bottom: 0;
 
     b { 
-        color: var(--Neutral-95, #23233D);
+     //   color: var(--Neutral-95, #23233D);
         font-feature-settings: 'clig' off, 'liga' off;
         font-size: 16px;
         font-style: normal;
@@ -121,7 +121,7 @@ ion-card {
     }
 
     span {
-        color: var(--Neutral-90, #4B4B61);
+    //    color: var(--Neutral-90, #4B4B61);
         font-feature-settings: 'clig' off, 'liga' off;
         font-size: 14px;
         font-style: normal;

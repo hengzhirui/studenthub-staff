@@ -59,9 +59,9 @@ export class CompanyContractFormPage implements OnInit {
   _initForm() {
  
     if (!this.model){ // Show Create Form
-      this.operation  = 'Add Brand';
+      this.operation  = 'Add Contract';
     } else { // Show Update Form
-      this.operation  = 'Update Brand';
+      this.operation  = 'Update Contract';
     }
  
     this.form = this._fb.group({
@@ -71,7 +71,7 @@ export class CompanyContractFormPage implements OnInit {
       start_date: [this.model?.start_date],
       end_date: [this.model?.end_date],
       transfer_cost: [this.model?.transfer_cost],
-      currency_code: [this.model?.currency_code],
+      currency_code: [this.model?.currency_code || "KWD"],
        
       //FixedPriceContract
       candidate_total: [this.model?.amount?.candidate_total],

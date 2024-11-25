@@ -1,14 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
+//models
+import { Contract } from 'src/app/models/contract';
 import { Company } from 'src/app/models/company';
+//services
 import { AnalyticsService } from 'src/app/providers/analytics.service';
 import { CompanyService } from 'src/app/providers/logged-in/company.service';
 import { ContractService } from 'src/app/providers/logged-in/contract.service';
-import { CompanyContractFormPage } from '../company-contract-form/company-contract-form.page';
-import { Contract } from 'src/app/models/contract';
 import { TranslateLabelService } from 'src/app/providers/translate-label.service';
 import { AuthService } from 'src/app/providers/auth.service';
 import { EventService } from 'src/app/providers/event.service';
+//pages
+import { CompanyContractFormPage } from '../company-contract-form/company-contract-form.page';
+
 
 @Component({
   selector: 'app-company-contract-list',

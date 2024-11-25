@@ -56,7 +56,7 @@
           <ion-textarea formControlName="detail"></ion-textarea>
         </ion-item>
 
-        <ion-item class="input-wrapper" >
+        <ion-item class="input-wrapper" *ngIf="form.value.type == 'HOURLY'">
           <div tabindex="0"></div>
           <ion-label position="floating">Transfer cost</ion-label>
           <ion-input type="number" formControlName="transfer_cost"></ion-input>
@@ -94,7 +94,7 @@
 
           <ion-item class="input-wrapper" >
             <div tabindex="0"></div>
-            <ion-label position="floating">Company total</ion-label>
+            <ion-label position="floating">Company total (including transfer cost)</ion-label>
             <ion-input type="number" formControlName="company_total"></ion-input>
           </ion-item>
 
@@ -131,7 +131,7 @@
 
           <ion-item class="input-wrapper" >
             <div tabindex="0"></div>
-            <ion-label position="floating">Company total</ion-label>
+            <ion-label position="floating">Company total (including transfer cost)</ion-label>
             <ion-input type="number" formControlName="company_total"></ion-input>
           </ion-item>
 
