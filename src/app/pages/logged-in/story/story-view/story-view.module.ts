@@ -19,6 +19,7 @@ import { StoryDeliveredComponent } from './story-delivered.component';
 import { CandidateModule } from 'src/app/components/candidate/candidate.module';
 import { JobFormPageModule } from '../job-form/job-form.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { JobInterestFilterPageModule } from '../job-interest-filter/job-interest-filter.module';
 
 @NgModule({
   imports: [
@@ -34,6 +35,7 @@ import { TranslateModule } from '@ngx-translate/core';
     JobFormPageModule,
     LoadingModalModule,
     SuggestionModule,
+    JobInterestFilterPageModule,
     TranslateModule.forChild()
   ],
   declarations: [

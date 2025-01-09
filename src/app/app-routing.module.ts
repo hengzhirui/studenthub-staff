@@ -809,6 +809,10 @@ const routes: Routes = [
     path: 'job-form',
     loadChildren: () => import('./pages/logged-in/story/job-form/job-form.module').then( m => m.JobFormPageModule)
   },
+  {
+    path: 'job-interest-filter',
+    loadChildren: () => import('./pages/logged-in/story/job-interest-filter/job-interest-filter.module').then( m => m.JobInterestFilterPageModule)
+  },
 ];
 
 @NgModule({

@@ -185,6 +185,10 @@
       Interested Candidates ({{InterestTotal}})
     </div>
 
+    <ion-button *ngIf="InterestTotal > 0" (click)="openInterestFilter()" class="btn-post my-4" >
+      Filter Candidate
+    </ion-button>
+
     <div *ngFor="let jobInterest of jobInterests" class=" p-4 bg-white rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.10)] gap-2.5 my-4">
     
         <div class="w-full justify-between flex">

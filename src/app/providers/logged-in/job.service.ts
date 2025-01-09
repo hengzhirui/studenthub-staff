@@ -25,6 +25,11 @@ export class JobService {
     return this.authhttp.get(url);
   }
 
+  listInterestFilter(job_uuid: string): Observable<any> {
+    let url = this.jobEndpoint + '/interests/filter?job_uuid=' + job_uuid;
+    return this.authhttp.get(url);
+  }
+
   /**
    * list candidate interests
    * @param page 

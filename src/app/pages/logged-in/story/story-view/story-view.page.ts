@@ -33,6 +33,9 @@ import { JobService } from 'src/app/providers/logged-in/job.service';
 import { Job } from 'src/app/models/job';
 import { JobInterest } from 'src/app/models/job-interest';
 import { AwsService } from 'src/app/providers/aws.service';
+import { JobInterestFilterPage } from '../job-interest-filter/job-interest-filter.page';
+import { Area } from 'src/app/models/area';
+import { Country } from 'src/app/models/country';
 
 
 export interface TimeSpan {
@@ -117,6 +120,28 @@ export class StoryViewPage implements OnInit, OnDestroy {
     REWORK: 7,
     STOPPED: 8,
   };
+
+  public interestFilter : {
+    country_id: number| null,
+    skills: string[],
+    areas: Area[],
+    age: {
+      from: number | null,
+      to: number| null
+    },
+    nationality_countries: Country[],
+    gender: number| null,
+  } = {
+    country_id: null,
+    nationality_countries: [],
+    skills: [],
+    areas: [],
+    gender: null,
+    age: {
+      from: null,
+      to: null
+    },
+  }
 
   public matchedCandidates: Candidate[] = [];
   public MPageCount = 0;
@@ -230,11 +255,83 @@ export class StoryViewPage implements OnInit, OnDestroy {
     }
   }
 
+  async openInterestFilter() {
+    
+    const modal = await this.modalCtrl.create({
+      component: JobInterestFilterPage,
+      componentProps: {
+        interestFilter: this.interestFilter,
+        job_uuid: this.story.job.job_uuid
+      },
+      cssClass: 'modal-request-filter modal-delivered-story',
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+
+    if (data && data.refresh) {
+      this.interestFilter = data.interestFilter;
+      this.listInterests();
+    }
+  }
+
+  jobInterestParams() {
+
+    let params = '';
+
+    if (!this.interestFilter) {
+      this.interestFilter = {
+        country_id: null,
+        nationality_countries: [],
+        skills: [],
+        areas: [],
+        gender: null,
+        age: {
+          from: null,
+          to: null
+        },
+      }
+    }
+
+    if (this.interestFilter.country_id) {
+      params += '&country_id=' + this.interestFilter.country_id;  
+    }
+    
+    if (this.interestFilter.nationality_countries) {
+      params += '&nationality_countries=' + this.interestFilter.nationality_countries.map(country => country.country_id).join(',')
+    }
+
+    if (this.interestFilter.age.from) {
+      params += '&age_from=' + this.interestFilter.age.from
+    }
+
+    if (this.interestFilter.age.to) {
+      params += '&age_to=' + this.interestFilter.age.to
+    }
+
+    if (this.interestFilter.gender) {
+      params += '&gender=' + this.interestFilter.gender
+    }
+
+    if (this.interestFilter.skills && this.interestFilter.skills.length > 0) {
+      params += '&skills=' + this.interestFilter.skills.join(',')
+    }
+
+    if (this.interestFilter.areas && this.interestFilter.areas.length > 0) {
+      params += '&areas=' + this.interestFilter.areas.map(area => area.area_uuid).join(',')
+    }
+       
+    return params;
+  }
+
   /**
    * list job interests
    */
   listInterests() {
-    this.jobService.listInterests(1).subscribe(response => {
+    const url = this.jobInterestParams();
+
+    this.jobService.listInterests(1, url).subscribe(response => {
       this.jobInterests = response.body;
 
       this.InterestPageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
@@ -254,7 +351,9 @@ export class StoryViewPage implements OnInit, OnDestroy {
     
     this.InterestPageCount++;
 
-    this.jobService.listInterests(1).subscribe(response => {
+    const url = this.jobInterestParams();
+
+    this.jobService.listInterests(1, url).subscribe(response => {
       this.jobInterests = this.jobInterests.concat(response.body);
 
       this.InterestPageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
