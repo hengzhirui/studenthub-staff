@@ -111,7 +111,8 @@
         <div class="flex-col justify-start items-start gap-6 flex overflow-hidden">
             <div *ngFor="let country of countrylistData" class="self-stretch justify-start items-center gap-4 inline-flex overflow-hidden">
                 <div class=" bg-white rounded shadow-[inset_0px_-1px_1px_0px_rgba(218,227,225,0.15)] border border-[#d7d7d4] justify-start items-start gap-2.5 flex">
-                    <ion-checkbox (ionChange)="toggleNationality(country, $event)" [checked]="isNationalitySelected(country)" mode="md" class="">
+                    <ion-checkbox (ionChange)="toggleNationality(country, $event)" 
+                      [checked]="isNationalitySelected(country)" mode="md" class="">
                     </ion-checkbox>
                 </div>
                 <div class="text-[#393f3e] text-sm font-medium leading-tight">

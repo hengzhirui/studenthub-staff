@@ -276,6 +276,49 @@ export class StoryViewPage implements OnInit, OnDestroy {
     }
   }
 
+  removeAllFilters() {
+    this.interestFilter = {
+      country_id: null,
+      nationality_countries: [],
+      skills: [],
+      areas: [],
+      gender: null,
+      age: {
+        from: null,
+        to: null
+      },
+    };
+    this.listInterests();
+  }
+
+  removeAge() {
+    this.interestFilter.age = {
+      from: null,
+      to: null
+    };
+    this.listInterests();
+  }
+
+  removeGender() {
+    this.interestFilter.gender = null;
+    this.listInterests();
+  }
+
+  removeNationality(nationality) {
+    this.interestFilter.nationality_countries = this.interestFilter.nationality_countries.filter(o => o.country_id !== nationality.country_id);
+    this.listInterests();
+  }
+
+  removeArea(area) {
+    this.interestFilter.areas = this.interestFilter.areas.filter(o => o.area_uuid !== area.area_uuid);
+    this.listInterests();
+  }
+
+  removeSkill(skill) {
+    this.interestFilter.skills = this.interestFilter.skills.filter(o => o !== skill);
+    this.listInterests();
+  }
+
   jobInterestParams() {
 
     let params = '';

@@ -128,11 +128,12 @@ export class JobInterestFilterPage implements OnInit {
   }
 
   isAreaSelected(area) {
-    return this.form.controls.areas.value.find(o => o.area_uuid !== area.area_uuid);
+    const a = this.form.controls.areas.value.find(o => o.area_uuid == area.area_uuid);
+    return a;
   }
   
   isNationalitySelected(country) {
-    return this.form.controls.nationality_countries.value.find(o => o.country_id !== country.country_id);
+    return this.form.controls.nationality_countries.value.find(o => o.country_id == country.country_id);
   }
 
   removeArea(area_uuid, event) {
@@ -142,24 +143,36 @@ export class JobInterestFilterPage implements OnInit {
   }
 
   toggleArea(area, event) {
+    event.stopPropagation();
+    event.preventDefault();
+
     //if (this.isAreaSelected(area)) {
-    if (event.detail.checked) {
-      this.form.controls.areas.setValue([...this.form.controls.areas.value, area]);
-    } else {
-      this.form.controls.areas.setValue(this.form.controls.areas.value.filter(o => o.area_uuid !== area.area_uuid));
-    }
-    this.form.controls.areas.updateValueAndValidity();
+   // setTimeout(() => {
+      if (event.detail.checked) {
+        if (!this.isAreaSelected(area)) 
+          this.form.controls.areas.setValue([...this.form.controls.areas.value, area]);
+      } else {
+        this.form.controls.areas.setValue(this.form.controls.areas.value.filter(o => o.area_uuid !== area.area_uuid));
+      }
+      this.form.controls.areas.updateValueAndValidity();
+   // }, 200)
+
   }
 
   toggleNationality(country, event) {
+    event.stopPropagation();
+    event.preventDefault();
     
     //if (this.isNationalitySelected(country)) {
-    if (event.detail.checked) {  
-      this.form.controls.nationality_countries.setValue([...this.form.controls.nationality_countries.value, country]);
-    } else {
-      this.form.controls.nationality_countries.setValue(this.form.controls.nationality_countries.value.filter(o => o.country_id !== country.country_id));
-    }
-    this.form.controls.nationality_countries.updateValueAndValidity();
+    //setTimeout(() => {
+      if (event.detail.checked) {  
+        if (!this.isNationalitySelected(country)) 
+          this.form.controls.nationality_countries.setValue([...this.form.controls.nationality_countries.value, country]);
+      } else {
+        this.form.controls.nationality_countries.setValue(this.form.controls.nationality_countries.value.filter(o => o.country_id !== country.country_id));
+      }
+      this.form.controls.nationality_countries.updateValueAndValidity();
+    //}, 200);
   }
 
   toggleSkill(skill) {

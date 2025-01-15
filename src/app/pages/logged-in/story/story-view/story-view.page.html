@@ -186,10 +186,55 @@
         Interested Candidates ({{InterestTotal}})
       </div>
 
-      <ion-button *ngIf="InterestTotal > 0" (click)="openInterestFilter()" class="btn-post my-4" >
-        Filter Candidate
+      <ion-button *ngIf="InterestTotal > 0 || (interestFilter.country_id || interestFilter.nationality_countries.length > 0 || interestFilter.skills.length > 0 ||
+        interestFilter.areas.length > 0 || interestFilter.gender || interestFilter.age.from || interestFilter.age.to)" (click)="openInterestFilter()" class="btn-post my-4" >
+        Filter Candidate 
       </ion-button>
 
+      <div class="clearfix"></div>
+
+      <button (click)="removeAge()" *ngIf="interestFilter.age.from || interestFilter.age.to"
+        [class]="'bg-[#4c6ff2] text-[#f5f5f7] me-2.5 mb-2.5 h-8 px-3 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex text-sm font-medium leading-tight ' ">
+         <ng-container *ngIf="interestFilter.age.from">From {{ interestFilter.age.from}} years </ng-container>
+         <ng-container *ngIf="interestFilter.age.to">To {{ interestFilter.age.to}} years</ng-container> 
+         <ion-icon name="close-outline"></ion-icon>
+      </button>
+
+      <button (click)="removeGender()" *ngIf="[0,1,2,3,'0','1','2','3'].indexOf(interestFilter.gender) > -1"
+        [class]="'bg-[#4c6ff2] text-[#f5f5f7] me-2.5 mb-2.5 h-8 px-3 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex text-sm font-medium leading-tight ' ">
+         <ng-container *ngIf="interestFilter.gender == 1">Male</ng-container>
+         <ng-container *ngIf="interestFilter.gender == 2">Female</ng-container> 
+         <ng-container *ngIf="interestFilter.gender == 3">Other</ng-container>
+         <ng-container *ngIf="interestFilter.gender == 0">Any</ng-container>
+         <ion-icon name="close-outline"></ion-icon>
+      </button>
+
+      <button (click)="removeArea(area)" *ngFor="let area of interestFilter.areas" 
+        [class]="'bg-[#4c6ff2] text-[#f5f5f7] me-2.5 mb-2.5 h-8 px-3 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex text-sm font-medium leading-tight ' ">
+        {{ area.area_name_en }}
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+
+      <button (click)="removeSkill(skill)" *ngFor="let skill of interestFilter.skills" 
+        [class]="'bg-[#4c6ff2] text-[#f5f5f7] me-2.5 mb-2.5 h-8 px-3 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex text-sm font-medium leading-tight ' ">
+        {{ skill }}
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+
+      <button (click)="removeNationality(nationality)" *ngFor="let nationality of interestFilter.nationality_countries" 
+        [class]="'bg-[#4c6ff2] text-[#f5f5f7] me-2.5 mb-2.5 h-8 px-3 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex text-sm font-medium leading-tight ' ">
+        {{ nationality.country_nationality_name_en }}
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+
+      <button (click)="removeAllFilters()" 
+      [class]="'bg-[red] text-[#f5f5f7] me-2.5 mb-2.5 h-8 px-3 py-1.5 rounded-lg justify-center items-center gap-2.5 inline-flex text-sm font-medium leading-tight ' "
+      *ngIf="(interestFilter.country_id || interestFilter.nationality_countries.length > 0 || interestFilter.skills.length > 0 ||
+        interestFilter.areas.length > 0 || interestFilter.gender || interestFilter.age.from || interestFilter.age.to)">
+        Clear All Filters 
+      </button>
+
+      <div class="clearfix"></div>
       <div *ngFor="let jobInterest of jobInterests" class=" p-4 bg-white rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.10)] gap-2.5 my-4">
       
           <div class="w-full justify-between flex">

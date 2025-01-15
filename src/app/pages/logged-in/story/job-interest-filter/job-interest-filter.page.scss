@@ -15,7 +15,8 @@ ion-back-button {
   }
   
   ion-content {
-    --background: var(--ion-color-custom-9);
+    background: #fff;
+    --background: #fff;// var(--ion-color-custom-9);
     --padding-top: 24px;
     --padding-start: 24px;
     --padding-end: 24px;
