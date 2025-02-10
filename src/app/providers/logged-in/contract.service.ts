@@ -17,7 +17,7 @@ export class ContractService {
    * @param contract_uuid
    */
   view(contract_uuid) {
-    return this.authHttp.get(this._endpoint + '/' + contract_uuid + '?expand=amount');
+    return this.authHttp.get(this._endpoint + '/' + contract_uuid + '?expand=amount,candidate,company,parentCompany,store');
   }
 
   /**
@@ -25,7 +25,7 @@ export class ContractService {
    * @returns {Observable<any>}
    */
   list(page: number): Observable<any>{
-    return this.authHttp.getRaw(this._endpoint + '?page=' + page);
+    return this.authHttp.getRaw(this._endpoint + '?expand=amount,candidate,company,parentCompany,store&page=' + page);
   }
  
   /**

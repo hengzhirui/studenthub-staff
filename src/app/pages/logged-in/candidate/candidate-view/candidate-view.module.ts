@@ -18,7 +18,7 @@ import { RequestListingModule } from 'src/app/components/request-listing/request
 import { InterviewEvaluationModule } from 'src/app/components/interview-evaluation/interview-evaluation.module';
 import { InterviewEvaluationFormPageModule } from '../interview-evaluation/interview-evaluation-form/interview-evaluation-form.module';
 import { CandidateCertificateFormPageModule } from '../candidate-certificate-form/candidate-certificate-form.module';
-
+import { CompanyContractFormPageModule } from '../../company/company-contract/company-contract-form/company-contract-form.module';
 @NgModule({
     imports: [
         CommonModule,
@@ -28,6 +28,7 @@ import { CandidateCertificateFormPageModule } from '../candidate-certificate-for
         CandidateViewPageRoutingModule,
         NoItemsModule,
         RequestListingModule,
+        CompanyContractFormPageModule,
         InterviewEvaluationFormPageModule,
         CandidateCertificateFormPageModule,
         InterviewEvaluationModule,

@@ -8,6 +8,7 @@ import { CompanyContractFormPageRoutingModule } from './company-contract-form-ro
 
 import { CompanyContractFormPage } from './company-contract-form.page';
 import { NoItemsModule } from 'src/app/components/no-items/no-items.module';
+import { DatePopupModule } from 'src/app/components/date-popup/date-popup.module';
 
 @NgModule({
   imports: [
@@ -16,6 +17,7 @@ import { NoItemsModule } from 'src/app/components/no-items/no-items.module';
     ReactiveFormsModule,
     IonicModule,
     NoItemsModule,
+    DatePopupModule,
     CompanyContractFormPageRoutingModule
   ],
   declarations: [CompanyContractFormPage]

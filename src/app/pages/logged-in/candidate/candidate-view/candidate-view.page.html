@@ -15,7 +15,6 @@
     </ion-buttons>
 
   </ion-toolbar>
-
   
   <ion-toolbar class="container" *ngIf="candidate">
 
@@ -464,7 +463,7 @@
           {{ candidate.currency_code }} per hour
         </h5>-->
 
-        <h5 class="heading" *ngIf="workHistory.length > 0"><ion-icon src="assets/images/icon-assignment.svg"></ion-icon> Assignments</h5>
+        <h5 class="heading" *ngIf="workHistory.length > 0"><ion-icon src="assets/images/icon-assignment.svg"></ion-icon> Contracts</h5>
 
         <ion-card class="card-history" *ngFor="let history of workHistory">
           <ion-card-header>
@@ -524,7 +523,7 @@
 
             <ion-button *ngIf="!history.end_date" class="btn-unassign"
               (click)="unassignCandidateFromStore(history.store_id)">&nbsp;
-              Unassign
+              Mark contract as completed
             </ion-button>
 
           </ion-card-content>

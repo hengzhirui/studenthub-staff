@@ -296,18 +296,6 @@ export class CandidateService {
     return this._authhttp.delete(url);
   }
 
-  /**
-   * Removes Candidate from Assigned store
-   * @param candidate
-   * @param feedback
-   * @param store_id
-   */
-  removeFromAssignedStore(candidate: Candidate, feedback: string, store_id:number = null): Observable<any> {
-    //todo: move feedback to body 
-    const url = `${this._candidateEndpoint}/unassign/${candidate.candidate_id}?store_id=${store_id}&feedback=${feedback}`;
-    return this._authhttp.delete(url);
-  }
-
   getTransferCostAtCompanyLevel(candidate_id, store_id): Observable<any> {
     const url = `${this._candidateEndpoint}/company-transfer-cost/${candidate_id}/${store_id}`;
     return this._authhttp.get(url);
@@ -322,25 +310,42 @@ export class CandidateService {
   assignCandidateToStore(
       candidate: Candidate,
       store_id: number,
-      rate: number,
-      start_date: string = null,
-      company_hourly_rate: number | null = null,
-      company_transfer_cost: number | null = null,
-      transfer_cost: number | null = null,
-      contract_uuid: string = null
+      start_date: string,
+      transfer_cost: number,
+      contract_type: string,
+      contract_amount_details: any,
+      currency_code: string,
+      sar_id: number = null,
+      end_date: string = null,
+      contract_detail: string = null,
   ): Observable<any> {
     const params = {
+      sar_id: sar_id,
       store_id: store_id,
-      hourly_rate: rate,
-      company_hourly_rate: company_hourly_rate,
-      company_transfer_cost: company_transfer_cost,
-      transfer_cost: transfer_cost,
       start_date: start_date,
-      contract_uuid: contract_uuid
+      end_date: end_date,
+      transfer_cost: transfer_cost,
+      contract_type: contract_type,
+      contract_detail: contract_detail,
+      contract_amount_details: contract_amount_details,
+      currency_code: currency_code
     };
     const url = `${this._candidateEndpoint}/assign/${candidate.candidate_id}`;
     return this._authhttp.patch(url, params);
   } 
+
+
+  /**
+   * Removes Candidate from Assigned store
+   * @param candidate
+   * @param feedback
+   * @param store_id
+   */
+  removeFromAssignedStore(candidate: Candidate, feedback: string, store_id:number = null): Observable<any> {
+    //todo: move feedback to body 
+    const url = `${this._candidateEndpoint}/unassign/${candidate.candidate_id}?store_id=${store_id}&feedback=${feedback}`;
+    return this._authhttp.delete(url);
+  }
 
   /**
    * list candidate applications

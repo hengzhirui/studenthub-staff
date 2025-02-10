@@ -31,6 +31,10 @@ export class CompanyContractListPage implements OnInit {
 
   public deleting = false; 
 
+  public currentPage: number;
+
+  public pageCount: number;
+
   constructor(
     public alertCtrl: AlertController,
     public toastCtrl: ToastController,
@@ -168,9 +172,56 @@ export class CompanyContractListPage implements OnInit {
    * load company detail
    */
   loadCompanyDetail() {
-    this.companyService.view(this.company.company_id, 'contracts,contracts.amount').subscribe(response => {
+    this.companyService.view(this.company.company_id).subscribe(response => {
       this.company = response;
+      this.loadContracts();
     }, () => {
+    });
+  }
+
+  loadContracts() {
+ 
+    this.loading = true;
+ 
+    this.contractService.list(1).subscribe(response => {
+
+      this.pageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
+      this.currentPage = parseInt(response.headers.get('X-Pagination-Current-Page'));
+
+      this.company.contracts = response.body;
+    },
+    error => { },
+    () => {
+      this.loading = false; 
+    });
+  }
+
+  /**
+   * infinite loader on scroll
+   * @param event
+   */
+  doInfinite(event) {
+
+    if(this.currentPage == this.pageCount) {
+      event.target.complete();
+      return null;
+    }
+
+    this.loading = true;
+
+    this.currentPage++;
+ 
+    this.contractService.list(this.currentPage).subscribe(response => {
+
+      this.pageCount = parseInt(response.headers.get('X-Pagination-Page-Count'));
+      this.currentPage = parseInt(response.headers.get('X-Pagination-Current-Page'));
+
+      this.company.contracts = this.company.contracts.concat(response.body);
+    },
+    error => { },
+    () => {
+      this.loading = false;
+      event.target.complete();
     });
   }
 }

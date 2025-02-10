@@ -11,6 +11,7 @@ import { NoItemsModule } from 'src/app/components/no-items/no-items.module';
 import { CompanyContractFormPageModule } from '../company-contract-form/company-contract-form.module';
 import { PipesModule } from 'src/app/pipes/pipes.module';
 import { LoadingModalModule } from 'src/app/components/loading-modal/loading-modal.module';
+import { CandidateModule } from 'src/app/components/candidate/candidate.module';
 
 @NgModule({
   imports: [
@@ -18,6 +19,7 @@ import { LoadingModalModule } from 'src/app/components/loading-modal/loading-mod
     FormsModule,
     IonicModule,
     PipesModule,
+    CandidateModule,
     CompanyContractFormPageModule,
     CompanyContractListPageRoutingModule,
     NoItemsModule,

@@ -23,10 +23,15 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
   
-  <div class="container" *ngIf="company">
+  <div class="container" *ngIf="company && company.contracts">
 
-    <ion-card *ngFor="let contract of company.contracts" tappable (click)="contractSelected(contract)">
+    <!--  tappable (click)="contractSelected(contract)"-->
+
+    <ion-card *ngFor="let contract of company.contracts">
       <ion-card-content>
+
+        <candidate [candidate]="contract.candidate" type='candidate'>
+        </candidate>
 
         <h5>
           <ng-container *ngIf="contract.type == 'FIXED_PRICE'">Fixed Price </ng-container> 
@@ -109,12 +114,16 @@
 
     <no-items *ngIf="!loading && company && company.contracts && company.contracts.length ==0" message="~ No contract data available ~"></no-items>
 
+    <ion-infinite-scroll *ngIf="currentPage < pageCount" (ionInfinite)="doInfinite($event)">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+ 
   </div>
-  
+  <!--
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="addContract()">
       <ion-icon name="add-outline"></ion-icon>
     </ion-fab-button>
-  </ion-fab>
+  </ion-fab>-->
 
 </ion-content>
