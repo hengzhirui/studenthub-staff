@@ -53,6 +53,8 @@ import { ArcElement, Chart, PieController } from 'chart.js';
 import { CertificateService } from 'src/app/providers/logged-in/certificate.service';
 import { CandidateCertificateFormPage } from '../candidate-certificate-form/candidate-certificate-form.page';
 import { JobInterest } from 'src/app/models/job-interest';
+import { Contract } from 'src/app/models/contract';
+import { CompanyContractFormPage } from '../../company/company-contract/company-contract-form/company-contract-form.page';
 
 
 
@@ -267,7 +269,7 @@ export class CandidateViewPage implements OnInit {
    * Load list of all stores then set store name and id as per candidate data
    */
   loadStoreData() {
-    this.storeService.list('store_id', 'storeWithCompany,contracts').subscribe(response => {
+    this.storeService.list('store_id', 'storeWithCompany').subscribe(response => {
       this.stores = response;
     });
   }
@@ -397,15 +399,22 @@ export class CandidateViewPage implements OnInit {
 
     const store = this.stores.find(e => e.store_id == storeID);
 
+    const contract = new Contract();
+    contract.company_id = store.company_id;
+    contract.store_id = store.store_id;
+    contract.candidate_id = this.candidate.candidate_id;
+
     const modal = await this.modalCtrl.create({
       component: ModalPopPage,
       componentProps: {
-        activatedRoutePath: CandidateAssignFormPage,
+        activatedRoutePath: CompanyContractFormPage,
         activatedRoutePathProps: {
-          view: 'direct',
-          store_id: storeID,
-          candidate_id: this.candidate_id,
-          contracts: store? store['contracts']: []
+          //view: 'direct',
+          model: contract,
+          store: store,
+          candidate: this.candidate,
+          
+          //contracts: store? store['contracts']: []
         }
       },
       cssClass: "popup-modal"
@@ -417,11 +426,17 @@ export class CandidateViewPage implements OnInit {
         window.history.back();
       }
 
-      if(e.data && (e.data.rate || e.data.contract_uuid)) {
+      if(e.data && e.data.refresh) {
+        this.loadCandidateDetail();
+        this.loadWorkHistoryData();
+        this.loadNotes(); 
+      }
+
+      /*if(e.data && (e.data.rate || e.data.contract_uuid)) {
         this.assignCandidateToStoreWithRate(storeID, e.data.rate, e.data.start_date, 
           e.data.company_hourly_rate, e.data.company_transfer_cost, e.data.transfer_cost, 
           e.data.contract_uuid);
-      }
+      }*/
     });
     modal.present();
   }

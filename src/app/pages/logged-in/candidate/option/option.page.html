@@ -131,7 +131,7 @@
   <ion-item *ngIf="candidate.store" tappable>
     <div tabindex="0"></div>
     <ion-label (click)="unassignCandidateFromStore(candidate.store.store_id)">
-      <span *ngIf="!unassinging"><ion-icon name="person-remove-outline"></ion-icon> Unassign from {{ candidate.store.store_name }}</span>
+      <span *ngIf="!unassinging"><ion-icon name="person-remove-outline"></ion-icon> Expire Contract from {{ candidate.store.store_name }}</span>
       <ion-spinner *ngIf="unassinging"></ion-spinner>
     </ion-label>
   </ion-item>
@@ -140,7 +140,7 @@
     <div tabindex="0"></div>
     <ion-label (click)="assingToStore()">
       <ion-icon class="warning" name="checkmark-circle-outline"></ion-icon>
-      <span *ngIf="!assigning">Assign to store</span>
+      <span *ngIf="!assigning">Generate Contract</span>
       <ion-spinner *ngIf="assigning"></ion-spinner>
     </ion-label>
   </ion-item>

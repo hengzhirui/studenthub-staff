@@ -82,10 +82,11 @@ export class CompanyService {
   /**
    * @param companyID
    * @param expands
+   * //contracts,contracts.amount,
    */
   view(
     companyID,
-    expands= 'contracts,contracts.amount,country,brands,subCompanies,subCompanies.stores,subCompanies.stores.mall,subCompanies.stores.brand,stores,stores.mall,stores.brand,subCompanies.stores.candidates,files,requests,notes,brands,parentTransfers,parentTransfers.profit,parentTransfers.childTransfers,parentTransfers.childTransfers.company,parentTransfers.totalCandidateTransferTotal,parentTransfers.totalPaid,parentTransfers.paidTransferCandidates,malls,notes.createdBy,notes.updatedBy,companyContacts'
+    expands= 'country,brands,subCompanies,subCompanies.stores,subCompanies.stores.mall,subCompanies.stores.brand,stores,stores.mall,stores.brand,subCompanies.stores.candidates,files,requests,notes,brands,parentTransfers,parentTransfers.profit,parentTransfers.childTransfers,parentTransfers.childTransfers.company,parentTransfers.totalCandidateTransferTotal,parentTransfers.totalPaid,parentTransfers.paidTransferCandidates,malls,notes.createdBy,notes.updatedBy,companyContacts,totalContracts'
   ) {
     return this._authhttp.get(this._companyEndpoint + '/' + companyID + '?expand=' + expands);
   }

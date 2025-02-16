@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActionSheetController, AlertController, ModalController, NavController, Platform, ToastController } from '@ionic/angular';
+import { Candidate } from 'src/app/models/candidate';
+import { Store } from 'src/app/models/store';
 import { Contract } from 'src/app/models/contract';
 import { FixedPriceContract } from 'src/app/models/fixed-price-contract';
 import { HourlyContract } from 'src/app/models/hourly-contract';
@@ -12,6 +14,8 @@ import { CameraService } from 'src/app/providers/camera.service';
 import { EventService } from 'src/app/providers/event.service';
 import { ContractService } from 'src/app/providers/logged-in/contract.service';
 import { SentryErrorhandlerService } from 'src/app/providers/sentry.errorhandler.service';
+import { CandidateService } from 'src/app/providers/logged-in/candidate.service';
+import { format, parseISO } from 'date-fns';
 
 @Component({
   selector: 'app-company-contract-form',
@@ -23,6 +27,10 @@ export class CompanyContractFormPage implements OnInit {
   public saving = false;
 
   public model: Contract;
+
+  public store: Store;
+  public candidate: Candidate;
+  public sar_id: number;
 
   public operation: string;
 
@@ -44,6 +52,7 @@ export class CompanyContractFormPage implements OnInit {
     public modalCtrl: ModalController,
     private _toastCtrl: ToastController,
     private eventService: EventService,
+    public candidateService: CandidateService,
     public analyticService: AnalyticsService
   ) { }
 
@@ -160,17 +169,31 @@ export class CompanyContractFormPage implements OnInit {
     this.form.get('type').updateValueAndValidity();
   }
 
+  selectDate($event, type) {
+    if (type == 'start_date') {
+      this.form.get('start_date').setValue(format(parseISO($event.original), 'yyyy-MM-dd'));
+      this.form.get('start_date').updateValueAndValidity();
+    } else {
+      this.form.get('end_date').setValue(format(parseISO($event.original), 'yyyy-MM-dd'));
+      this.form.get('end_date').updateValueAndValidity();
+    }
+  }
+
   /**
    * Update Model Data based on Form Input
    */
   updateModelDataFromForm(){
+
     this.model.type = this.form.value.type;
     this.model.detail = this.form.value.detail;
-    this.model.start_date = this.form.value.start_date;
+    
     this.model.end_date = this.form.value.end_date;
     this.model.transfer_cost = this.form.value.transfer_cost;
     this.model.currency_code = this.form.value.currency_code;
  
+    this.model.start_date = this.form.value.start_date? format(parseISO(this.form.value.start_date), 'yyyy-MM-dd') : null;
+    this.model.end_date = this.form.value.end_date? format(parseISO(this.form.value.end_date), 'yyyy-MM-dd') : null;
+
     if (this.model.type == "FIXED_PRICE") {
       this.model.amount = new FixedPriceContract;
       this.model.amount.candidate_total = this.form.value.candidate_total;
@@ -185,6 +208,19 @@ export class CompanyContractFormPage implements OnInit {
       this.model.amount.salary_day = this.form.value.salary_day; 
       this.model.amount.candidate_total = this.form.value.candidate_total;
       this.model.amount.company_total = this.form.value.company_total;
+    }
+
+    //for candidate contract 
+
+    this.model.sar_id = this.sar_id;
+
+    if (this.store) {
+      this.model.store_id = this.store.store_id;
+      this.model.company_id = this.store.company_id;
+    }
+
+    if (this.candidate) {
+      this.model.candidate_id = this.candidate.candidate_id;
     }
   }
 
@@ -214,7 +250,24 @@ export class CompanyContractFormPage implements OnInit {
 
     if (!this.model.contract_uuid) {
       // Create
-      action = this.contractService.create(this.model);
+      if (this.candidate) {
+         
+        action = this.candidateService.assignCandidateToStore(
+          this.candidate, 
+          this.store.store_id, 
+
+          this.model.start_date, 
+          this.model.transfer_cost, 
+          this.model.type, 
+          this.model.amount, 
+          this.model.currency_code,
+          this.sar_id,
+          this.model.end_date,
+          this.model.detail
+        );
+      } else {
+        action = this.contractService.create(this.model);
+      }
     } else {
       // Update
       action =  this.contractService.update(this.model);
