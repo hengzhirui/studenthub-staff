@@ -56,6 +56,7 @@ import { JobInterest } from 'src/app/models/job-interest';
 import { Contract } from 'src/app/models/contract';
 import { CompanyContractFormPage } from '../../company/company-contract/company-contract-form/company-contract-form.page';
 import { JobSearchStatusComponent } from 'src/app/components/job-search-status/job-search-status.component';
+import { RESTRICTED_COMPANY_ID, ALLOWED_STAFF_IDS } from 'src/app/constants/restriction.constants';
 
 
 
@@ -626,6 +627,31 @@ export class CandidateViewPage implements OnInit {
    * load candidate details
    * @param loading
    */
+  // Restriction configuration (should match company/company-view.page.ts)
+  // Restriction configuration imported from shared constants
+
+  shouldHideFinancialsTab(): boolean {
+
+    // Check work history for restricted company
+    const hasRestrictedCompany = Array.isArray(this.candidate?.workHistory)
+      ? this.candidate.workHistory.some(
+          (history) => history.company_id === RESTRICTED_COMPANY_ID
+        )
+      : false;
+
+    // Check currentWorkHistory for restricted company
+    const currentHasRestrictedCompany = this.candidate?.currentWorkHistory
+      ? this.workHistory.some(
+          (history) => history.company_id === RESTRICTED_COMPANY_ID
+        )
+      : false;
+
+    // Hide if any match and staff is not allowed
+    return (hasRestrictedCompany || currentHasRestrictedCompany)
+      && this.authService?.staff_id
+      && ALLOWED_STAFF_IDS.indexOf(this.authService.staff_id) === -1;
+  }
+
   loadCandidateDetail(loading = true) {
     this.loading = loading;
 
