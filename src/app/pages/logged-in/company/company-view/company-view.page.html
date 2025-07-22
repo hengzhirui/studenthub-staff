@@ -52,7 +52,7 @@
         <ion-label>Manage</ion-label>
       </ion-segment-button>
 
-      <ion-segment-button mode="md" value="stats" *ngIf="canShowStatsTab()">
+      <ion-segment-button mode="md" value="stats" *ngIf="!isCompanyAndStaffRestricted()">
         <ion-label>Stats</ion-label>
       </ion-segment-button>
 
@@ -106,7 +106,7 @@
 
     </div>
 
-    <div class="tab-stats" *ngIf="segment == 'stats' && canShowStatsTab()">
+    <div class="tab-stats" *ngIf="segment == 'stats' && !isCompanyAndStaffRestricted()">
 
       <ion-row>
         <ion-col size="12" size-md="4" *ngFor="let companyStat of company.companyStats">
@@ -270,7 +270,7 @@
             </ion-item>
           </ion-col>
 
-          <ion-col size-xs="12" size-sm="12" size-md="4" size-lg="4" size-xl="4" *ngIf="canShowContractsAndTransfers()">
+          <ion-col size-xs="12" size-sm="12" size-md="4" size-lg="4" size-xl="4" *ngIf="!isCompanyAndStaffRestricted()">
             <ion-item tappable (click)="openContracts()">
               <div tabindex="0"></div>
               <ion-label>
@@ -314,7 +314,7 @@
             </ion-item>
           </ion-col>
 
-          <ion-col *ngIf="!company.parent_company_id && canShowContractsAndTransfers()" size-xs="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
+          <ion-col *ngIf="!company.parent_company_id && !isCompanyAndStaffRestricted()" size-xs="12" size-sm="12" size-md="4" size-lg="4" size-xl="4">
             <ion-item tappable (click)="openTransfers()" >
               <div tabindex="0"></div>
               <ion-label>

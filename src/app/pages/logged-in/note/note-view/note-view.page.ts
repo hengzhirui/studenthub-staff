@@ -12,7 +12,7 @@ import { NoteService } from 'src/app/providers/logged-in/note.service';
 import { CompanyNoteFormPage } from '../../company/company-note-form/company-note-form.page';
 import { AuthService } from 'src/app/providers/auth.service';
 import { CompanyViewPage } from '../../company/company-view/company-view.page';
-import { RESTRICTED_COMPANY_ID, ALLOWED_STAFF_IDS } from 'src/app/constants/restriction.constants';
+import { RestrictionService } from 'src/app/providers/restriction.service';
 
 
 @Component({
@@ -41,7 +41,8 @@ export class NoteViewPage implements OnInit {
     public eventService: EventService,
     public authService: AuthService,
     public analyticService: AnalyticsService,
-    public noteService: NoteService
+    public noteService: NoteService,
+    public restrictionService: RestrictionService
   ) { }
 
   ngOnInit() {
@@ -52,13 +53,9 @@ export class NoteViewPage implements OnInit {
     if (this.route.snapshot.params['company_id']) {
       company_id = this.route.snapshot.params['company_id'];
     }
-    // If not, will fallback to note.company_id after loadData
     // Import restriction constants
     if (
-      RESTRICTED_COMPANY_ID &&
-      company_id == RESTRICTED_COMPANY_ID &&
-      this.authService.staff_id &&
-      ALLOWED_STAFF_IDS.indexOf(this.authService.staff_id) === -1
+      this.restrictionService.isCompanyAndStaffRestricted(company_id, this.authService.staff_id)
     ) {
       this.isRestricted = true;
       this.location.back();

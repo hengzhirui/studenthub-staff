@@ -16,7 +16,7 @@ import { ModalPopPage } from '../../modal-pop/modal-pop.page';
 import { CompanyContactFormPage } from "../company-contact-form/company-contact-form.page";
 import { ContactFilterComponent } from 'src/app/components/contact-filter/contact-filter.component';
 import { AuthService } from 'src/app/providers/auth.service';
-import { RESTRICTED_COMPANY_ID, ALLOWED_STAFF_IDS } from 'src/app/constants/restriction.constants';
+import { RestrictionService } from 'src/app/providers/restriction.service';
 
 
 @Component({
@@ -52,14 +52,9 @@ export class CompanyContactsPage implements OnInit {
 
   public loadingLoginUrl: boolean = false;
 
-  // Restriction configuration (should match CompanyViewPage)
-  // Restriction configuration imported from shared constants
-
+  // Use RestrictionService for restriction logic
   public isCompanyAndStaffRestricted(): boolean {
-    return RESTRICTED_COMPANY_ID &&
-      this.company && this.company.company_id == RESTRICTED_COMPANY_ID &&
-      this.authService.staff_id &&
-      ALLOWED_STAFF_IDS.indexOf(this.authService.staff_id) === -1;
+    return this.company && this.restrictionService.isCompanyAndStaffRestricted(this.company.company_id, this.authService.staff_id);
   }
 
   constructor(
@@ -72,7 +67,8 @@ export class CompanyContactsPage implements OnInit {
     public authService: AuthService,
     public alertCtrl: AlertController,
     public eventService: EventService,
-    public analyticService: AnalyticsService
+    public analyticService: AnalyticsService,
+    public restrictionService: RestrictionService
   ) { }
 
   ngOnInit() {

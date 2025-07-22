@@ -31,7 +31,7 @@ import { FiringHitmapService } from 'src/app/providers/logged-in/firing-hitmap.s
 import { ActionComponent } from 'src/app/components/action/action.component';
 import { TransferRatesPage } from '../../transfer/transfer-rates/transfer-rates.page';
 import { CompanyContractListPage } from '../company-contract/company-contract-list/company-contract-list.page';
-import { RESTRICTED_COMPANY_ID, ALLOWED_STAFF_IDS } from 'src/app/constants/restriction.constants';
+import { RestrictionService } from 'src/app/providers/restriction.service';
 
 
 @Component({
@@ -72,21 +72,9 @@ export class CompanyViewPage implements OnInit {
   public isRestricted = false;
 
   // Restriction helpers
+  // Use RestrictionService for restriction logic
   public isCompanyAndStaffRestricted(): boolean {
-    return RESTRICTED_COMPANY_ID &&
-      this.company_id == RESTRICTED_COMPANY_ID &&
-      this.authService.staff_id &&
-      ALLOWED_STAFF_IDS.indexOf(this.authService.staff_id) === -1;
-  }
-
-  public canShowStatsTab(): boolean {
-    // Hide stats for restricted company/staff
-    return !this.isCompanyAndStaffRestricted();
-  }
-
-  public canShowContractsAndTransfers(): boolean {
-    // Hide contracts/transfers for restricted company/staff
-    return !this.isCompanyAndStaffRestricted();
+    return this.restrictionService.isCompanyAndStaffRestricted(this.company_id, this.authService.staff_id);
   }
 
   public getFilteredActivities(): Note[] {
@@ -128,7 +116,8 @@ export class CompanyViewPage implements OnInit {
     public eventService: EventService,
     public analyticService: AnalyticsService,
     public firingHitmapService: FiringHitmapService,
-    public noteService: NoteService
+    public noteService: NoteService,
+    public restrictionService: RestrictionService
   ) {
   }
 
@@ -176,8 +165,6 @@ export class CompanyViewPage implements OnInit {
     Chart.register(PointElement);
     Chart.register(LineElement);
 
-    console.log(this.company_id);
-    console.log(this.authService.staff_id);
     // Evaluate restriction once company_id is known
     if (this.isCompanyAndStaffRestricted()) {
       this.isRestricted = true;
